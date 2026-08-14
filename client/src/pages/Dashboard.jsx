@@ -39,8 +39,9 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  if (user.role === 'admin') { navigate('/admin'); return null; }
+
   if (!user || loading) return <Loader/>;
+  if (user.role === "admin") { navigate("/admin"); return null; }
 
   return (
     <div className="min-h-screen bg-gray-50">
