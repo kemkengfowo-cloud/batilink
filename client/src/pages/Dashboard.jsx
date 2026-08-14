@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import ProjectCard from '../components/ProjectCard';
@@ -8,11 +8,13 @@ import { getAvatarUrl, formatBudget, renderStars, formatDate } from '../utils/he
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [data, setData] = useState({ projects:[], missions:[], artisan:null, entreprise:null });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
+    if (user.role === 'admin') { navigate('/admin'); return; }
     if (user.role === 'client') {
       api.get('/projects/my')
         .then(res => setData({ projects: res.data || [], missions:[], artisan:null, entreprise:null }))
@@ -39,9 +41,7 @@ export default function Dashboard() {
     }
   }, [user]);
 
-
   if (!user || loading) return <Loader/>;
-  if (user.role === "admin") { navigate("/admin"); return null; }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -110,7 +110,7 @@ function ClientDashboard({ projects }) {
             <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-2xl">🔨</div>
             <div>
               <h3 className="font-bold text-gray-900">Trouver un artisan</h3>
-              <p className="text-gray-400 text-sm">Techniciens verfies</p>
+              <p className="text-gray-400 text-sm">Techniciens verifies</p>
             </div>
             <span className="ml-auto text-gray-300">→</span>
           </div>
@@ -144,7 +144,7 @@ function ArtisanDashboard({ artisan, projects, missions }) {
                 <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold">{artisan.metier}</span>
                 <span className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-semibold">📍 {artisan.ville}</span>
                 <span className={`px-3 py-1.5 rounded-full text-sm font-semibold ${artisan.disponible?'bg-green-50 text-green-700':'bg-gray-100 text-gray-500'}`}>
-                  {artisan.disponible ? 'Disponible' : 'Occupe'}
+                  {artisan.disponible?'Disponible':'Occupe'}
                 </span>
               </div>
             ) : <p className="text-gray-400">Completez votre profil</p>}
@@ -240,12 +240,6 @@ function EntrepriseDashboard({ entreprise, missions }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {m.map(x=>(
               <div key={x._id} className="bg-white rounded-2xl border border-gray-100 p-5">
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {(x.typePersonnel||[]).slice(0,2).map(t=><span key={t} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs font-bold">{t}</span>)}
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-bold ml-auto ${x.statut==='ouverte'?'bg-green-50 text-green-700':'bg-gray-100 text-gray-500'}`}>
-                    {x.statut==='ouverte'?'Ouverte':x.statut}
-                  </span>
-                </div>
                 <h3 className="font-display font-bold text-gray-900 mb-1">{x.titre}</h3>
                 <p className="text-gray-500 text-sm line-clamp-2 mb-4">{x.description}</p>
                 <div className="flex items-center justify-between">
