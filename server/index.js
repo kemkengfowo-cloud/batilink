@@ -28,6 +28,7 @@ app.use('/api/entreprises', require('./routes/entreprises'));
 app.use('/api/missions', require('./routes/missions'));
 app.use('/api/messages', require('./routes/messages'));
 
+app.use('/api/admin', require('./routes/admin'));
 app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Batilink API running' }));
 
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/batilink')
