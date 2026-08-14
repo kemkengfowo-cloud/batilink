@@ -12,7 +12,13 @@ const artisanSchema = new mongoose.Schema({
   note:        { type: Number, default: 4.0, min: 0, max: 5 },
   nbAvis:      { type: Number, default: 0 },
   disponible:  { type: Boolean, default: true },
-  verifie:     { type: Boolean, default: false }
+  verifie:     { type: Boolean, default: false },
+  badges: {
+    verifie:    { type: Boolean, default: false },
+    complet:    { type: Boolean, default: false },
+    topRated:   { type: Boolean, default: false },
+    premium:    { type: Boolean, default: false },
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Artisan', artisanSchema);

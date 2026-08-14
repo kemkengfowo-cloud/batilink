@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getAvatarUrl, getWhatsAppLink, renderStars } from '../utils/helpers';
+import { BadgeList } from './Badge';
 
 export default function ArtisanCard({ artisan }) {
-  const { user, metier, ville, description, note, nbAvis, whatsapp, disponible, verifie } = artisan;
+  const { user, metier, ville, description, note, nbAvis, whatsapp, disponible, badges } = artisan;
   const name = user?.name || 'Artisan';
   const waMsg = `Bonjour ${name}, j'ai vu votre profil sur Batilink et je souhaite vous contacter.`;
 
@@ -21,7 +22,6 @@ export default function ArtisanCard({ artisan }) {
                 <h3 className="font-display font-bold text-gray-900 leading-tight">{name}</h3>
                 <p className="text-blue-600 font-semibold text-sm mt-0.5">{metier}</p>
               </div>
-              {verifie && <span className="flex-shrink-0 text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-semibold">✓ Vérifié</span>}
             </div>
             <div className="flex items-center gap-3 mt-2">
               <span className="flex items-center gap-1 text-sm">
@@ -32,6 +32,11 @@ export default function ArtisanCard({ artisan }) {
               <span className="text-gray-200">•</span>
               <span className="text-gray-500 text-xs">📍 {ville}</span>
             </div>
+            {badges && Object.values(badges).some(Boolean) && (
+              <div className="mt-2">
+                <BadgeList badges={badges} size="sm"/>
+              </div>
+            )}
           </div>
         </div>
         {description && <p className="mt-3 text-sm text-gray-500 line-clamp-2">{description}</p>}

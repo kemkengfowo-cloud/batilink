@@ -199,3 +199,31 @@ router.delete('/projects/:id', auth, adminOnly, async (req, res) => {
 });
 
 module.exports = router;
+
+// PUT /api/admin/badges/artisan/:id
+router.put('/badges/artisan/:id', auth, adminOnly, async (req, res) => {
+  try {
+    const { verifie, complet, topRated, premium } = req.body;
+    const update = {};
+    if (verifie !== undefined) update['badges.verifie'] = verifie;
+    if (complet !== undefined) update['badges.complet'] = complet;
+    if (topRated !== undefined) update['badges.topRated'] = topRated;
+    if (premium !== undefined) update['badges.premium'] = premium;
+    const artisan = await Artisan.findByIdAndUpdate(req.params.id, update, { new: true }).populate('user', 'name email');
+    res.json(artisan);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+// PUT /api/admin/badges/entreprise/:id
+router.put('/badges/entreprise/:id', auth, adminOnly, async (req, res) => {
+  try {
+    const { verifie, complet, topRated, premium } = req.body;
+    const update = {};
+    if (verifie !== undefined) update['badges.verifie'] = verifie;
+    if (complet !== undefined) update['badges.complet'] = complet;
+    if (topRated !== undefined) update['badges.topRated'] = topRated;
+    if (premium !== undefined) update['badges.premium'] = premium;
+    const entreprise = await Entreprise.findByIdAndUpdate(req.params.id, update, { new: true }).populate('user', 'name email');
+    res.json(entreprise);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
