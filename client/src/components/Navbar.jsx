@@ -11,71 +11,147 @@ export default function Navbar() {
   const [drop, setDrop] = useState(false);
 
   const handleLogout = () => { logout(); navigate('/'); setOpen(false); };
-  const cl = (path) => `block px-4 py-2 rounded-lg font-medium transition-colors ${pathname===path?'bg-brand-50 text-brand-600':'text-earth-700 hover:bg-earth-100'}`;
+  const close = () => setOpen(false);
+  const isActive = (p) => pathname === p;
+
+  const navLinks = {
+    client: [
+      { to:'/dashboard', label:'Tableau de bord' },
+      { to:'/create-project', label:'Nouvelle demande' },
+      { to:'/projects/my', label:'Mes demandes' },
+      { to:'/artisans', label:'Trouver un artisan' },
+      { to:'/entreprises', label:'Entreprises BTP' },
+      { to:'/messages', label:'Messages' },
+    ],
+    artisan: [
+      { to:'/dashboard', label:'Tableau de bord' },
+      { to:'/projects', label:'Projets disponibles' },
+      { to:'/missions', label:'Missions disponibles' },
+      { to:'/messages', label:'Messages' },
+      { to:'/profile', label:'Mon profil' },
+    ],
+    entreprise: [
+      { to:'/dashboard', label:'Tableau de bord' },
+      { to:'/create-mission', label:'Location personnel' },
+      { to:'/missions/my', label:'Mes missions' },
+      { to:'/artisans', label:'Trouver technicien' },
+      { to:'/messages', label:'Messages' },
+    ],
+  };
+
+  const links = user ? (navLinks[user.role] || []) : [];
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-earth-200">
-      <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center shadow-brand">
-            <span className="text-white font-bold text-sm font-display">B</span>
-          </div>
-          <span className="font-display font-bold text-xl">Bati<span className="text-brand-500">link</span></span>
-        </Link>
-
-        {/* Desktop */}
-        <div className="hidden md:flex items-center gap-1">
-          <Link to="/artisans" className={`px-4 py-2 rounded-lg font-medium transition-colors ${pathname==='/artisans'?'bg-brand-50 text-brand-600':'text-earth-700 hover:bg-earth-100'}`}>Artisans</Link>
-          <Link to="/projects" className={`px-4 py-2 rounded-lg font-medium transition-colors ${pathname==='/projects'?'bg-brand-50 text-brand-600':'text-earth-700 hover:bg-earth-100'}`}>Projets</Link>
-          {user ? (
-            <>
-              {user.role==='client' && <Link to="/create-project" className="ml-2 px-4 py-2 bg-brand-500 text-white rounded-lg font-semibold hover:bg-brand-600 shadow-brand transition-colors">+ Publier</Link>}
-              <div className="relative ml-1">
-                <button onClick={()=>setDrop(!drop)} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-earth-100 transition-colors">
-                  <img src={getAvatarUrl(user.avatar, user.name)} alt={user.name} className="w-7 h-7 rounded-full object-cover" />
-                  <span className="text-sm font-semibold text-earth-800">{user.name.split(' ')[0]}</span>
-                  <svg className="w-4 h-4 text-earth-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                {drop && <div className="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-card-hover border border-earth-100 py-1 z-50" onMouseLeave={()=>setDrop(false)}>
-                  <Link to="/dashboard" className="block px-4 py-2 text-sm text-earth-700 hover:bg-earth-50" onClick={()=>setDrop(false)}>Tableau de bord</Link>
-                  <Link to="/messages" className="block px-4 py-2 text-sm text-earth-700 hover:bg-earth-50" onClick={()=>setDrop(false)}>Messages</Link>
-                  <Link to="/profile" className="block px-4 py-2 text-sm text-earth-700 hover:bg-earth-50" onClick={()=>setDrop(false)}>Mon profil</Link>
-                  <hr className="my-1 border-earth-100"/>
-                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Déconnexion</button>
-                </div>}
-              </div>
-            </>
-          ) : (
-            <div className="flex items-center gap-2 ml-2">
-              <Link to="/login" className="px-4 py-2 text-earth-700 hover:bg-earth-100 rounded-lg font-medium transition-colors">Connexion</Link>
-              <Link to="/register" className="px-4 py-2 bg-brand-500 text-white rounded-lg font-semibold hover:bg-brand-600 shadow-brand transition-colors">Inscription</Link>
+    <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
+            <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20">
+              <span className="text-white font-bold text-base">B</span>
             </div>
-          )}
+            <span className="font-display font-bold text-xl text-gray-900">Bati<span className="text-blue-600">link</span></span>
+          </Link>
+
+          {/* Desktop nav */}
+          <div className="hidden lg:flex items-center gap-1 flex-1 mx-8">
+            {user ? links.map(l => (
+              <Link key={l.to} to={l.to}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive(l.to)?'bg-blue-50 text-blue-600':'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
+                {l.label}
+              </Link>
+            )) : (
+              <>
+                <Link to="/artisans" className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/artisans')?'bg-blue-50 text-blue-600':'text-gray-600 hover:bg-gray-100'}`}>Artisans</Link>
+                <Link to="/projects" className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/projects')?'bg-blue-50 text-blue-600':'text-gray-600 hover:bg-gray-100'}`}>Projets</Link>
+                <Link to="/entreprises" className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/entreprises')?'bg-blue-50 text-blue-600':'text-gray-600 hover:bg-gray-100'}`}>Entreprises BTP</Link>
+              </>
+            )}
+          </div>
+
+          {/* Right side */}
+          <div className="hidden lg:flex items-center gap-3">
+            {user ? (
+              <>
+                {user.role === 'client' && (
+                  <Link to="/create-project" className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
+                    + Nouvelle demande
+                  </Link>
+                )}
+                {user.role === 'entreprise' && (
+                  <Link to="/create-mission" className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
+                    + Location personnel
+                  </Link>
+                )}
+                <div className="relative">
+                  <button onClick={()=>setDrop(!drop)} onBlur={()=>setTimeout(()=>setDrop(false),200)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors">
+                    <img src={getAvatarUrl(user.avatar, user.name)} alt={user.name} className="w-8 h-8 rounded-lg object-cover"/>
+                    <div className="text-left">
+                      <p className="text-sm font-semibold text-gray-900 leading-none">{user.name.split(' ')[0]}</p>
+                      <p className="text-xs text-gray-400 capitalize leading-none mt-0.5">{user.role}</p>
+                    </div>
+                    <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/></svg>
+                  </button>
+                  {drop && (
+                    <div className="absolute right-0 mt-1 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                      <div className="px-4 py-2 border-b border-gray-100 mb-1">
+                        <p className="text-sm font-semibold text-gray-900">{user.name}</p>
+                        <p className="text-xs text-gray-400">{user.email}</p>
+                      </div>
+                      <Link to="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Tableau de bord</Link>
+                      <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Mon profil</Link>
+                      <Link to="/messages" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Messages</Link>
+                      <hr className="my-1 border-gray-100"/>
+                      <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Déconnexion</button>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link to="/login" className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-xl transition-colors">Connexion</Link>
+                <Link to="/register" className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">Inscription</Link>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile burger */}
+          <button className="lg:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors" onClick={()=>setOpen(!open)}>
+            <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {open ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>}
+            </svg>
+          </button>
         </div>
 
-        {/* Mobile burger */}
-        <button className="md:hidden p-2 rounded-lg hover:bg-earth-100" onClick={()=>setOpen(!open)}>
-          <svg className="w-6 h-6 text-earth-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            {open ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>}
-          </svg>
-        </button>
+        {/* Mobile menu */}
+        {open && (
+          <div className="lg:hidden py-3 pb-5 border-t border-gray-100 space-y-1">
+            {user ? (
+              <>
+                {links.map(l => (
+                  <Link key={l.to} to={l.to} onClick={close}
+                    className={`block px-4 py-2.5 rounded-xl text-sm font-medium ${isActive(l.to)?'bg-blue-50 text-blue-600':'text-gray-700 hover:bg-gray-100'}`}>
+                    {l.label}
+                  </Link>
+                ))}
+                <hr className="my-2 border-gray-100"/>
+                <Link to="/profile" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Mon profil</Link>
+                <button onClick={handleLogout} className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl">Déconnexion</button>
+              </>
+            ) : (
+              <>
+                <Link to="/artisans" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Artisans</Link>
+                <Link to="/projects" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Projets</Link>
+                <Link to="/entreprises" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Entreprises BTP</Link>
+                <hr className="my-2 border-gray-100"/>
+                <Link to="/login" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Connexion</Link>
+                <Link to="/register" onClick={close} className="block px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold text-center">Inscription</Link>
+              </>
+            )}
+          </div>
+        )}
       </div>
-
-      {/* Mobile menu */}
-      {open && <div className="md:hidden px-4 pt-2 pb-4 border-t border-earth-100 space-y-1">
-        <Link to="/artisans" className={cl('/artisans')} onClick={()=>setOpen(false)}>Artisans</Link>
-        <Link to="/projects" className={cl('/projects')} onClick={()=>setOpen(false)}>Projets</Link>
-        {user ? <>
-          <Link to="/dashboard" className={cl('/dashboard')} onClick={()=>setOpen(false)}>Mon espace</Link>
-          <Link to="/messages" className={cl('/messages')} onClick={()=>setOpen(false)}>Messages</Link>
-          <Link to="/profile" className={cl('/profile')} onClick={()=>setOpen(false)}>Profil</Link>
-          {user.role==='client' && <Link to="/create-project" className="block px-4 py-2 bg-brand-500 text-white rounded-lg font-semibold text-center" onClick={()=>setOpen(false)}>+ Publier un projet</Link>}
-          <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-red-600 font-medium rounded-lg hover:bg-red-50">Déconnexion</button>
-        </> : <>
-          <Link to="/login" className={cl('/login')} onClick={()=>setOpen(false)}>Connexion</Link>
-          <Link to="/register" className="block px-4 py-2 bg-brand-500 text-white rounded-lg font-semibold text-center" onClick={()=>setOpen(false)}>Créer un compte</Link>
-        </>}
-      </div>}
     </nav>
   );
 }

@@ -1,47 +1,88 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { VILLES } from '../utils/helpers';
+import { VILLES, CATEGORIES } from '../utils/helpers';
+
+const LOTS = ['Gros œuvre','Finition','Rénovation','Réalisation de plans / Architecture'];
+const TYPE_PERSONNEL = ['Coffreur','Manœuvre','Ferrailleur','Dalleur','Maçon','Électricien','Plombier','Peintre','Carreleur','Menuisier','Soudeur','Autres'];
 
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name:'', email:'', password:'', role:'client', phone:'', city:'' });
+  const [params] = useSearchParams();
+  const defaultRole = params.get('role') || 'client';
+  const [role, setRole] = useState(defaultRole);
+  const [step, setStep] = useState(1);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const set = (k, v) => setForm(f => ({...f, [k]: v}));
+  const [form, setForm] = useState({
+    name:'', email:'', password:'', phone:'', city:'',
+    metier:'', whatsapp:'', experience:'',
+    nomEntreprise:'', nomResponsable:'', rccm:'',
+    lotsTravauxPropose:[], typePersonnel:[]
+  });
+
+  const set = (k,v) => setForm(f=>({...f,[k]:v}));
+  const toggleArr = (k,v) => setForm(f=>({...f,[k]: f[k].includes(v) ? f[k].filter(x=>x!==v) : [...f[k],v]}));
 
   const handleSubmit = async (e) => {
     e.preventDefault(); setError(''); setLoading(true);
     try {
-      await register(form);
+      await register({...form, role});
       navigate('/dashboard');
-    } catch (err) { setError(err.response?.data?.message || 'Erreur d\'inscription'); }
+    } catch(err) { setError(err.response?.data?.message || 'Erreur d\'inscription'); }
     finally { setLoading(false); }
   };
 
-  return (
-    <div className="min-h-screen bg-earth-50 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-brand">
-              <span className="text-white font-bold">B</span>
-            </div>
-            <span className="font-display font-bold text-2xl">Bati<span className="text-brand-500">link</span></span>
-          </Link>
-          <h1 className="text-2xl font-display font-bold text-earth-900">Créer un compte</h1>
-          <p className="text-earth-500 mt-2">Rejoignez Batilink gratuitement</p>
-        </div>
+  const inputCls = "w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors text-gray-800";
+  const labelCls = "block text-sm font-semibold text-gray-700 mb-1.5";
 
-        <div className="bg-white rounded-2xl shadow-card p-6 md:p-8">
+  return (
+    <div className="min-h-screen flex" style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 50%, #1a4a8a 100%)'}}>
+      {/* Left panel */}
+      <div className="hidden lg:flex w-1/2 flex-col justify-center px-16 text-white">
+        <Link to="/" className="flex items-center gap-3 mb-16">
+          <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center font-bold text-xl">B</div>
+          <span className="font-display font-bold text-2xl">Batilink</span>
+        </Link>
+        <h1 className="text-5xl font-display font-black leading-tight mb-6">
+          Rejoignez le réseau BTP #1 au Cameroun
+        </h1>
+        <p className="text-blue-200 text-lg leading-relaxed mb-12">
+          Clients, techniciens et entreprises — une seule plateforme pour tous vos besoins en construction.
+        </p>
+        <div className="space-y-4">
+          {[['✅','Inscription 100% gratuite'],['🔨','500+ artisans vérifiés'],['🏢','Entreprises BTP certifiées'],['⚡','Mise en relation rapide']].map(([i,t])=>(
+            <div key={t} className="flex items-center gap-3 text-blue-100">
+              <span className="text-xl">{i}</span><span>{t}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right panel */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8">
+          <div className="text-center mb-8">
+            <Link to="/" className="lg:hidden flex items-center gap-2 justify-center mb-6">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">B</div>
+              <span className="font-display font-bold text-xl text-gray-900">Batilink</span>
+            </Link>
+            <h2 className="text-2xl font-display font-bold text-gray-900">Créer un compte</h2>
+            <p className="text-gray-500 mt-1 text-sm">Choisissez votre profil pour commencer</p>
+          </div>
+
           {/* Role selector */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            {['client','artisan'].map(r => (
-              <button key={r} type="button" onClick={() => set('role', r)}
-                className={`py-4 rounded-xl border-2 font-semibold transition-all ${form.role===r?'border-brand-500 bg-brand-50 text-brand-700':'border-earth-200 text-earth-600 hover:border-earth-300'}`}>
-                <div className="text-2xl mb-1">{r==='client'?'🏠':'🔨'}</div>
-                <div className="text-sm capitalize">{r==='client'?'Je suis client':'Je suis artisan'}</div>
+          <div className="grid grid-cols-3 gap-2 mb-8">
+            {[
+              {r:'client', icon:'🏠', label:'Client'},
+              {r:'artisan', icon:'🔨', label:'Technicien'},
+              {r:'entreprise', icon:'🏢', label:'Entreprise'},
+            ].map(({r,icon,label})=>(
+              <button key={r} type="button" onClick={()=>{setRole(r);setStep(1);}}
+                className={`py-4 rounded-xl border-2 font-semibold transition-all text-center ${role===r?'border-blue-500 bg-blue-50 text-blue-700':'border-gray-200 text-gray-500 hover:border-gray-300'}`}>
+                <div className="text-2xl mb-1">{icon}</div>
+                <div className="text-xs">{label}</div>
               </button>
             ))}
           </div>
@@ -49,46 +90,116 @@ export default function Register() {
           {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">{error}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-earth-700 mb-1.5">Nom complet</label>
-              <input type="text" required value={form.name} onChange={e=>set('name',e.target.value)}
-                className="w-full px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 transition-colors"
-                placeholder="Jean Mbarga"/>
+            {/* CHAMPS COMMUNS */}
+            {role === 'entreprise' ? (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={labelCls}>Nom de l'entreprise *</label>
+                  <input type="text" required value={form.nomEntreprise} onChange={e=>set('nomEntreprise',e.target.value)} className={inputCls} placeholder="SOBTP Sarl"/>
+                </div>
+                <div>
+                  <label className={labelCls}>Nom du responsable *</label>
+                  <input type="text" required value={form.nomResponsable} onChange={e=>set('nomResponsable',e.target.value)} className={inputCls} placeholder="Jean Mbarga"/>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <label className={labelCls}>Nom complet *</label>
+                <input type="text" required value={form.name} onChange={e=>set('name',e.target.value)} className={inputCls} placeholder="Jean Mbarga"/>
+              </div>
+            )}
+
+            {role === 'entreprise' && (
+              <div>
+                <label className={labelCls}>Nom complet (pour le compte)</label>
+                <input type="text" value={form.name} onChange={e=>set('name',e.target.value)} className={inputCls} placeholder="Nom du responsable"/>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className={labelCls}>Email *</label>
+                <input type="email" required value={form.email} onChange={e=>set('email',e.target.value)} className={inputCls} placeholder="vous@exemple.com"/>
+              </div>
+              <div>
+                <label className={labelCls}>Téléphone *</label>
+                <input type="tel" required value={form.phone} onChange={e=>set('phone',e.target.value)} className={inputCls} placeholder="+237 6XX XXX XXX"/>
+              </div>
             </div>
+
             <div>
-              <label className="block text-sm font-semibold text-earth-700 mb-1.5">Email</label>
-              <input type="email" required value={form.email} onChange={e=>set('email',e.target.value)}
-                className="w-full px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 transition-colors"
-                placeholder="vous@exemple.com"/>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-earth-700 mb-1.5">Téléphone</label>
-              <input type="tel" value={form.phone} onChange={e=>set('phone',e.target.value)}
-                className="w-full px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 transition-colors"
-                placeholder="+237 6XX XXX XXX"/>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-earth-700 mb-1.5">Ville</label>
-              <select value={form.city} onChange={e=>set('city',e.target.value)}
-                className="w-full px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 transition-colors bg-white">
-                <option value="">Sélectionner une ville</option>
+              <label className={labelCls}>Ville *</label>
+              <select required value={form.city} onChange={e=>set('city',e.target.value)} className={inputCls}>
+                <option value="">Sélectionner votre ville</option>
                 {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
               </select>
             </div>
+
+            {/* CHAMPS ARTISAN */}
+            {role === 'artisan' && (<>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={labelCls}>Spécialité *</label>
+                  <select required value={form.metier} onChange={e=>set('metier',e.target.value)} className={inputCls}>
+                    <option value="">Votre métier</option>
+                    {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={labelCls}>Expérience (ans)</label>
+                  <input type="number" min="0" max="50" value={form.experience} onChange={e=>set('experience',e.target.value)} className={inputCls} placeholder="5"/>
+                </div>
+              </div>
+              <div>
+                <label className={labelCls}>WhatsApp</label>
+                <input type="tel" value={form.whatsapp} onChange={e=>set('whatsapp',e.target.value)} className={inputCls} placeholder="+237 6XX XXX XXX"/>
+              </div>
+            </>)}
+
+            {/* CHAMPS ENTREPRISE */}
+            {role === 'entreprise' && (<>
+              <div>
+                <label className={labelCls}>Numéro RCCM</label>
+                <input type="text" value={form.rccm} onChange={e=>set('rccm',e.target.value)} className={inputCls} placeholder="RC/DLA/2024/B/1234"/>
+              </div>
+              <div>
+                <label className={labelCls}>Lots de travaux proposés</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {LOTS.map(l=>(
+                    <label key={l} className={`flex items-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${form.lotsTravauxPropose.includes(l)?'border-blue-500 bg-blue-50':'border-gray-200 hover:border-gray-300'}`}>
+                      <input type="checkbox" checked={form.lotsTravauxPropose.includes(l)} onChange={()=>toggleArr('lotsTravauxPropose',l)} className="accent-blue-500"/>
+                      <span className="text-xs font-medium text-gray-700">{l}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className={labelCls}>Type de personnel disponible à la location</label>
+                <div className="flex flex-wrap gap-2">
+                  {TYPE_PERSONNEL.map(t=>(
+                    <button key={t} type="button" onClick={()=>toggleArr('typePersonnel',t)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition-all ${form.typePersonnel.includes(t)?'border-blue-500 bg-blue-500 text-white':'border-gray-200 text-gray-600 hover:border-blue-300'}`}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>)}
+
             <div>
-              <label className="block text-sm font-semibold text-earth-700 mb-1.5">Mot de passe</label>
-              <input type="password" required value={form.password} onChange={e=>set('password',e.target.value)}
-                className="w-full px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 transition-colors"
-                placeholder="Minimum 6 caractères"/>
+              <label className={labelCls}>Mot de passe *</label>
+              <input type="password" required minLength={6} value={form.password} onChange={e=>set('password',e.target.value)} className={inputCls} placeholder="Minimum 6 caractères"/>
             </div>
+
             <button type="submit" disabled={loading}
-              className="w-full py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-brand transition-colors disabled:opacity-50 text-lg">
-              {loading ? 'Création...' : `Créer mon compte ${form.role === 'artisan' ? 'artisan' : 'client'}`}
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50 text-lg shadow-lg shadow-blue-600/20">
+              {loading ? 'Création...' : `Créer mon compte ${role==='client'?'client':role==='artisan'?'technicien':'entreprise'}`}
             </button>
           </form>
-          <p className="mt-5 text-center text-sm text-earth-500">
+
+          <p className="mt-5 text-center text-sm text-gray-500">
             Déjà un compte ?{' '}
-            <Link to="/login" className="text-brand-600 font-semibold hover:text-brand-700">Se connecter</Link>
+            <Link to="/login" className="text-blue-600 font-semibold hover:text-blue-700">Se connecter</Link>
           </p>
         </div>
       </div>
