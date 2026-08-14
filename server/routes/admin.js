@@ -119,4 +119,3 @@ router.delete('/projects/:id', auth, adminOnly, async (req, res) => {
 });
 
 module.exports = router;
-# force rebuild Fri Aug 14 12:16:28     2026
