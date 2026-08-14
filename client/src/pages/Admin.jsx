@@ -4,6 +4,25 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { formatDate, getAvatarUrl } from '../utils/helpers';
 
+const BADGE_CONFIG = {
+  verifie:  { label:'Vérifié', icon:'✓', color:'bg-blue-500 text-white', desc:'Identité vérifiée par Batilink' },
+  complet:  { label:'Complet', icon:'★', color:'bg-green-500 text-white', desc:'Profil 100% complété' },
+  topRated: { label:'Top', icon:'⭐', color:'bg-amber-500 text-white', desc:'Note > 4.5 avec 5+ avis' },
+  premium:  { label:'Premium', icon:'👑', color:'bg-purple-600 text-white', desc:'Partenaire premium' },
+};
+
+function BadgeToggle({ badges={}, onToggle, type }) {
+  const cfg = BADGE_CONFIG[type];
+  const active = badges?.[type];
+  return (
+    <button onClick={() => onToggle(type, !active)}
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all ${active ? `${cfg.color} border-transparent shadow-sm` : 'bg-gray-100 text-gray-400 border-gray-200 hover:border-gray-300'}`}
+      title={cfg.desc}>
+      {cfg.icon} {cfg.label}
+    </button>
+  );
+}
+
 export default function Admin() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -39,8 +58,7 @@ export default function Admin() {
       if (a.status==='fulfilled') setArtisans(a.value.data.artisans || []);
       if (e.status==='fulfilled') setEntreprises(e.value.data.entreprises || []);
       if (sig.status==='fulfilled') setSignalements(sig.value.data || []);
-    } catch(err) { console.error(err); }
-    finally { setLoading(false); }
+    } finally { setLoading(false); }
   };
 
   const verifyArtisan = async (id, verifie) => {
@@ -51,6 +69,16 @@ export default function Admin() {
   const verifyEntreprise = async (id, verifie) => {
     await api.put(`/admin/entreprises/${id}/verify`, { verifie });
     setEntreprises(prev => prev.map(e => e._id===id ? {...e, verifie} : e));
+  };
+
+  const toggleBadgeArtisan = async (artisanId, badgeType, value) => {
+    await api.put(`/admin/badges/artisan/${artisanId}`, { [badgeType]: value });
+    setArtisans(prev => prev.map(a => a._id===artisanId ? {...a, badges:{...a.badges, [badgeType]:value}} : a));
+  };
+
+  const toggleBadgeEntreprise = async (entrepriseId, badgeType, value) => {
+    await api.put(`/admin/badges/entreprise/${entrepriseId}`, { [badgeType]: value });
+    setEntreprises(prev => prev.map(e => e._id===entrepriseId ? {...e, badges:{...e.badges, [badgeType]:value}} : e));
   };
 
   const deleteUser = async (id) => {
@@ -69,20 +97,20 @@ export default function Admin() {
     setSending(true);
     try {
       const res = await api.post('/admin/broadcast', broadcast);
-      setBroadcastMsg(`Message envoyé a ${res.data.count} utilisateur(s)`);
+      setBroadcastMsg(`Message envoye a ${res.data.count} utilisateur(s)`);
       setBroadcast({ contenu:'', roleFilter:'' });
       setTimeout(() => setBroadcastMsg(''), 4000);
-    } catch(err) { setBroadcastMsg('Erreur lors de l envoi'); }
+    } catch { setBroadcastMsg('Erreur lors de l envoi'); }
     finally { setSending(false); }
   };
 
   const TABS = [
-    { id:'stats', label:'Tableau de bord', icon:'📊', badge: null },
-    { id:'users', label:'Utilisateurs', icon:'👥', badge: users.length },
-    { id:'artisans', label:'Artisans', icon:'🔨', badge: artisans.filter(a=>!a.verifie).length || null },
-    { id:'entreprises', label:'Entreprises', icon:'🏢', badge: entreprises.filter(e=>!e.verifie).length || null },
-    { id:'signalements', label:'Signalements', icon:'🚨', badge: signalements.filter(s=>s.statut==='en_attente').length || null },
-    { id:'messagerie', label:'Messagerie', icon:'📢', badge: null },
+    { id:'stats', label:'Tableau de bord', icon:'📊', badge:null },
+    { id:'users', label:'Utilisateurs', icon:'👥', badge:users.length },
+    { id:'artisans', label:'Artisans', icon:'🔨', badge:artisans.filter(a=>!a.verifie).length||null },
+    { id:'entreprises', label:'Entreprises', icon:'🏢', badge:entreprises.filter(e=>!e.verifie).length||null },
+    { id:'signalements', label:'Signalements', icon:'🚨', badge:signalements.filter(s=>s.statut==='en_attente').length||null },
+    { id:'messagerie', label:'Messagerie', icon:'📢', badge:null },
   ];
 
   if (loading) return (
@@ -96,7 +124,6 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 100%)'}}>
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-6">
@@ -113,13 +140,11 @@ export default function Admin() {
             </div>
           </div>
           <div className="flex gap-1 overflow-x-auto pb-1">
-            {TABS.map(t => (
-              <button key={t.id} onClick={() => setTab(t.id)}
+            {TABS.map(t=>(
+              <button key={t.id} onClick={()=>setTab(t.id)}
                 className={`relative flex-shrink-0 px-4 py-2.5 text-sm font-semibold transition-all rounded-t-lg ${tab===t.id?'bg-white text-blue-700':'text-blue-200 hover:text-white hover:bg-white/10'}`}>
                 {t.icon} {t.label}
-                {t.badge > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">{t.badge}</span>
-                )}
+                {t.badge > 0 && <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">{t.badge}</span>}
               </button>
             ))}
           </div>
@@ -131,31 +156,27 @@ export default function Admin() {
         {/* STATS */}
         {tab==='stats' && stats && (
           <div className="space-y-6">
-            {/* KPIs */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { label:'Clients', value:stats.clients, icon:'🏠', sub:`+${stats.newUsers30j} ce mois`, color:'border-blue-200 bg-blue-50 text-blue-700' },
-                { label:'Artisans', value:stats.artisans, icon:'🔨', sub:'techniciens inscrits', color:'border-green-200 bg-green-50 text-green-700' },
-                { label:'Entreprises', value:stats.entreprises, icon:'🏢', sub:'entreprises BTP', color:'border-purple-200 bg-purple-50 text-purple-700' },
-                { label:'Signalements', value:stats.signalements, icon:'🚨', sub:'en attente', color:'border-red-200 bg-red-50 text-red-700' },
+                { label:'Clients', value:stats.clients, icon:'🏠', color:'border-blue-200 bg-blue-50 text-blue-700' },
+                { label:'Artisans', value:stats.artisans, icon:'🔨', color:'border-green-200 bg-green-50 text-green-700' },
+                { label:'Entreprises', value:stats.entreprises, icon:'🏢', color:'border-purple-200 bg-purple-50 text-purple-700' },
+                { label:'Signalements', value:stats.signalements, icon:'🚨', color:'border-red-200 bg-red-50 text-red-700' },
               ].map(s=>(
                 <div key={s.label} className={`bg-white rounded-2xl p-5 border-2 ${s.color}`}>
                   <div className="text-3xl mb-2">{s.icon}</div>
                   <p className="text-3xl font-display font-black">{s.value}</p>
                   <p className="text-sm font-semibold mt-1">{s.label}</p>
-                  <p className="text-xs opacity-70 mt-0.5">{s.sub}</p>
                 </div>
               ))}
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Activité */}
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
                 <h3 className="font-display font-bold text-gray-900 mb-4">Activite plateforme</h3>
                 <div className="space-y-3">
                   {[
-                    { label:'Nouveaux inscrits (7j)', value:stats.newUsers7j, color:'bg-blue-500' },
-                    { label:'Nouveaux inscrits (30j)', value:stats.newUsers30j, color:'bg-blue-400' },
+                    { label:'Nouveaux (7j)', value:stats.newUsers7j, color:'bg-blue-500' },
+                    { label:'Nouveaux (30j)', value:stats.newUsers30j, color:'bg-blue-400' },
                     { label:'Projets ouverts', value:stats.projectsOuverts, color:'bg-green-500' },
                     { label:'Missions ouvertes', value:stats.missionsOuvertes, color:'bg-purple-500' },
                   ].map(i=>(
@@ -163,7 +184,7 @@ export default function Admin() {
                       <span className="text-sm text-gray-600">{i.label}</span>
                       <div className="flex items-center gap-3">
                         <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div className={`h-full ${i.color} rounded-full`} style={{width:`${Math.min(100, (i.value/20)*100)}%`}}></div>
+                          <div className={`h-full ${i.color} rounded-full`} style={{width:`${Math.min(100,(i.value/20)*100)}%`}}></div>
                         </div>
                         <span className="text-sm font-bold text-gray-900 w-6 text-right">{i.value}</span>
                       </div>
@@ -171,8 +192,6 @@ export default function Admin() {
                   ))}
                 </div>
               </div>
-
-              {/* Villes actives */}
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
                 <h3 className="font-display font-bold text-gray-900 mb-4">Villes les plus actives</h3>
                 <div className="space-y-3">
@@ -192,43 +211,16 @@ export default function Admin() {
                   ))}
                 </div>
               </div>
-
-              {/* Metiers top */}
-              <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                <h3 className="font-display font-bold text-gray-900 mb-4">Metiers les plus demandes</h3>
-                <div className="space-y-2">
-                  {(stats.metiersTop||[]).map((m,i)=>(
-                    <div key={m._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                      <div className="flex items-center gap-3">
-                        <span className="w-6 h-6 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">{i+1}</span>
-                        <span className="text-sm font-semibold text-gray-700">{m._id}</span>
-                      </div>
-                      <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold">{m.count} artisan{m.count>1?'s':''}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Derniers inscrits */}
-              <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                <h3 className="font-display font-bold text-gray-900 mb-4">Derniers inscrits</h3>
-                <div className="space-y-2">
-                  {(stats.recentUsers||[]).slice(0,6).map(u=>(
-                    <div key={u._id} className="flex items-center justify-between p-2">
-                      <div className="flex items-center gap-2">
-                        <img src={getAvatarUrl(u.avatar, u.name)} alt={u.name} className="w-8 h-8 rounded-lg object-cover"/>
-                        <div>
-                          <p className="text-sm font-semibold text-gray-900 leading-none">{u.name}</p>
-                          <p className="text-xs text-gray-400 mt-0.5">{u.city}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${u.role==='client'?'bg-blue-50 text-blue-700':u.role==='artisan'?'bg-green-50 text-green-700':'bg-purple-50 text-purple-700'}`}>{u.role}</span>
-                        <p className="text-xs text-gray-400 mt-0.5">{formatDate(u.createdAt)}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+            </div>
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <h3 className="font-display font-bold text-gray-900 mb-4">Legende des badges</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {Object.entries(BADGE_CONFIG).map(([key, cfg])=>(
+                  <div key={key} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${cfg.color}`}>{cfg.icon} {cfg.label}</span>
+                    <span className="text-xs text-gray-500">{cfg.desc}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -239,7 +231,7 @@ export default function Admin() {
           <div className="space-y-5">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <h2 className="text-xl font-display font-bold text-gray-900">Utilisateurs ({users.length})</h2>
-              <input type="text" placeholder="Rechercher nom ou email..." value={search} onChange={e=>setSearch(e.target.value)}
+              <input type="text" placeholder="Rechercher..." value={search} onChange={e=>setSearch(e.target.value)}
                 className="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm w-72"/>
             </div>
             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
@@ -250,13 +242,12 @@ export default function Admin() {
                       <th className="text-left px-5 py-3 text-xs font-bold text-gray-500 uppercase">Utilisateur</th>
                       <th className="text-left px-5 py-3 text-xs font-bold text-gray-500 uppercase">Role</th>
                       <th className="text-left px-5 py-3 text-xs font-bold text-gray-500 uppercase">Ville</th>
-                      <th className="text-left px-5 py-3 text-xs font-bold text-gray-500 uppercase">Telephone</th>
                       <th className="text-left px-5 py-3 text-xs font-bold text-gray-500 uppercase">Date</th>
                       <th className="text-left px-5 py-3 text-xs font-bold text-gray-500 uppercase">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {users.filter(u => !search || u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase())).map(u=>(
+                    {users.filter(u=>!search||u.name.toLowerCase().includes(search.toLowerCase())||u.email.toLowerCase().includes(search.toLowerCase())).map(u=>(
                       <tr key={u._id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-3">
@@ -271,7 +262,6 @@ export default function Admin() {
                           <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${u.role==='client'?'bg-blue-50 text-blue-700':u.role==='artisan'?'bg-green-50 text-green-700':u.role==='entreprise'?'bg-purple-50 text-purple-700':'bg-red-50 text-red-700'}`}>{u.role}</span>
                         </td>
                         <td className="px-5 py-3 text-sm text-gray-500">{u.city||'-'}</td>
-                        <td className="px-5 py-3 text-sm text-gray-500">{u.phone||'-'}</td>
                         <td className="px-5 py-3 text-xs text-gray-400">{formatDate(u.createdAt)}</td>
                         <td className="px-5 py-3">
                           <button onClick={()=>deleteUser(u._id)} className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-100 transition-colors">Supprimer</button>
@@ -308,7 +298,7 @@ export default function Admin() {
                       </div>
                     </div>
                     <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${a.verifie?'bg-green-50 text-green-700':'bg-yellow-50 text-yellow-700'}`}>
-                      {a.verifie ? '✓ Verifie' : 'En attente'}
+                      {a.verifie?'Verifie':'En attente'}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-gray-400 mb-4">
@@ -316,6 +306,17 @@ export default function Admin() {
                     {a.user?.phone && <span>📞 {a.user.phone}</span>}
                     <span>📅 {formatDate(a.createdAt)}</span>
                   </div>
+
+                  {/* Badges */}
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold text-gray-500 mb-2">Badges :</p>
+                    <div className="flex flex-wrap gap-2">
+                      {Object.keys(BADGE_CONFIG).map(type=>(
+                        <BadgeToggle key={type} badges={a.badges} type={type} onToggle={(t,v)=>toggleBadgeArtisan(a._id,t,v)}/>
+                      ))}
+                    </div>
+                  </div>
+
                   {!a.verifie ? (
                     <button onClick={()=>verifyArtisan(a._id, true)}
                       className="w-full py-2.5 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600 transition-colors">
@@ -353,16 +354,23 @@ export default function Admin() {
                       <p className="text-gray-400 text-xs">{e.user?.email}</p>
                     </div>
                     <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${e.verifie?'bg-green-50 text-green-700':'bg-yellow-50 text-yellow-700'}`}>
-                      {e.verifie ? '✓ Certifiee' : 'En attente'}
+                      {e.verifie?'Certifiee':'En attente'}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1 mb-3">
                     {(e.lotsTravauxPropose||[]).map(l=><span key={l} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">{l}</span>)}
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-400 mb-4">
-                    <span>📍 {e.ville}</span>
-                    {e.rccm && <span>RCCM: {e.rccm}</span>}
+
+                  {/* Badges */}
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold text-gray-500 mb-2">Badges :</p>
+                    <div className="flex flex-wrap gap-2">
+                      {Object.keys(BADGE_CONFIG).map(type=>(
+                        <BadgeToggle key={type} badges={e.badges} type={type} onToggle={(t,v)=>toggleBadgeEntreprise(e._id,t,v)}/>
+                      ))}
+                    </div>
                   </div>
+
                   {!e.verifie ? (
                     <button onClick={()=>verifyEntreprise(e._id, true)}
                       className="w-full py-2.5 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600 transition-colors">
@@ -383,75 +391,41 @@ export default function Admin() {
         {/* SIGNALEMENTS */}
         {tab==='signalements' && (
           <div className="space-y-5">
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <h2 className="text-xl font-display font-bold text-gray-900">Signalements ({signalements.length})</h2>
-              <span className="px-3 py-1.5 bg-red-50 text-red-700 rounded-full text-xs font-bold">
-                {signalements.filter(s=>s.statut==='en_attente').length} en attente
-              </span>
-            </div>
-            {signalements.length === 0 ? (
+            <h2 className="text-xl font-display font-bold text-gray-900">Signalements ({signalements.length})</h2>
+            {signalements.length===0 ? (
               <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
                 <div className="text-6xl mb-4">✅</div>
                 <h3 className="text-xl font-display font-bold text-gray-700">Aucun signalement</h3>
-                <p className="text-gray-400 mt-2">La plateforme est propre !</p>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {signalements.map(s=>(
-                  <div key={s._id} className={`bg-white rounded-2xl border-2 p-5 ${s.statut==='en_attente'?'border-red-200':'border-gray-100'}`}>
-                    <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${s.statut==='en_attente'?'bg-red-50 text-red-700':s.statut==='traite'?'bg-green-50 text-green-700':'bg-gray-100 text-gray-500'}`}>
-                            {s.statut==='en_attente'?'En attente':s.statut==='traite'?'Traite':'Rejete'}
-                          </span>
-                          <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold capitalize">{s.type}</span>
-                        </div>
-                        <p className="font-bold text-gray-900">{s.motif}</p>
-                        {s.description && <p className="text-gray-500 text-sm mt-1">{s.description}</p>}
-                      </div>
-                      <div className="text-right text-xs text-gray-400">
-                        <p>{formatDate(s.createdAt)}</p>
-                      </div>
+            ) : signalements.map(s=>(
+              <div key={s._id} className={`bg-white rounded-2xl border-2 p-5 ${s.statut==='en_attente'?'border-red-200':'border-gray-100'}`}>
+                <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${s.statut==='en_attente'?'bg-red-50 text-red-700':s.statut==='traite'?'bg-green-50 text-green-700':'bg-gray-100 text-gray-500'}`}>
+                        {s.statut==='en_attente'?'En attente':s.statut==='traite'?'Traite':'Rejete'}
+                      </span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold capitalize">{s.type}</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-xl">
-                      <div>
-                        <p className="text-xs text-gray-400 mb-1">Rapporte par</p>
-                        <div className="flex items-center gap-2">
-                          <img src={getAvatarUrl(s.rapporteur?.avatar, s.rapporteur?.name)} alt="" className="w-7 h-7 rounded-lg"/>
-                          <div>
-                            <p className="text-sm font-semibold text-gray-900">{s.rapporteur?.name}</p>
-                            <p className="text-xs text-gray-400">{s.rapporteur?.email}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-400 mb-1">Signale</p>
-                        <div className="flex items-center gap-2">
-                          <img src={getAvatarUrl(s.cible?.avatar, s.cible?.name)} alt="" className="w-7 h-7 rounded-lg"/>
-                          <div>
-                            <p className="text-sm font-semibold text-gray-900">{s.cible?.name}</p>
-                            <p className="text-xs text-gray-400 capitalize">{s.cible?.role}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {s.statut==='en_attente' && (
-                      <div className="flex gap-2">
-                        <button onClick={()=>traiterSignalement(s._id,'traite')}
-                          className="flex-1 py-2.5 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600 transition-colors">
-                          Marquer comme traite
-                        </button>
-                        <button onClick={()=>traiterSignalement(s._id,'rejete')}
-                          className="flex-1 py-2.5 bg-gray-100 text-gray-600 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
-                          Rejeter
-                        </button>
-                      </div>
-                    )}
+                    <p className="font-bold text-gray-900">{s.motif}</p>
+                    {s.description && <p className="text-gray-500 text-sm mt-1">{s.description}</p>}
                   </div>
-                ))}
+                  <span className="text-xs text-gray-400">{formatDate(s.createdAt)}</span>
+                </div>
+                {s.statut==='en_attente' && (
+                  <div className="flex gap-2">
+                    <button onClick={()=>traiterSignalement(s._id,'traite')}
+                      className="flex-1 py-2.5 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600 transition-colors">
+                      Marquer comme traite
+                    </button>
+                    <button onClick={()=>traiterSignalement(s._id,'rejete')}
+                      className="flex-1 py-2.5 bg-gray-100 text-gray-600 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
+                      Rejeter
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
+            ))}
           </div>
         )}
 
@@ -460,10 +434,8 @@ export default function Admin() {
           <div className="space-y-6 max-w-2xl">
             <h2 className="text-xl font-display font-bold text-gray-900">Messagerie administrative</h2>
             <div className="bg-white rounded-2xl border border-gray-100 p-6">
-              <h3 className="font-bold text-gray-900 mb-5">Envoyer un message a tous les utilisateurs</h3>
-              {broadcastMsg && (
-                <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm font-medium">{broadcastMsg}</div>
-              )}
+              <h3 className="font-bold text-gray-900 mb-5">Envoyer un message groupé</h3>
+              {broadcastMsg && <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm font-medium">{broadcastMsg}</div>}
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Destinataires</label>
@@ -479,21 +451,13 @@ export default function Admin() {
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Message</label>
                   <textarea value={broadcast.contenu} onChange={e=>setBroadcast(b=>({...b,contenu:e.target.value}))} rows={5}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 resize-none"
-                    placeholder="Ecrivez votre message pour tous les utilisateurs..."/>
+                    placeholder="Ecrivez votre message..."/>
                 </div>
                 <button onClick={sendBroadcast} disabled={sending||!broadcast.contenu.trim()}
-                  className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-lg shadow-blue-600/20">
-                  {sending ? 'Envoi en cours...' : 'Envoyer le message'}
+                  className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors">
+                  {sending?'Envoi...':'Envoyer le message'}
                 </button>
               </div>
-            </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5">
-              <h4 className="font-bold text-blue-800 mb-2">Comment ca marche</h4>
-              <ul className="text-sm text-blue-700 space-y-1">
-                <li>Les messages apparaissent dans la messagerie de chaque utilisateur</li>
-                <li>Prefixe automatique [Message Admin] pour identification</li>
-                <li>Utilisez pour annoncer des mises a jour ou promotions</li>
-              </ul>
             </div>
           </div>
         )}
