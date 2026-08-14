@@ -6,7 +6,16 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }));
+const corsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -15,6 +24,8 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/projects', require('./routes/projects'));
 app.use('/api/artisans', require('./routes/artisans'));
+app.use('/api/entreprises', require('./routes/entreprises'));
+app.use('/api/missions', require('./routes/missions'));
 app.use('/api/messages', require('./routes/messages'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Batilink API running' }));
