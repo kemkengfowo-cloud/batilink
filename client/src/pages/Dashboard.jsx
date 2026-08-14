@@ -39,6 +39,7 @@ export default function Dashboard() {
     }
   }, [user]);
 
+  if (user.role === 'admin') { navigate('/admin'); return null; }
   if (!user || loading) return <Loader/>;
 
   return (
