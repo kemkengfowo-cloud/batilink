@@ -17,6 +17,9 @@ import Messages from './pages/Messages';
 import EntrepriseList from './pages/EntrepriseList';
 import EntrepriseProfile from './pages/EntrepriseProfile';
 import MissionList from './pages/MissionList';
+import MesDevis from './pages/MesDevis';
+import DevisDetail from './pages/DevisDetail';
+import CreerDevis from './pages/CreerDevis';
 import CreateMission from './pages/CreateMission';
 import Loader from './components/Loader';
 import Admin from './pages/Admin';
@@ -75,6 +78,9 @@ function AppRoutes() {
           <Route path="/create-project" element={<PrivateRoute role={['client']}><CreateProject/></PrivateRoute>}/>
 
           {/* Entreprise uniquement */}
+          <Route path="/devis" element={<PrivateRoute><MesDevis/></PrivateRoute>}/>
+          <Route path="/devis/creer" element={<PrivateRoute role={['artisan','entreprise']}><CreerDevis/></PrivateRoute>}/>
+          <Route path="/devis/:id" element={<PrivateRoute><DevisDetail/></PrivateRoute>}/>
           <Route path="/create-mission" element={<PrivateRoute role={['entreprise']}><CreateMission/></PrivateRoute>}/>
 
           <Route path="/admin" element={<PrivateRoute role={['admin']}><Admin/></PrivateRoute>}/>

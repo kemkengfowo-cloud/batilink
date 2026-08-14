@@ -26,3 +26,14 @@ router.post('/avatar', auth, upload.single('avatar'), async (req, res) => {
 });
 
 module.exports = router;
+
+// GET /api/users/search?email=xxx
+router.get('/search', auth, async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) return res.status(400).json({ message: 'Email requis.' });
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) return res.status(404).json({ message: 'Utilisateur non trouve.' });
+    res.json(user);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
