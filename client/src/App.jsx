@@ -18,6 +18,7 @@ import EntrepriseList from './pages/EntrepriseList';
 import MissionList from './pages/MissionList';
 import CreateMission from './pages/CreateMission';
 import Loader from './components/Loader';
+import Admin from './pages/Admin';
 
 const PrivateRoute = ({ children, role }) => {
   const { user, loading } = useAuth();
@@ -74,6 +75,7 @@ function AppRoutes() {
           {/* Entreprise uniquement */}
           <Route path="/create-mission" element={<PrivateRoute role={['entreprise']}><CreateMission/></PrivateRoute>}/>
 
+          <Route path="/admin" element={<PrivateRoute role={['admin']}><Admin/></PrivateRoute>}/>
           <Route path="*" element={<NotFound/>}/>
         </Routes>
       </main>
