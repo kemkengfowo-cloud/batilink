@@ -15,6 +15,7 @@ import CreateProject from './pages/CreateProject';
 import Profile from './pages/Profile';
 import Messages from './pages/Messages';
 import EntrepriseList from './pages/EntrepriseList';
+import EntrepriseProfile from './pages/EntrepriseProfile';
 import MissionList from './pages/MissionList';
 import CreateMission from './pages/CreateMission';
 import Loader from './components/Loader';
@@ -62,6 +63,7 @@ function AppRoutes() {
           <Route path="/projects" element={<ProjectList/>}/>
           <Route path="/projects/:id" element={<ProjectDetail/>}/>
           <Route path="/entreprises" element={<EntrepriseList/>}/>
+          <Route path="/entreprises/:id" element={<EntrepriseProfile/>}/>
           <Route path="/missions" element={<MissionList/>}/>
 
           {/* Pages protégées */}
