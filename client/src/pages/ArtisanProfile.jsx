@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../utils/api';
 import Loader from '../components/Loader';
+import AvisSection from '../components/AvisSection';
+import AvisSection from '../components/AvisSection';
 import { getAvatarUrl, getWhatsAppLink, getImageUrl, formatDate, renderStars } from '../utils/helpers';
 import { useAuth } from '../context/AuthContext';
 
@@ -142,6 +144,14 @@ export default function ArtisanProfile() {
         </div>
       </div>
 
+      <div className="mt-8">
+        <AvisSection
+          cibleUserId={u?._id}
+          cibleType="artisan"
+          cibleRefId={artisan._id}
+          nomCible={u?.name}
+        />
+      </div>
       {/* Modal message */}
       {msgModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4" onClick={()=>setMsgModal(false)}>
