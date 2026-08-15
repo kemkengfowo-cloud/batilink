@@ -35,7 +35,7 @@ export default function Footer() {
         </div>
         <div className="border-t border-blue-900 mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-blue-300">
           <p>© {new Date().getFullYear()} Batilink. Tous droits réservés.</p>
-          <p>contact@batilink.cm</p>
+          <p>contact@batilink.org</p>
         </div>
       </div>
     </footer>
