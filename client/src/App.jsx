@@ -25,6 +25,9 @@ import DevisDetail from './pages/DevisDetail';
 import CreerDevis from './pages/CreerDevis';
 import CreateMission from './pages/CreateMission';
 import Loader from './components/Loader';
+import CommentCaMarche from './pages/CommentCaMarche';
+import CGU from './pages/CGU';
+import Confidentialite from './pages/Confidentialite';
 import Admin from './pages/Admin';
 
 const PrivateRoute = ({ children, role }) => {
@@ -90,6 +93,9 @@ function AppRoutes() {
           <Route path="/create-mission" element={<PrivateRoute role={['entreprise']}><CreateMission/></PrivateRoute>}/>
 
           <Route path="/admin" element={<PrivateRoute role={['admin']}><Admin/></PrivateRoute>}/>
+          <Route path="/comment-ca-marche" element={<CommentCaMarche/>}/>
+          <Route path="/cgu" element={<CGU/>}/>
+          <Route path="/confidentialite" element={<Confidentialite/>}/>
           <Route path="*" element={<NotFound/>}/>
         </Routes>
       </main>
