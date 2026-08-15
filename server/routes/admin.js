@@ -250,3 +250,13 @@ router.put('/litiges/:id/resoudre', auth, adminOnly, async (req, res) => {
     res.json(litige);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
+
+// Stats litiges
+const Litige2 = require('../models/Litige');
+router.get('/stats-litiges', auth, adminOnly, async (req, res) => {
+  try {
+    const ouverts = await Litige2.countDocuments({ statut: 'ouvert' });
+    const enExamen = await Litige2.countDocuments({ statut: 'en_examen' });
+    res.json({ ouverts, enExamen });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
