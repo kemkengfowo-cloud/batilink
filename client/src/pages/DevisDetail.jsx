@@ -8,6 +8,7 @@ import Avertissement from '../components/Avertissement';
 import PhotosChantier from '../components/PhotosChantier';
 import JalonsSection from '../components/JalonsSection';
 import LitigeModal from '../components/LitigeModal';
+import FacturePDF from '../components/FacturePDF';
 
 const STATUT = {
   envoye:   { label:'En attente', color:'bg-yellow-50 text-yellow-700', icon:'⏳' },
@@ -245,7 +246,12 @@ export default function DevisDetail() {
                 <p className="text-green-600 text-sm mt-1">Definissez les jalons et soumettez vos photos d avancement.</p>
               </div>
             )}
-            {devis.statut==='termine' && (
+            {devis.statut==='termine' {devis.statut==='termine' && ({devis.statut==='termine' && ( (
+              <div className="flex justify-end mb-4">
+                <FacturePDF devis={devis}/>
+              </div>
+            )}            
+            {devis.statut==='termine_HIDDEN' {devis.statut==='termine' && ({devis.statut==='termine' && ( (
               <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-5">
                 <p className="text-green-700 font-bold text-lg">💰 Travaux valides</p>
                 <p className="text-green-600 text-sm mt-1">
