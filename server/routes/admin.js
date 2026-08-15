@@ -227,3 +227,26 @@ router.put('/badges/entreprise/:id', auth, adminOnly, async (req, res) => {
     res.json(entreprise);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
+
+// Litiges admin
+const Litige = require('../models/Litige');
+router.get('/litiges', auth, adminOnly, async (req, res) => {
+  try {
+    const litiges = await Litige.find()
+      .populate('plaignant','name avatar email')
+      .populate('accuse','name avatar email')
+      .sort({ createdAt: -1 });
+    res.json(litiges);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+router.put('/litiges/:id/resoudre', auth, adminOnly, async (req, res) => {
+  try {
+    const litige = await Litige.findByIdAndUpdate(req.params.id, {
+      ...req.body,
+      adminTraitant: req.user.id,
+      dateResolution: new Date()
+    }, { new: true });
+    res.json(litige);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});

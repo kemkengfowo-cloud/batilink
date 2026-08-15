@@ -39,3 +39,7 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/batilink')
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Serveur Batilink sur http://localhost:${PORT}`));
+
+app.use('/api/jalons', require('./routes/jalons'));
+app.use('/api/litiges', require('./routes/litiges'));
+app.use('/api/photos-chantier', require('./routes/photos-chantier'));
