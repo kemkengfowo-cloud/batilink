@@ -3,8 +3,9 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { VILLES, CATEGORIES } from '../utils/helpers';
 
-const LOTS = ['Gros œuvre','Finition','Rénovation','Réalisation de plans / Architecture'];
-const TYPE_PERSONNEL = ['Coffreur','Manœuvre','Ferrailleur','Dalleur','Maçon','Électricien','Plombier','Peintre','Carreleur','Menuisier','Soudeur','Autres'];
+const LOTS = ['Gros oeuvre','Finition','Renovation','Architecture'];
+const TYPE_PERSONNEL = ['Coffreur','Manoeuvre','Ferrailleur','Dalleur','Macon','Electricien','Plombier','Peintre','Carreleur','Menuisier','Soudeur','Autres'];
+const PAYS_MONDE = ['France','Belgique','Suisse','Canada','Etats-Unis','Allemagne','Italie','Espagne','Royaume-Uni','Portugal','Gabon','Congo','Cote d Ivoire','Senegal','Autre'];
 
 export default function Register() {
   const { register } = useAuth();
@@ -12,25 +13,25 @@ export default function Register() {
   const [params] = useSearchParams();
   const defaultRole = params.get('role') || 'client';
   const [role, setRole] = useState(defaultRole);
-  const [step, setStep] = useState(1);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name:'', email:'', password:'', phone:'', city:'',
+    estDiaspora: false, paysDiaspora:'',
     metier:'', whatsapp:'', experience:'',
     nomEntreprise:'', nomResponsable:'', rccm:'',
     lotsTravauxPropose:[], typePersonnel:[]
   });
 
   const set = (k,v) => setForm(f=>({...f,[k]:v}));
-  const toggleArr = (k,v) => setForm(f=>({...f,[k]: f[k].includes(v) ? f[k].filter(x=>x!==v) : [...f[k],v]}));
+  const toggleArr = (k,v) => setForm(f=>({...f,[k]:f[k].includes(v)?f[k].filter(x=>x!==v):[...f[k],v]}));
 
   const handleSubmit = async (e) => {
     e.preventDefault(); setError(''); setLoading(true);
     try {
       await register({...form, role});
       navigate('/dashboard');
-    } catch(err) { setError(err.response?.data?.message || 'Erreur d\'inscription'); }
+    } catch(err) { setError(err.response?.data?.message || 'Erreur d inscription'); }
     finally { setLoading(false); }
   };
 
@@ -39,47 +40,35 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex" style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 50%, #1a4a8a 100%)'}}>
-      {/* Left panel */}
       <div className="hidden lg:flex w-1/2 flex-col justify-center px-16 text-white">
         <Link to="/" className="flex items-center gap-3 mb-16">
           <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center font-bold text-xl">B</div>
           <span className="font-display font-bold text-2xl">Batilink</span>
         </Link>
-        <h1 className="text-5xl font-display font-black leading-tight mb-6">
-          Rejoignez le réseau BTP #1 au Cameroun
-        </h1>
-        <p className="text-blue-200 text-lg leading-relaxed mb-12">
-          Clients, techniciens et entreprises — une seule plateforme pour tous vos besoins en construction.
-        </p>
+        <h1 className="text-5xl font-display font-black leading-tight mb-6">Rejoignez le reseau BTP #1 au Cameroun</h1>
+        <p className="text-blue-200 text-lg leading-relaxed mb-12">Clients locaux et diaspora, techniciens et entreprises — une seule plateforme pour tous vos besoins.</p>
         <div className="space-y-4">
-          {[['✅','Inscription 100% gratuite'],['🔨','500+ artisans vérifiés'],['🏢','Entreprises BTP certifiées'],['⚡','Mise en relation rapide']].map(([i,t])=>(
-            <div key={t} className="flex items-center gap-3 text-blue-100">
-              <span className="text-xl">{i}</span><span>{t}</span>
-            </div>
+          {[['✅','Inscription 100% gratuite'],['🌍','Accessible depuis partout dans le monde'],['🔒','Paiements securises via Batilink'],['📸','Suivi chantier a distance avec photos']].map(([i,t])=>(
+            <div key={t} className="flex items-center gap-3 text-blue-100"><span className="text-xl">{i}</span><span>{t}</span></div>
           ))}
         </div>
       </div>
 
-      {/* Right panel */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 overflow-y-auto">
         <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8">
           <div className="text-center mb-8">
             <Link to="/" className="lg:hidden flex items-center gap-2 justify-center mb-6">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">B</div>
               <span className="font-display font-bold text-xl text-gray-900">Batilink</span>
             </Link>
-            <h2 className="text-2xl font-display font-bold text-gray-900">Créer un compte</h2>
-            <p className="text-gray-500 mt-1 text-sm">Choisissez votre profil pour commencer</p>
+            <h2 className="text-2xl font-display font-bold text-gray-900">Creer un compte</h2>
+            <p className="text-gray-500 mt-1 text-sm">Choisissez votre profil</p>
           </div>
 
-          {/* Role selector */}
+          {/* Role */}
           <div className="grid grid-cols-3 gap-2 mb-8">
-            {[
-              {r:'client', icon:'🏠', label:'Client'},
-              {r:'artisan', icon:'🔨', label:'Technicien'},
-              {r:'entreprise', icon:'🏢', label:'Entreprise'},
-            ].map(({r,icon,label})=>(
-              <button key={r} type="button" onClick={()=>{setRole(r);setStep(1);}}
+            {[{r:'client',icon:'🏠',label:'Client'},{r:'artisan',icon:'🔨',label:'Technicien'},{r:'entreprise',icon:'🏢',label:'Entreprise'}].map(({r,icon,label})=>(
+              <button key={r} type="button" onClick={()=>setRole(r)}
                 className={`py-4 rounded-xl border-2 font-semibold transition-all text-center ${role===r?'border-blue-500 bg-blue-50 text-blue-700':'border-gray-200 text-gray-500 hover:border-gray-300'}`}>
                 <div className="text-2xl mb-1">{icon}</div>
                 <div className="text-xs">{label}</div>
@@ -90,11 +79,11 @@ export default function Register() {
           {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">{error}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* CHAMPS COMMUNS */}
+            {/* Nom */}
             {role === 'entreprise' ? (
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={labelCls}>Nom de l'entreprise *</label>
+                  <label className={labelCls}>Nom de l entreprise *</label>
                   <input type="text" required value={form.nomEntreprise} onChange={e=>set('nomEntreprise',e.target.value)} className={inputCls} placeholder="SOBTP Sarl"/>
                 </div>
                 <div>
@@ -111,7 +100,7 @@ export default function Register() {
 
             {role === 'entreprise' && (
               <div>
-                <label className={labelCls}>Nom complet (pour le compte)</label>
+                <label className={labelCls}>Nom du compte</label>
                 <input type="text" value={form.name} onChange={e=>set('name',e.target.value)} className={inputCls} placeholder="Nom du responsable"/>
               </div>
             )}
@@ -119,34 +108,57 @@ export default function Register() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={labelCls}>Email *</label>
-                <input type="email" required value={form.email} onChange={e=>set('email',e.target.value)} className={inputCls} placeholder="vous@exemple.com"/>
+                <input type="email" required value={form.email} onChange={e=>set('email',e.target.value)} className={inputCls} placeholder="vous@email.com"/>
               </div>
               <div>
-                <label className={labelCls}>Téléphone *</label>
+                <label className={labelCls}>Telephone *</label>
                 <input type="tel" required value={form.phone} onChange={e=>set('phone',e.target.value)} className={inputCls} placeholder="+237 6XX XXX XXX"/>
               </div>
             </div>
 
+            {/* Ville */}
             <div>
               <label className={labelCls}>Ville *</label>
               <select required value={form.city} onChange={e=>set('city',e.target.value)} className={inputCls}>
-                <option value="">Sélectionner votre ville</option>
+                <option value="">Selectionner votre ville</option>
                 {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
               </select>
             </div>
 
-            {/* CHAMPS ARTISAN */}
+            {/* Case diaspora — clients uniquement */}
+            {role === 'client' && (
+              <div>
+                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.estDiaspora?'border-blue-500 bg-blue-50':'border-gray-200 hover:border-gray-300'}`}>
+                  <input type="checkbox" checked={form.estDiaspora} onChange={e=>set('estDiaspora',e.target.checked)} className="w-5 h-5 accent-blue-500"/>
+                  <div>
+                    <p className="font-semibold text-gray-800 text-sm">🌍 Je suis hors du Cameroun (Diaspora)</p>
+                    <p className="text-gray-400 text-xs mt-0.5">J ai un chantier au Cameroun mais je vis a l etranger</p>
+                  </div>
+                </label>
+                {form.estDiaspora && (
+                  <div className="mt-3">
+                    <label className={labelCls}>Mon pays de residence</label>
+                    <select value={form.paysDiaspora} onChange={e=>set('paysDiaspora',e.target.value)} className={inputCls}>
+                      <option value="">Selectionnez votre pays</option>
+                      {PAYS_MONDE.map(p=><option key={p} value={p}>{p}</option>)}
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Champs artisan */}
             {role === 'artisan' && (<>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={labelCls}>Spécialité *</label>
+                  <label className={labelCls}>Specialite *</label>
                   <select required value={form.metier} onChange={e=>set('metier',e.target.value)} className={inputCls}>
-                    <option value="">Votre métier</option>
+                    <option value="">Votre metier</option>
                     {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className={labelCls}>Expérience (ans)</label>
+                  <label className={labelCls}>Experience (ans)</label>
                   <input type="number" min="0" max="50" value={form.experience} onChange={e=>set('experience',e.target.value)} className={inputCls} placeholder="5"/>
                 </div>
               </div>
@@ -156,14 +168,14 @@ export default function Register() {
               </div>
             </>)}
 
-            {/* CHAMPS ENTREPRISE */}
+            {/* Champs entreprise */}
             {role === 'entreprise' && (<>
               <div>
-                <label className={labelCls}>Numéro RCCM</label>
+                <label className={labelCls}>Numero RCCM</label>
                 <input type="text" value={form.rccm} onChange={e=>set('rccm',e.target.value)} className={inputCls} placeholder="RC/DLA/2024/B/1234"/>
               </div>
               <div>
-                <label className={labelCls}>Lots de travaux proposés</label>
+                <label className={labelCls}>Lots de travaux proposes</label>
                 <div className="grid grid-cols-2 gap-2">
                   {LOTS.map(l=>(
                     <label key={l} className={`flex items-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${form.lotsTravauxPropose.includes(l)?'border-blue-500 bg-blue-50':'border-gray-200 hover:border-gray-300'}`}>
@@ -174,7 +186,7 @@ export default function Register() {
                 </div>
               </div>
               <div>
-                <label className={labelCls}>Type de personnel disponible à la location</label>
+                <label className={labelCls}>Personnel disponible a la location</label>
                 <div className="flex flex-wrap gap-2">
                   {TYPE_PERSONNEL.map(t=>(
                     <button key={t} type="button" onClick={()=>toggleArr('typePersonnel',t)}
@@ -188,17 +200,17 @@ export default function Register() {
 
             <div>
               <label className={labelCls}>Mot de passe *</label>
-              <input type="password" required minLength={6} value={form.password} onChange={e=>set('password',e.target.value)} className={inputCls} placeholder="Minimum 6 caractères"/>
+              <input type="password" required minLength={6} value={form.password} onChange={e=>set('password',e.target.value)} className={inputCls} placeholder="Minimum 6 caracteres"/>
             </div>
 
             <button type="submit" disabled={loading}
               className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50 text-lg shadow-lg shadow-blue-600/20">
-              {loading ? 'Création...' : `Créer mon compte ${role==='client'?'client':role==='artisan'?'technicien':'entreprise'}`}
+              {loading?'Creation...': `Creer mon compte ${role==='client'?'client':role==='artisan'?'technicien':'entreprise'}`}
             </button>
           </form>
 
           <p className="mt-5 text-center text-sm text-gray-500">
-            Déjà un compte ?{' '}
+            Deja un compte ?{' '}
             <Link to="/login" className="text-blue-600 font-semibold hover:text-blue-700">Se connecter</Link>
           </p>
         </div>
