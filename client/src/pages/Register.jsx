@@ -118,9 +118,9 @@ export default function Register() {
 
             {/* Ville */}
             <div>
-              <label className={labelCls}>Ville *</label>
+              <label className={labelCls}>{role === 'client' && form.estDiaspora ? 'Ville du chantier au Cameroun' : 'Ville'} *</label>
               <select required value={form.city} onChange={e=>set('city',e.target.value)} className={inputCls}>
-                <option value="">Selectionner votre ville</option>
+                <option value="">{role === 'client' && form.estDiaspora ? 'Ville du chantier' : 'Selectionner votre ville'}</option>
                 {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
               </select>
             </div>
