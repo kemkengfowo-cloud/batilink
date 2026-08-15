@@ -11,11 +11,11 @@ import LitigeModal from '../components/LitigeModal';
 import FacturePDF from '../components/FacturePDF';
 
 const STATUT = {
-  envoye:   { label:'En attente', color:'bg-yellow-50 text-yellow-700', icon:'⏳' },
-  accepte:  { label:'Accepte - Travaux en cours', color:'bg-blue-50 text-blue-700', icon:'🔨' },
-  refuse:   { label:'Refuse', color:'bg-red-50 text-red-700', icon:'❌' },
-  expire:   { label:'Expire', color:'bg-gray-100 text-gray-500', icon:'⌛' },
-  termine:  { label:'Termine - Paye', color:'bg-green-50 text-green-700', icon:'✅' },
+  envoye:  { label:'En attente', color:'bg-yellow-50 text-yellow-700', icon:'⏳' },
+  accepte: { label:'Accepte - Travaux en cours', color:'bg-blue-50 text-blue-700', icon:'🔨' },
+  refuse:  { label:'Refuse', color:'bg-red-50 text-red-700', icon:'❌' },
+  expire:  { label:'Expire', color:'bg-gray-100 text-gray-500', icon:'⌛' },
+  termine: { label:'Termine - Paye', color:'bg-green-50 text-green-700', icon:'✅' },
 };
 
 export default function DevisDetail() {
@@ -41,7 +41,7 @@ export default function DevisDetail() {
     try {
       const res = await api.put(`/devis/${id}/${type}`, { note });
       setDevis(res.data.devis || res.data);
-      setMessage(res.data.message || `Action effectuee !`);
+      setMessage(res.data.message || 'Action effectuee !');
       setAction(''); setNote('');
     } catch(err) { setMessage(err.response?.data?.message || 'Erreur'); }
     finally { setProcessing(false); }
@@ -64,7 +64,9 @@ export default function DevisDetail() {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto px-4 py-6">
-          <Link to="/devis" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-4 font-medium">← Retour</Link>
+          <Link to="/devis" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-4 font-medium">
+            ← Retour
+          </Link>
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div>
               <p className="text-xs font-mono text-gray-400 mb-1">{devis.numeroDevis}</p>
@@ -74,16 +76,14 @@ export default function DevisDetail() {
               <span className={`px-4 py-2 rounded-xl text-sm font-bold ${statut?.color}`}>
                 {statut?.icon} {statut?.label}
               </span>
-              {(isClient || isArtisan) && ['accepte','en_cours'].includes(devis.statut) && (
-                <button onClick={()=>setShowLitige(true)}
+              {(isClient || isArtisan) && ['accepte'].includes(devis.statut) && (
+                <button onClick={() => setShowLitige(true)}
                   className="px-4 py-2 bg-red-50 text-red-600 border-2 border-red-200 rounded-xl text-sm font-semibold hover:bg-red-100">
-                  ⚠️ Litige
+                  Litige
                 </button>
               )}
             </div>
           </div>
-
-          {/* Tabs */}
           <div className="flex gap-1 mt-5 border-b border-gray-200">
             {TABS.map(t=>(
               <button key={t.id} onClick={()=>setActiveTab(t.id)}
@@ -98,7 +98,7 @@ export default function DevisDetail() {
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
         {message && (
           <div className="p-4 bg-blue-50 border-2 border-blue-200 text-blue-700 rounded-2xl font-semibold">
-            ✅ {message}
+            {message}
           </div>
         )}
 
@@ -106,9 +106,14 @@ export default function DevisDetail() {
           <>
             <Avertissement type="devis"/>
 
-            {/* Parties */}
+            {devis.statut === 'termine' && (
+              <div className="flex justify-end">
+                <FacturePDF devis={devis}/>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[{label:'Prestataire', data:devis.artisan},{label:'Client', data:devis.client}].map(p=>(
+              {[{label:'Prestataire',data:devis.artisan},{label:'Client',data:devis.client}].map(p=>(
                 <div key={p.label} className="bg-white rounded-2xl border border-gray-100 p-5">
                   <p className="text-xs font-bold text-gray-400 uppercase mb-3">{p.label}</p>
                   <div className="flex items-center gap-3">
@@ -122,7 +127,6 @@ export default function DevisDetail() {
               ))}
             </div>
 
-            {/* Description */}
             <div className="bg-white rounded-2xl border border-gray-100 p-6">
               <h2 className="font-display font-bold text-gray-900 mb-3">Description</h2>
               <p className="text-gray-600 leading-relaxed">{devis.description}</p>
@@ -133,7 +137,6 @@ export default function DevisDetail() {
               </div>
             </div>
 
-            {/* Lignes */}
             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
               <div className="p-5 border-b border-gray-100">
                 <h2 className="font-display font-bold text-gray-900">Detail des travaux</h2>
@@ -173,31 +176,39 @@ export default function DevisDetail() {
               </div>
             </div>
 
-            {/* Actions client */}
-            {isClient && devis.statut==='envoye' && (
+            {isClient && devis.statut === 'envoye' && (
               <div className="bg-white rounded-2xl border-2 border-blue-200 p-6">
                 <h3 className="font-display font-bold text-gray-900 mb-4">Votre reponse</h3>
-                {action==='' ? (
-                  <div className="flex gap-3">
-                    <button onClick={()=>setAction('accepter')} className="flex-1 py-3.5 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 text-lg">✅ Accepter</button>
-                    <button onClick={()=>setAction('refuser')} className="flex-1 py-3.5 bg-red-50 text-red-600 border-2 border-red-200 rounded-xl font-bold hover:bg-red-100 text-lg">❌ Refuser</button>
+                {action === '' ? (
+                  <div className="flex gap-3 flex-wrap">
+                    <button onClick={()=>setAction('accepter')} className="flex-1 py-3.5 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 text-lg">Accepter</button>
+                    <button onClick={()=>setAction('counter')} className="flex-1 py-3.5 bg-amber-50 text-amber-700 border-2 border-amber-200 rounded-xl font-bold hover:bg-amber-100 text-lg">Contre-offre</button>
+                    <button onClick={()=>setAction('refuser')} className="flex-1 py-3.5 bg-red-50 text-red-600 border-2 border-red-200 rounded-xl font-bold hover:bg-red-100 text-lg">Refuser</button>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {action==='refuser' && (
+                    {action === 'counter' && (
+                      <>
+                        <p className="font-semibold text-gray-700">Proposer un nouveau montant</p>
+                        <input type="number" value={note} onChange={e=>setNote(e.target.value)}
+                          className="w-full px-4 py-3 border-2 border-amber-200 rounded-xl focus:outline-none focus:border-amber-400"
+                          placeholder="Montant propose en FCFA"/>
+                      </>
+                    )}
+                    {action === 'refuser' && (
                       <textarea value={note} onChange={e=>setNote(e.target.value)} rows={3}
                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 resize-none"
                         placeholder="Motif du refus..."/>
                     )}
-                    {action==='accepter' && (
+                    {action === 'accepter' && (
                       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700">
-                        ⚠️ En acceptant, vous vous engagez a payer {formatBudget(devis.total)} via Batilink.
+                        En acceptant, vous vous engagez a payer {formatBudget(devis.total)} via Batilink.
                       </div>
                     )}
                     <div className="flex gap-3">
-                      <button onClick={()=>handleAction(action)} disabled={processing}
-                        className={`flex-1 py-3 rounded-xl font-bold text-white disabled:opacity-50 ${action==='accepter'?'bg-green-500 hover:bg-green-600':'bg-red-500 hover:bg-red-600'}`}>
-                        {processing?'...':action==='accepter'?'Confirmer l acceptation':'Confirmer le refus'}
+                      <button onClick={()=>handleAction(action === 'counter' ? 'counter' : action)} disabled={processing}
+                        className={`flex-1 py-3 rounded-xl font-bold text-white disabled:opacity-50 ${action==='accepter'?'bg-green-500 hover:bg-green-600':action==='counter'?'bg-amber-500 hover:bg-amber-600':'bg-red-500 hover:bg-red-600'}`}>
+                        {processing ? '...' : action==='accepter'?'Confirmer':'Envoyer'}
                       </button>
                       <button onClick={()=>setAction('')} className="px-5 py-3 border-2 border-gray-200 text-gray-600 rounded-xl font-semibold">Annuler</button>
                     </div>
@@ -206,12 +217,11 @@ export default function DevisDetail() {
               </div>
             )}
 
-            {/* Valider travaux */}
-            {isClient && devis.statut==='accepte' && (
+            {isClient && devis.statut === 'accepte' && (
               <div className="bg-white rounded-2xl border-2 border-green-200 p-6">
                 <h3 className="font-display font-bold text-gray-900 mb-2">Valider les travaux</h3>
                 <p className="text-gray-500 text-sm mb-4">L artisan recevra <strong>{formatBudget(devis.montantArtisan)}</strong> apres validation.</p>
-                {action==='terminer' ? (
+                {action === 'terminer' ? (
                   <div className="space-y-3">
                     <textarea value={note} onChange={e=>setNote(e.target.value)} rows={3}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 resize-none"
@@ -219,7 +229,7 @@ export default function DevisDetail() {
                     <div className="flex gap-3">
                       <button onClick={()=>handleAction('terminer')} disabled={processing}
                         className="flex-1 py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 disabled:opacity-50">
-                        {processing?'Validation...':'Confirmer'}
+                        {processing ? 'Validation...' : 'Confirmer'}
                       </button>
                       <button onClick={()=>setAction('')} className="px-5 py-3 border-2 border-gray-200 text-gray-600 rounded-xl font-semibold">Annuler</button>
                     </div>
@@ -227,46 +237,42 @@ export default function DevisDetail() {
                 ) : (
                   <button onClick={()=>setAction('terminer')}
                     className="w-full py-3.5 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 text-lg">
-                    ✅ Valider et payer l artisan
+                    Valider et payer l artisan
                   </button>
                 )}
               </div>
             )}
 
-            {/* Info artisan */}
-            {isArtisan && devis.statut==='envoye' && (
+            {isArtisan && devis.statut === 'envoye' && (
               <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5">
-                <p className="text-blue-700 font-semibold">⏳ En attente de la reponse du client</p>
+                <p className="text-blue-700 font-semibold">En attente de la reponse du client</p>
                 <p className="text-blue-600 text-sm mt-1">Le client a {devis.validiteJours} jours pour repondre.</p>
               </div>
             )}
-            {isArtisan && devis.statut==='accepte' && (
+
+            {isArtisan && devis.statut === 'accepte' && (
               <div className="bg-green-50 border border-green-200 rounded-2xl p-5">
-                <p className="text-green-700 font-semibold">🔨 Devis accepte</p>
-                <p className="text-green-600 text-sm mt-1">Definissez les jalons et soumettez vos photos d avancement.</p>
+                <p className="text-green-700 font-semibold">Devis accepte — Travaux en cours</p>
+                <p className="text-green-600 text-sm mt-1">Definissez les jalons et soumettez vos photos.</p>
               </div>
             )}
-            {devis.statut==='termine' {devis.statut==='termine' && ({devis.statut==='termine' && ( (
-              <div className="flex justify-end mb-4">
-                <FacturePDF devis={devis}/>
-              </div>
-            )}            
-            {devis.statut==='termine_HIDDEN' {devis.statut==='termine' && ({devis.statut==='termine' && ( (
+
+            {devis.statut === 'termine' && (
               <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-5">
-                <p className="text-green-700 font-bold text-lg">💰 Travaux valides</p>
+                <p className="text-green-700 font-bold text-lg">Travaux valides et paiement libere</p>
                 <p className="text-green-600 text-sm mt-1">
-                  {isArtisan?`Vous recevrez ${formatBudget(devis.montantArtisan)} sur votre Mobile Money.`:`Le paiement a ete libere a l artisan.`}
+                  {isArtisan ? `Vous recevrez ${formatBudget(devis.montantArtisan)} sur votre Mobile Money.` : `Le paiement a ete libere a l artisan.`}
                 </p>
               </div>
             )}
           </>
         )}
 
-        {activeTab === 'jalons' && devis.statut !== 'envoye' && devis.statut !== 'refuse' && (
+        {activeTab === 'jalons' && !['envoye','refuse'].includes(devis.statut) && (
           <JalonsSection devis={devis}/>
         )}
 
-        {activeTab === 'photos' && devis.statut !== 'envoye' && devis.statut !== 'refuse' && (
+        {activeTab === 'photos' && !['envoye','refuse'].includes(devis.statut) && (
           <PhotosChantier devisId={devis._id}/>
         )}
 
