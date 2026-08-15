@@ -1,28 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import api from '../utils/api';
-import ArtisanCard from '../components/ArtisanCard';
-import ProjectCard from '../components/ProjectCard';
-import Loader from '../components/Loader';
 import { useAuth } from '../context/AuthContext';
 
 export default function Home() {
   const { user } = useAuth();
-  const [artisans, setArtisans] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    Promise.allSettled([api.get('/artisans?limit=6'), api.get('/projects?limit=4')])
-      .then(([a, p]) => {
-        setArtisans(a.status==='fulfilled' ? (a.value.data?.artisans || []) : []);
-        setProjects(p.status==='fulfilled' ? (p.value.data?.projects || []) : []);
-      })
-      .finally(() => setLoading(false));
-  }, []);
 
   return (
     <div className="bg-white">
+
       {/* HERO */}
       <section className="relative min-h-screen flex items-center overflow-hidden"
         style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 40%, #0a3272 70%, #1a4a8a 100%)'}}>
@@ -38,34 +23,42 @@ export default function Home() {
               <span className="text-blue-300 text-sm font-semibold tracking-widest uppercase">Cameroun · BTP</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-display font-black text-white leading-tight mb-8">
-              Le bon technicien, <span className="text-blue-400">vérifié,</span> près de chez vous.
+              Le bon technicien,{' '}
+              <span className="text-blue-400">verifie,</span>{' '}
+              pres de chez vous.
             </h1>
             <p className="text-xl text-blue-100 leading-relaxed mb-12 max-w-2xl opacity-90">
-              Batilink relie les particuliers aux techniciens du bâtiment vérifiés : décrivez votre besoin, recevez des devis, louez de la main-d'œuvre qualifiée.
+              Batilink connecte clients, artisans et entreprises BTP au Cameroun. Devis securise, paiement garanti, suivi photos.
             </p>
+
+            {/* 3 CTA */}
             <div className="flex flex-col sm:flex-row gap-4 mb-16">
               <Link to={user?.role==='client'?'/create-project':'/register?role=client'}
                 className="px-8 py-4 bg-blue-500 hover:bg-blue-400 text-white font-bold rounded-xl text-center text-lg transition-all shadow-lg">
                 Je suis un client
               </Link>
               <Link to={user?.role==='artisan'?'/dashboard':'/register?role=artisan'}
-                className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-center text-lg transition-all border border-white/20">
+                className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-center text-lg transition-all border border-white/20 backdrop-blur">
                 Je suis un technicien
               </Link>
               <Link to={user?.role==='entreprise'?'/dashboard':'/register?role=entreprise'}
-                className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-center text-lg transition-all border border-white/20">
+                className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-center text-lg transition-all border border-white/20 backdrop-blur">
                 Je suis une entreprise BTP
               </Link>
             </div>
+
+            {/* Citation */}
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-lg backdrop-blur">
               <div className="text-blue-300 text-3xl mb-2">"</div>
-              <p className="text-white/80 italic text-sm leading-relaxed">La qualité n'est jamais un accident : elle est toujours le résultat d'un effort intelligent.</p>
+              <p className="text-white/80 italic text-sm leading-relaxed">La qualite n est jamais un accident : elle est toujours le resultat d un effort intelligent.</p>
               <p className="text-blue-300 text-xs mt-3 font-semibold">— John Ruskin</p>
             </div>
           </div>
         </div>
+
+        {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40">
-          <span className="text-xs tracking-widest uppercase">Découvrir</span>
+          <span className="text-xs tracking-widest uppercase">Decouvrir</span>
           <div className="w-px h-12 bg-gradient-to-b from-white/40 to-transparent animate-pulse"></div>
         </div>
       </section>
@@ -74,114 +67,106 @@ export default function Home() {
       <section className="bg-blue-600 py-12">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
-            {[['500+','Artisans vérifiés'],['1200+','Projets réalisés'],['98%','Clients satisfaits'],['48h','Délai moyen']].map(([v,l])=>(
-              <div key={l}><p className="text-4xl font-display font-black mb-1">{v}</p><p className="text-blue-200 text-sm">{l}</p></div>
+            {[
+              ['500+','Artisans verifies'],
+              ['1200+','Projets realises'],
+              ['98%','Clients satisfaits'],
+              ['48h','Delai moyen'],
+            ].map(([v,l])=>(
+              <div key={l}>
+                <p className="text-4xl font-display font-black mb-1">{v}</p>
+                <p className="text-blue-200 text-sm">{l}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SERVICES */}
+      {/* 3 SERVICES */}
       <section className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Nos services</span>
             <h2 className="text-4xl font-display font-black text-gray-900 mt-3">Tout ce dont vous avez besoin</h2>
+            <p className="text-gray-500 mt-4 max-w-xl mx-auto">Une plateforme complete pour tous vos projets de construction et renovation au Cameroun</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              {icon:'🏗️',title:'Travaux & Rénovation',desc:'Trouvez le bon artisan pour tous vos travaux : maçonnerie, plomberie, électricité, peinture...',color:'bg-blue-50 text-blue-600'},
-              {icon:'👷',title:'Location de Personnel',desc:'Louez de la main-d\'œuvre qualifiée à la journée ou à la semaine pour vos chantiers.',color:'bg-indigo-50 text-indigo-600'},
-              {icon:'🏢',title:'Solutions Entreprises',desc:'Gérez vos projets BTP à grande échelle avec des équipes complètes et des devis sur mesure.',color:'bg-sky-50 text-sky-600'},
+              {
+                icon:'🏗️',
+                titre:'Travaux & Renovation',
+                desc:'Trouvez le bon artisan pour tous vos travaux : maconnerie, plomberie, electricite, peinture. Devis securise et paiement garanti.',
+                color:'bg-blue-50 text-blue-600',
+                link:'/artisans',
+                cta:'Trouver un artisan'
+              },
+              {
+                icon:'👷',
+                titre:'Location de Personnel',
+                desc:'Louez de la main-d oeuvre qualifiee a la journee ou a la semaine. Coffreur, Ferrailleur, Dalleur, Macon disponibles.',
+                color:'bg-indigo-50 text-indigo-600',
+                link:'/missions',
+                cta:'Voir les missions'
+              },
+              {
+                icon:'🏢',
+                titre:'Entreprises BTP',
+                desc:'Pour vos grands travaux, faites appel a des entreprises certifiees. Gros oeuvre, finition, renovation et architecture.',
+                color:'bg-sky-50 text-sky-600',
+                link:'/entreprises',
+                cta:'Voir les entreprises'
+              },
             ].map(s=>(
-              <div key={s.title} className="group p-8 rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div key={s.titre} className="group p-8 rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                 <div className={`w-14 h-14 rounded-2xl ${s.color} flex items-center justify-center text-2xl mb-6`}>{s.icon}</div>
-                <h3 className="text-xl font-display font-bold text-gray-900 mb-3">{s.title}</h3>
-                <p className="text-gray-500 leading-relaxed">{s.desc}</p>
+                <h3 className="text-xl font-display font-bold text-gray-900 mb-3">{s.titre}</h3>
+                <p className="text-gray-500 leading-relaxed mb-6">{s.desc}</p>
+                <Link to={s.link} className="inline-flex items-center gap-2 text-blue-600 font-semibold text-sm group-hover:gap-3 transition-all">
+                  {s.cta} →
+                </Link>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* COMMENT CA MARCHE */}
-      <section className="py-24" style={{background:'linear-gradient(135deg, #f8faff 0%, #eff4ff 100%)'}}>
+      {/* PROTECTION */}
+      <section className="py-16" style={{background:'linear-gradient(135deg, #f8faff 0%, #eff4ff 100%)'}}>
         <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Simple & Rapide</span>
-            <h2 className="text-4xl font-display font-black text-gray-900 mt-3">Comment ça marche ?</h2>
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-display font-bold text-gray-900">🔒 Votre protection avec Batilink</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              {num:'01',title:'Décrivez votre projet',desc:'Expliquez vos besoins, votre budget et votre localisation.'},
-              {num:'02',title:'Recevez des devis',desc:'Les artisans qualifiés vous contactent rapidement.'},
-              {num:'03',title:'Choisissez l\'artisan',desc:'Comparez les profils, notes et réalisations.'},
-              {num:'04',title:'Suivez votre chantier',desc:'Photos, messages et validation des étapes.'},
-            ].map((s,i)=>(
-              <div key={s.num} className="relative text-center">
-                {i<3 && <div className="hidden md:block absolute top-8 left-[60%] w-full h-px bg-blue-200 z-0"></div>}
-                <div className="relative z-10 w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center font-display font-black text-xl mx-auto mb-5 shadow-lg shadow-blue-600/20">{s.num}</div>
-                <h3 className="font-display font-bold text-gray-900 mb-2">{s.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{s.desc}</p>
+              {icon:'💳', titre:'Paiement securise', desc:'L argent est bloque et libere uniquement apres votre validation des travaux.'},
+              {icon:'⏰', titre:'Delai de contestation', desc:'48h apres validation pour contester si les travaux ne sont pas conformes.'},
+              {icon:'⚖️', titre:'Systeme de litige', desc:'En cas de probleme, l admin Batilink arbitre et decide sous 72h maximum.'},
+            ].map(p=>(
+              <div key={p.titre} className="bg-white rounded-2xl border border-blue-100 p-6 text-center shadow-sm">
+                <div className="text-4xl mb-3">{p.icon}</div>
+                <h3 className="font-bold text-gray-900 mb-2">{p.titre}</h3>
+                <p className="text-gray-500 text-sm">{p.desc}</p>
               </div>
             ))}
           </div>
+          <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800 text-center max-w-2xl mx-auto">
+            ⚠️ Tout echange financier hors de la plateforme Batilink annule automatiquement toute protection.
+          </div>
         </div>
       </section>
-
-      {/* ARTISANS */}
-      <section className="py-24 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex items-end justify-between mb-12">
-            <div>
-              <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Notre réseau</span>
-              <h2 className="text-4xl font-display font-black text-gray-900 mt-2">Artisans disponibles</h2>
-            </div>
-            <Link to="/artisans" className="hidden md:flex items-center gap-2 text-blue-600 font-semibold hover:gap-3 transition-all">Voir tous →</Link>
-          </div>
-          {loading ? <Loader/> : artisans.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">
-              <div className="text-5xl mb-3">🔨</div>
-              <p>Aucun artisan disponible pour le moment</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {artisans.map(a=><ArtisanCard key={a._id} artisan={a}/>)}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* PROJETS */}
-      {projects.length > 0 && (
-        <section className="py-24" style={{background:'linear-gradient(135deg, #f8faff 0%, #eff4ff 100%)'}}>
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="flex items-end justify-between mb-12">
-              <div>
-                <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Opportunités</span>
-                <h2 className="text-4xl font-display font-black text-gray-900 mt-2">Projets ouverts</h2>
-              </div>
-              <Link to="/projects" className="hidden md:flex items-center gap-2 text-blue-600 font-semibold hover:gap-3 transition-all">Voir tous →</Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {projects.map(p=><ProjectCard key={p._id} project={p}/>)}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* TEMOIGNAGES */}
       <section className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Témoignages</span>
+            <span className="text-blue-600 font-semibold text-sm uppercase tracking-widest">Temoignages</span>
             <h2 className="text-4xl font-display font-black text-gray-900 mt-3">Ils nous font confiance</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              {name:'Marie Nkomo',role:'Cliente, Yaoundé',text:'J\'ai trouvé un excellent carreleur en moins de 24h. Travail impeccable et prix honnête !'},
-              {name:'Paul Fotso',role:'Maçon, Douala',text:'Batilink m\'a permis de tripler mon nombre de clients. La plateforme est simple et efficace.'},
-              {name:'Entreprise SOBTP',role:'Entreprise BTP, Bafoussam',text:'Nous utilisons Batilink pour louer du personnel qualifié pour nos chantiers. Excellent service.'},
+              {name:'Marie Nkomo', role:'Cliente, Yaounde', text:'J ai trouve un excellent carreleur en moins de 24h. Travail impeccable et prix honnete. Je recommande vivement Batilink !'},
+              {name:'Paul Fotso', role:'Macon, Douala', text:'Batilink m a permis de tripler mon nombre de clients. La plateforme est simple et le paiement est toujours garanti.'},
+              {name:'SOBTP Sarl', role:'Entreprise BTP, Bafoussam', text:'Nous utilisons Batilink pour louer du personnel qualifie pour nos chantiers. Service excellent et contrats securises.'},
             ].map(t=>(
               <div key={t.name} className="p-8 rounded-2xl border border-gray-100 hover:shadow-xl transition-all">
                 <div className="text-amber-400 text-xl mb-4">★★★★★</div>
@@ -203,12 +188,24 @@ export default function Home() {
       <section className="py-24 relative overflow-hidden"
         style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 50%, #1a4a8a 100%)'}}>
         <div className="relative max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-6">Prêt à lancer votre projet ?</h2>
-          <p className="text-blue-200 text-xl mb-12 max-w-2xl mx-auto">Rejoignez des centaines de clients et d'artisans qui font confiance à Batilink au Cameroun.</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/register" className="px-10 py-4 bg-blue-500 hover:bg-blue-400 text-white font-bold rounded-xl text-lg transition-all shadow-lg">Commencer gratuitement</Link>
-            <Link to="/artisans" className="px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-lg transition-all border border-white/20">Voir les artisans</Link>
+          <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-6">
+            Pret a lancer votre projet ?
+          </h2>
+          <p className="text-blue-200 text-xl mb-12 max-w-2xl mx-auto">
+            Inscription gratuite. Rejoignez des centaines de clients et artisans au Cameroun.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <Link to="/register" className="px-10 py-4 bg-blue-500 hover:bg-blue-400 text-white font-bold rounded-xl text-lg transition-all shadow-lg">
+              Commencer gratuitement
+            </Link>
+            <Link to="/comment-ca-marche" className="px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-lg transition-all border border-white/20">
+              Comment ca marche ?
+            </Link>
           </div>
+          <p className="text-blue-300 text-sm">
+            Deja un compte ?{' '}
+            <Link to="/login" className="text-white underline font-semibold">Se connecter</Link>
+          </p>
         </div>
       </section>
     </div>
