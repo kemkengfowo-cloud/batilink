@@ -392,7 +392,7 @@ function EntrepriseDashboard({ entreprise, missions, contrats }) {
       {(m.length > 0 || c.length > 0) && (
         <div className="grid grid-cols-3 gap-4">
           {[
-            { label:'Missions ouvertes', value:missionsOuvertes, icon:'👷', color:'text-blue-600' },
+            { label:'Demandes en attente', value:missionsOuvertes, icon:'👷', color:'text-blue-600' },
             { label:'Contrats en cours', value:contratsEnCours, icon:'✍️', color:'text-green-600' },
             { label:'En attente signature', value:contratsEnAttente, icon:'⏳', color:'text-amber-600' },
           ].map(s=>(
@@ -445,16 +445,15 @@ function EntrepriseDashboard({ entreprise, missions, contrats }) {
             <p className="text-blue-200 text-sm">Admin selectionne les meilleurs techniciens</p>
           </div>
         </Link>
-        <Link to="/contrats/creer"
+        <Link to="/contrats"
           className="flex items-center gap-4 p-5 bg-white rounded-2xl border-2 border-blue-200 hover:border-blue-400 hover:shadow-md transition-all">
           <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">✍️</div>
           <div>
-            <p className="font-bold text-lg text-gray-900">Creer un contrat</p>
-            <p className="text-gray-400 text-sm">Location officielle avec signature</p>
+            <p className="font-bold text-lg text-gray-900">Mes contrats</p>
+            <p className="text-gray-400 text-sm">Voir et gerer vos contrats</p>
           </div>
         </Link>
       </div>
-      )}
       {/* Liens rapides */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5">
         <h2 className="font-display font-bold text-gray-900 mb-4">Acces rapide</h2>
