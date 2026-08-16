@@ -128,6 +128,7 @@ export default function Admin() {
     { id:'visites', label:'Visites', icon:'🔍', badge:visitesEnAttente||null },
     { id:'messagerie', label:'Messagerie', icon:'📢', badge:null },
     { id:'historique', label:'Journal', icon:'📜', badge:null },
+  ];
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
