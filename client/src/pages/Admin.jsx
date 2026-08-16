@@ -673,7 +673,6 @@ export default function Admin() {
             ))}
           </div>
         )}
-        )}
 
         {/* MESSAGERIE */}
         {tab==='messagerie' && (
