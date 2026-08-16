@@ -50,17 +50,6 @@ const PublicOnly = ({ children }) => {
   return children;
 };
 
-function NotFound() {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 bg-gray-50">
-      <div className="text-8xl mb-6">🏗️</div>
-      <h1 className="text-4xl font-display font-bold text-gray-900 mb-3">Page introuvable</h1>
-      <p className="text-gray-500 mb-8">Cette page n'existe pas ou a été déplacée.</p>
-      <a href="/" className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">Retour à l'accueil</a>
-    </div>
-  );
-}
-
 function AppRoutes() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
