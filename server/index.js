@@ -30,6 +30,7 @@ app.use('/api/messages', require('./routes/messages'));
 
 app.use('/api/signalements', require('./routes/signalements'));
 app.use('/api/contrats', require('./routes/contrats'));
+app.use('/api/avis', require('./routes/avis'));
 app.use('/api/admin', require('./routes/admin'));
 app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Batilink API running' }));
 
