@@ -52,18 +52,6 @@ export default function Register() {
           <p className="text-blue-200">Inscription 100% gratuite</p>
         </div>
       </div>
-        <Link to="/" className="flex items-center gap-3 mb-16">
-          <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center font-bold text-xl">B</div>
-          <span className="font-display font-bold text-2xl">Batilink</span>
-        </Link>
-        <h1 className="text-5xl font-display font-black leading-tight mb-6">Rejoignez le reseau BTP #1 au Cameroun</h1>
-        <p className="text-blue-200 text-lg leading-relaxed mb-12">Clients locaux et diaspora, techniciens et entreprises — une seule plateforme pour tous vos besoins.</p>
-        <div className="space-y-4">
-          {[['✅','Inscription 100% gratuite'],['🌍','Accessible depuis partout dans le monde'],['🔒','Paiements securises via Batilink'],['📸','Suivi chantier a distance avec photos']].map(([i,t])=>(
-            <div key={t} className="flex items-center gap-3 text-blue-100"><span className="text-xl">{i}</span><span>{t}</span></div>
-          ))}
-        </div>
-      </div>
 
       <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 overflow-y-auto">
         <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8">
