@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import Loader from '../components/Loader';
 import { formatBudget, formatDate, getAvatarUrl } from '../utils/helpers';
 import Avertissement from '../components/Avertissement';
-import PhotosChantier from '../components/PhotosChantier';
+
 import JalonsSection from '../components/JalonsSection';
 import LitigeModal from '../components/LitigeModal';
 import FacturePDF from '../components/FacturePDF';
@@ -57,7 +57,7 @@ export default function DevisDetail() {
   const TABS = [
     { id:'details', label:'Details' },
     { id:'jalons', label:'Jalons de paiement' },
-    { id:'photos', label:'Photos chantier' },
+    
   ];
 
   return (

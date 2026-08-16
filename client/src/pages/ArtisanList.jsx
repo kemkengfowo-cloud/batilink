@@ -9,76 +9,128 @@ export default function ArtisanList() {
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState({ ville: '', metier: '' });
-  const [search, setSearch] = useState({ ville: '', metier: '' });
+  const [filters, setFilters] = useState({ ville:'', metier:'', nom:'' });
+  const [search, setSearch] = useState({ ville:'', metier:'', nom:'' });
 
   const fetchArtisans = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ page, limit: 12, ...Object.fromEntries(Object.entries(search).filter(([,v])=>v)) });
+      const params = new URLSearchParams({ page, limit:12 });
+      if (search.ville) params.append('ville', search.ville);
+      if (search.metier) params.append('metier', search.metier);
+      if (search.nom) params.append('nom', search.nom);
       const res = await api.get(`/artisans?${params}`);
-      setArtisans(res.data.artisans);
-      setTotal(res.data.total);
-    } finally { setLoading(false); }
+      setArtisans(res.data.artisans || []);
+      setTotal(res.data.total || 0);
+    } catch { setArtisans([]); }
+    finally { setLoading(false); }
   }, [page, search]);
 
   useEffect(() => { fetchArtisans(); }, [fetchArtisans]);
 
   const handleSearch = (e) => { e.preventDefault(); setSearch({...filters}); setPage(1); };
-  const handleReset = () => { setFilters({ville:'',metier:''}); setSearch({ville:'',metier:''}); setPage(1); };
+  const handleReset = () => { setFilters({ville:'',metier:'',nom:''}); setSearch({ville:'',metier:'',nom:''}); setPage(1); };
+
+  const hasFilter = search.ville || search.metier || search.nom;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-display font-bold text-earth-900">Artisans du Cameroun</h1>
-        <p className="text-earth-500 mt-2">{total} artisan{total>1?'s':''} disponible{total>1?'s':''}</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero */}
+      <div style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 100%)'}} className="py-12">
+        <div className="max-w-6xl mx-auto px-4 text-center text-white">
+          <h1 className="text-4xl font-display font-black mb-3">Artisans du Cameroun</h1>
+          <p className="text-blue-200 text-lg mb-8">Trouvez le technicien ideal pour vos travaux</p>
+
+          {/* Barre de recherche */}
+          <form onSubmit={handleSearch} className="bg-white rounded-2xl p-4 max-w-3xl mx-auto shadow-xl">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <input type="text" placeholder="Rechercher par nom..."
+                value={filters.nom} onChange={e=>setFilters(f=>({...f,nom:e.target.value}))}
+                className="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-gray-800 text-sm"/>
+              <select value={filters.ville} onChange={e=>setFilters(f=>({...f,ville:e.target.value}))}
+                className="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-gray-800 text-sm bg-white">
+                <option value="">Toutes les villes</option>
+                {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
+              </select>
+              <select value={filters.metier} onChange={e=>setFilters(f=>({...f,metier:e.target.value}))}
+                className="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-gray-800 text-sm bg-white">
+                <option value="">Tous les metiers</option>
+                {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
+              </select>
+              <button type="submit"
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors text-sm">
+                Rechercher
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
-      {/* Filtres */}
-      <form onSubmit={handleSearch} className="bg-white rounded-2xl shadow-card p-4 mb-8 flex flex-col sm:flex-row gap-3">
-        <select value={filters.ville} onChange={e=>setFilters(f=>({...f,ville:e.target.value}))}
-          className="flex-1 px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 bg-white">
-          <option value="">Toutes les villes</option>
-          {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
-        </select>
-        <select value={filters.metier} onChange={e=>setFilters(f=>({...f,metier:e.target.value}))}
-          className="flex-1 px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 bg-white">
-          <option value="">Tous les métiers</option>
-          {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
-        </select>
-        <button type="submit" className="px-6 py-3 bg-brand-500 text-white rounded-xl font-semibold hover:bg-brand-600 shadow-brand transition-colors">
-          Rechercher
-        </button>
-        {(search.ville||search.metier) && (
-          <button type="button" onClick={handleReset} className="px-4 py-3 border-2 border-earth-200 text-earth-600 rounded-xl font-medium hover:bg-earth-50 transition-colors">
-            ✕ Réinitialiser
-          </button>
-        )}
-      </form>
-
-      {loading ? <Loader text="Chargement des artisans..." /> : artisans.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-xl font-display font-bold text-earth-700">Aucun artisan trouvé</h3>
-          <p className="text-earth-400 mt-2">Essayez d'autres filtres de recherche</p>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {artisans.map(a => <ArtisanCard key={a._id} artisan={a}/>)}
+      <div className="max-w-6xl mx-auto px-4 py-10">
+        {/* Stats + Reset */}
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <div>
+            <p className="text-gray-900 font-bold text-lg">{total} artisan{total>1?'s':''} disponible{total>1?'s':''}</p>
+            {hasFilter && (
+              <p className="text-gray-400 text-sm mt-0.5">
+                {search.nom && `Nom: "${search.nom}" `}
+                {search.ville && `Ville: ${search.ville} `}
+                {search.metier && `Metier: ${search.metier}`}
+              </p>
+            )}
           </div>
-          {/* Pagination */}
-          {total > 12 && (
-            <div className="flex justify-center gap-2 mt-10">
-              <button onClick={()=>setPage(p=>Math.max(1,p-1))} disabled={page===1}
-                className="px-4 py-2 border-2 border-earth-200 rounded-xl disabled:opacity-40 hover:border-brand-300 transition-colors font-medium">← Précédent</button>
-              <span className="px-4 py-2 text-earth-600 font-medium">Page {page}</span>
-              <button onClick={()=>setPage(p=>p+1)} disabled={artisans.length<12}
-                className="px-4 py-2 border-2 border-earth-200 rounded-xl disabled:opacity-40 hover:border-brand-300 transition-colors font-medium">Suivant →</button>
-            </div>
+          {hasFilter && (
+            <button onClick={handleReset}
+              className="px-4 py-2 border-2 border-gray-200 text-gray-600 rounded-xl text-sm font-semibold hover:border-red-300 hover:text-red-500 transition-colors">
+              Effacer les filtres ×
+            </button>
           )}
-        </>
-      )}
+        </div>
+
+        {/* Badges filtres actifs */}
+        {hasFilter && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {search.nom && <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold border border-blue-200">🔍 {search.nom}</span>}
+            {search.ville && <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold border border-blue-200">📍 {search.ville}</span>}
+            {search.metier && <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold border border-blue-200">🔨 {search.metier}</span>}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex justify-center py-20"><Loader/></div>
+        ) : artisans.length === 0 ? (
+          <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
+            <div className="text-6xl mb-4">🔍</div>
+            <h3 className="text-xl font-display font-bold text-gray-700 mb-2">Aucun artisan trouve</h3>
+            <p className="text-gray-400 mb-6">Essayez d autres filtres de recherche</p>
+            <button onClick={handleReset} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">
+              Voir tous les artisans
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {artisans.map(a=><ArtisanCard key={a._id} artisan={a}/>)}
+            </div>
+            {/* Pagination */}
+            {total > 12 && (
+              <div className="flex justify-center gap-2 mt-10">
+                <button onClick={()=>setPage(p=>Math.max(1,p-1))} disabled={page===1}
+                  className="px-5 py-2.5 border-2 border-gray-200 rounded-xl font-semibold text-sm disabled:opacity-40 hover:border-blue-300 transition-colors">
+                  ← Precedent
+                </button>
+                <span className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm">
+                  Page {page} / {Math.ceil(total/12)}
+                </span>
+                <button onClick={()=>setPage(p=>p+1)} disabled={page>=Math.ceil(total/12)}
+                  className="px-5 py-2.5 border-2 border-gray-200 rounded-xl font-semibold text-sm disabled:opacity-40 hover:border-blue-300 transition-colors">
+                  Suivant →
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -6,10 +6,11 @@ const upload = require('../middleware/upload');
 
 router.get('/', async (req, res) => {
   try {
-    const { ville, metier, page = 1, limit = 12 } = req.query;
+    const { ville, metier, nom, page = 1, limit = 12 } = req.query;
     const filter = {};
     if (ville) filter.ville = new RegExp(ville, 'i');
     if (metier) filter.metier = new RegExp(metier, 'i');
+    if (nom) filter['user.name'] = new RegExp(nom, 'i');
     const artisans = await Artisan.find(filter)
       .populate('user', 'name email avatar phone')
       .sort({ note: -1 })

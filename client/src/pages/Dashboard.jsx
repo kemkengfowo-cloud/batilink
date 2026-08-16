@@ -212,6 +212,12 @@ function EntrepriseDashboard({ entreprise, missions }) {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Link to="/contrats/creer" className="bg-white rounded-2xl border-2 border-blue-200 p-6 hover:bg-blue-50 transition-colors">
+          <div className="text-3xl mb-3">✍️</div>
+          <h3 className="font-display font-bold text-lg text-gray-900 mb-1">Creer un contrat</h3>
+          <p className="text-gray-500 text-sm">Location de personnel officielle</p>
+          <div className="mt-4 text-blue-600 font-semibold text-sm">Nouveau contrat →</div>
+        </Link>
         <Link to="/create-mission" className="bg-blue-600 rounded-2xl p-6 text-white hover:bg-blue-700 transition-colors">
           <div className="text-3xl mb-3">👷</div>
           <h3 className="font-display font-bold text-lg mb-1">Louer du personnel</h3>

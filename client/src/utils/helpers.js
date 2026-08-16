@@ -20,3 +20,5 @@ export const VILLES = [
   'Maroua','Ngaoundéré','Bertoua','Ebolowa','Kribi','Limbé',
   'Edéa','Nkongsamba','Foumban','Kumba','Buea','Sangmélima'
 ];
+
+export const getUserId = (user) => user?._id || user?.id || '';

@@ -84,6 +84,12 @@ export default function ArtisanProfile() {
                     WhatsApp
                   </a>
                 )}
+                {user {user && user._id !== u?._id && ({user && user._id !== u?._id && ( user?.role === 'client' {user && user._id !== u?._id && ({user && user._id !== u?._id && ( (
+                  <Link to={'/devis/creer'}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors">
+                    📄 Demander un devis
+                  </Link>
+                )}
                 {user && user._id !== u?._id && (
                   <button onClick={() => setMsgModal(true)}
                     className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl border border-white/20 transition-colors">

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getAvatarUrl } from '../utils/helpers';
+import Notifications from './Notifications';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -17,28 +18,25 @@ export default function Navbar() {
   const navLinks = {
     client: [
       { to:'/dashboard', label:'Tableau de bord' },
-      { to:'/create-project', label:'Nouvelle demande' },
-      { to:'/visites', label:'Visites evaluation' },
       { to:'/artisans', label:'Trouver un artisan' },
       { to:'/entreprises', label:'Entreprises BTP' },
+      { to:'/visites', label:'Visites evaluation' },
       { to:'/messages', label:'Messages' },
-      { to:'/devis', label:'Mes devis' },
     ],
     artisan: [
       { to:'/dashboard', label:'Tableau de bord' },
-      { to:'/projects', label:'Projets disponibles' },
-      { to:'/missions', label:'Missions' },
+      { to:'/projects', label:'Projets' },
       { to:'/devis', label:'Mes devis' },
       { to:'/messages', label:'Messages' },
-      { to:'/profile', label:'Mon profil' },
     ],
     entreprise: [
       { to:'/dashboard', label:'Tableau de bord' },
-      { to:'/create-mission', label:'Location personnel' },
-      { to:'/missions/my', label:'Mes missions' },
-      { to:'/devis', label:'Mes devis' },
-      { to:'/artisans', label:'Techniciens' },
+      { to:'/missions', label:'Missions' },
+      { to:'/contrats', label:'Mes contrats' },
       { to:'/messages', label:'Messages' },
+    ],
+    admin: [
+      { to:'/admin', label:'Panel Admin' },
     ],
   };
 
@@ -48,7 +46,7 @@ export default function Navbar() {
     <>
       {/* Bandeau protection */}
       <div className="bg-blue-700 text-white py-1.5 px-4 text-center text-xs font-medium hidden md:block">
-        🔒 Batilink protège vos transactions — Utilisez toujours le système de devis officiel pour etre couvert en cas de litige
+        🔒 Batilink protege vos transactions — Utilisez toujours le systeme de devis officiel pour etre couvert en cas de litige
       </div>
 
       <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
@@ -61,7 +59,7 @@ export default function Navbar() {
               <span className="font-display font-bold text-xl text-gray-900">Bati<span className="text-blue-600">link</span></span>
             </Link>
 
-            <div className="hidden lg:flex items-center gap-1 flex-1 mx-6 overflow-x-auto">
+            <div className="hidden lg:flex items-center gap-1 flex-1 mx-6">
               {user ? links.map(l=>(
                 <Link key={l.to} to={l.to}
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${isActive(l.to)?'bg-blue-50 text-blue-600':'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
@@ -72,6 +70,7 @@ export default function Navbar() {
                   <Link to="/artisans" className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/artisans')?'bg-blue-50 text-blue-600':'text-gray-600 hover:bg-gray-100'}`}>Artisans</Link>
                   <Link to="/projects" className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/projects')?'bg-blue-50 text-blue-600':'text-gray-600 hover:bg-gray-100'}`}>Projets</Link>
                   <Link to="/entreprises" className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/entreprises')?'bg-blue-50 text-blue-600':'text-gray-600 hover:bg-gray-100'}`}>Entreprises BTP</Link>
+                  <Link to="/comment-ca-marche" className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/comment-ca-marche')?'bg-blue-50 text-blue-600':'text-gray-600 hover:bg-gray-100'}`}>Comment ca marche</Link>
                 </>
               )}
             </div>
@@ -79,6 +78,7 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center gap-3">
               {user ? (
                 <>
+                  <Notifications/>
                   {user.role==='client' && (
                     <Link to="/create-project" className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
                       + Nouvelle demande
@@ -86,7 +86,12 @@ export default function Navbar() {
                   )}
                   {user.role==='entreprise' && (
                     <Link to="/create-mission" className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
-                      + Location personnel
+                      + Mission
+                    </Link>
+                  )}
+                  {user.role==='artisan' && (
+                    <Link to="/devis/creer" className="px-4 py-2 bg-green-600 text-white rounded-xl text-sm font-semibold hover:bg-green-700 transition-colors">
+                      + Creer devis
                     </Link>
                   )}
                   <div className="relative">
@@ -100,15 +105,18 @@ export default function Navbar() {
                       <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     {drop && (
-                      <div className="absolute right-0 mt-1 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                      <div className="absolute right-0 mt-1 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
                         <div className="px-4 py-2 border-b border-gray-100 mb-1">
                           <p className="text-sm font-semibold text-gray-900">{user.name}</p>
                           <p className="text-xs text-gray-400">{user.email}</p>
                         </div>
                         <Link to="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Tableau de bord</Link>
-                        <Link to="/devis" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Mes devis</Link>
                         <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Mon profil</Link>
                         <Link to="/messages" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Messages</Link>
+                        {user.role==='client' && <Link to="/devis" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Mes devis</Link>}
+                        {user.role==='client' && <Link to="/contrats" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Mes contrats</Link>}
+                        {user.role==='artisan' && <Link to="/contrats" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Mes contrats</Link>}
+                        {user.role==='admin' && <Link to="/admin" className="block px-4 py-2 text-sm text-blue-600 font-semibold hover:bg-blue-50" onClick={()=>setDrop(false)}>Panel Admin</Link>}
                         <hr className="my-1 border-gray-100"/>
                         <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Deconnexion</button>
                       </div>
@@ -132,7 +140,6 @@ export default function Navbar() {
 
           {open && (
             <div className="lg:hidden py-3 pb-5 border-t border-gray-100 space-y-1">
-              {/* Bandeau mobile */}
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-3 text-xs text-blue-700 font-medium">
                 🔒 Utilisez toujours le devis officiel Batilink pour etre protege
               </div>
@@ -146,6 +153,9 @@ export default function Navbar() {
                   ))}
                   <hr className="my-2 border-gray-100"/>
                   <Link to="/profile" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Mon profil</Link>
+                  {user.role==='client' && <Link to="/devis" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Mes devis</Link>}
+                  {user.role==='client' && <Link to="/contrats" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Mes contrats</Link>}
+                  {user.role==='artisan' && <Link to="/contrats" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Mes contrats</Link>}
                   <button onClick={handleLogout} className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl">Deconnexion</button>
                 </>
               ) : (
@@ -153,6 +163,7 @@ export default function Navbar() {
                   <Link to="/artisans" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Artisans</Link>
                   <Link to="/projects" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Projets</Link>
                   <Link to="/entreprises" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Entreprises BTP</Link>
+                  <Link to="/comment-ca-marche" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Comment ca marche</Link>
                   <hr className="my-2 border-gray-100"/>
                   <Link to="/login" onClick={close} className="block px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100">Connexion</Link>
                   <Link to="/register" onClick={close} className="block px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold text-center">Inscription</Link>

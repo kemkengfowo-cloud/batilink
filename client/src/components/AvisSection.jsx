@@ -46,7 +46,7 @@ export default function AvisSection({ cibleUserId, cibleType, cibleRefId, nomCib
 
   const peutNoter = user && user._id !== cibleUserId &&
     user.role !== cibleType &&
-    !avis.find(a => a.auteur?._id === user._id || a.auteur?._id === user.id);
+    !avis.find(a => a?.auteur?._id === (user?._id || user?.id));
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6">
