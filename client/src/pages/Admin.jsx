@@ -127,7 +127,7 @@ export default function Admin() {
     { id:'litiges', label:'Litiges', icon:'⚖️', badge:litiesOuverts||null },
     { id:'visites', label:'Visites', icon:'🔍', badge:visitesEnAttente||null },
     { id:'messagerie', label:'Messagerie', icon:'📢', badge:null },
-  ];
+    { id:'historique', label:'Journal', icon:'📜', badge:null },
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -586,6 +586,26 @@ export default function Admin() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* HISTORIQUE */}
+        {tab==="historique" && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-display font-bold text-gray-900">Journal d activite</h2>
+              <a href="/admin/historique" className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700">
+                Voir le journal complet →
+              </a>
+            </div>
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-8 text-center">
+              <div className="text-5xl mb-4">📜</div>
+              <h3 className="text-xl font-display font-bold text-gray-900 mb-2">Journal d activite complet</h3>
+              <p className="text-gray-500 mb-6">Consultez toutes les actions effectuees sur la plateforme avec matricules, timestamps et details.</p>
+              <a href="/admin/historique" className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">
+                Ouvrir le journal →
+              </a>
+            </div>
           </div>
         )}
 
