@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Devis = require('../models/Devis');
 const auth = require('../middleware/auth');
+const { logAction } = require('../middleware/logger');
 
 router.get('/mes-devis', auth, async (req, res) => {
   try {
@@ -49,6 +50,7 @@ router.post('/', auth, async (req, res) => {
       .populate('artisan', 'name avatar')
       .populate('client', 'name avatar')
       .populate('projet', 'titre');
+    logAction({ userId: req.user.id, nom:'', email:'', role: req.user.role, action: 'DEVIS_ENVOYE', details: { titre: populated.titre, total: populated.total, clientId } });
     res.status(201).json(populated);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
@@ -60,6 +62,7 @@ router.put('/:id/accepter', auth, async (req, res) => {
     if (devis.client.toString() !== req.user.id) return res.status(403).json({ message: 'Acces refuse.' });
     if (devis.statut !== 'envoye') return res.status(400).json({ message: 'Ce devis ne peut plus etre accepte.' });
     devis.statut = 'accepte';
+    logAction({ userId: req.user.id, nom:'', email:'', role: req.user.role, action: 'DEVIS_ACCEPTE', details: { devisId: devis._id, numeroDevis: devis.numeroDevis, total: devis.total } });
     devis.dateAcceptation = new Date();
     devis.noteClient = req.body.note || '';
     await devis.save();
@@ -100,6 +103,7 @@ router.put('/:id/terminer', auth, async (req, res) => {
     if (devis.client.toString() !== req.user.id) return res.status(403).json({ message: 'Acces refuse.' });
     if (devis.statut !== 'accepte') return res.status(400).json({ message: 'Les travaux doivent etre en cours.' });
     devis.statut = 'termine';
+    logAction({ userId: req.user.id, nom:'', email:'', role: req.user.role, action: 'TRAVAUX_VALIDES', details: { devisId: devis._id, montantArtisan: devis.montantArtisan, montantCommission: devis.montantCommission } });
     devis.noteClient = req.body.note || '';
     await devis.save();
     res.json({

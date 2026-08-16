@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Artisan = require('../models/Artisan');
 const Message = require('../models/Message');
 const auth = require('../middleware/auth');
+const { logAction } = require('../middleware/logger');
 const upload = require('../middleware/upload');
 
 // GET /api/visites/mes-visites

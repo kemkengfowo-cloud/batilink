@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Contrat = require('../models/Contrat');
 const auth = require('../middleware/auth');
+const { logAction } = require('../middleware/logger');
 
 router.get('/mes-contrats', auth, async (req, res) => {
   try {
@@ -32,6 +33,7 @@ router.post('/', auth, async (req, res) => {
       return res.status(400).json({ message: 'Champs requis manquants.' });
     const contrat = await Contrat.create({ mission: missionId, employeur: req.user.id, technicien: technicienId, typePersonnel, nombrePersonnes, dateDebut, dateFin, adresseChantier, horaires, equipementsFournis, remunerationTotal: +remunerationTotal, obligations });
     const populated = await Contrat.findById(contrat._id).populate('employeur','name avatar').populate('technicien','name avatar').populate('mission','titre');
+    logAction({ userId: req.user.id, nom:'', email:'', role: req.user.role, action: 'CONTRAT_CREE', details: { numeroContrat: contrat.numeroContrat, typePersonnel, remunerationTotal: +remunerationTotal } });
     res.status(201).json(populated);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });

@@ -3,36 +3,104 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Artisan = require('../models/Artisan');
-const auth = require('../middleware/auth');
+const Entreprise = require('../models/Entreprise');
+const { logAction } = require('../middleware/logger');
 
-const genToken = (user) => jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
+const genToken = (user) => jwt.sign(
+  { id: user._id, role: user.role },
+  process.env.JWT_SECRET || 'secret',
+  { expiresIn: '7d' }
+);
 
+// POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role, phone, city } = req.body;
-    if (!name || !email || !password || !role) return res.status(400).json({ message: 'Champs requis manquants.' });
-    if (await User.findOne({ email })) return res.status(400).json({ message: 'Email déjà utilisé.' });
-    const user = await new User({ name, email, password, role, phone, city }).save();
-    if (role === 'artisan') await Artisan.create({ user: user._id, metier: 'Non défini', ville: city || 'Yaoundé' });
-    res.status(201).json({ token: genToken(user), user });
-  } catch (err) { res.status(500).json({ message: err.message }); }
+    const { name, email, password, role, phone, city, metier, whatsapp, experience,
+            nomEntreprise, nomResponsable, rccm, lotsTravauxPropose, typePersonnel,
+            estDiaspora, paysDiaspora, specialites } = req.body;
+
+    const exists = await User.findOne({ email: email?.toLowerCase() });
+    if (exists) return res.status(400).json({ message: 'Email deja utilise.' });
+
+    const userName = role === 'entreprise' ? (nomResponsable || name) : name;
+    const user = await new User({ name: userName, email, password, role, phone, city, estDiaspora, pays: paysDiaspora }).save();
+
+    // Creer profil artisan
+    if (role === 'artisan') {
+      await Artisan.create({
+        user: user._id,
+        metier: metier || 'Non specifie',
+        ville: city || '',
+        whatsapp: whatsapp || '',
+        experience: parseInt(experience) || 0,
+        specialites: specialites ? specialites.split(',').map(s=>s.trim()).filter(Boolean) : []
+      });
+    }
+
+    // Creer profil entreprise
+    if (role === 'entreprise') {
+      await Entreprise.create({
+        user: user._id,
+        nomEntreprise: nomEntreprise || userName,
+        nomResponsable: nomResponsable || userName,
+        ville: city || '',
+        rccm: rccm || '',
+        lotsTravauxPropose: lotsTravauxPropose || [],
+        typePersonnel: typePersonnel || []
+      });
+    }
+
+    // Logger inscription
+    await logAction({
+      userId: user._id,
+      nom: user.name,
+      email: user.email,
+      role: user.role,
+      action: 'INSCRIPTION',
+      details: { ville: city, role, estDiaspora: estDiaspora || false },
+      ip: req.ip
+    });
+
+    const token = genToken(user);
+    res.status(201).json({ token, user });
+  } catch(err) { res.status(500).json({ message: err.message }); }
 });
 
+// POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) return res.status(400).json({ message: 'Email ou mot de passe incorrect.' });
-    res.json({ token: genToken(user), user });
-  } catch (err) { res.status(500).json({ message: err.message }); }
-});
+    const user = await User.findOne({ email: email?.toLowerCase() });
 
-router.get('/me', auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé.' });
-    res.json(user);
-  } catch (err) { res.status(500).json({ message: err.message }); }
+    if (!user || !(await user.comparePassword(password))) {
+      // Logger echec connexion
+      await logAction({
+        userId: null, nom: 'Inconnu', email: email || '', role: 'inconnu',
+        action: 'CONNEXION',
+        details: { email, raison: 'Email ou mot de passe incorrect' },
+        statut: 'echec',
+        ip: req.ip
+      });
+      return res.status(401).json({ message: 'Email ou mot de passe incorrect.' });
+    }
+
+    if (user.blocked) return res.status(403).json({ message: 'Compte bloque. Contactez l administrateur.' });
+
+    // Logger connexion reussie
+    await logAction({
+      userId: user._id,
+      nom: user.name,
+      email: user.email,
+      role: user.role,
+      action: 'CONNEXION',
+      details: { ville: user.city },
+      statut: 'succes',
+      ip: req.ip
+    });
+
+    const token = genToken(user);
+    res.json({ token, user });
+  } catch(err) { res.status(500).json({ message: err.message }); }
 });
 
 module.exports = router;

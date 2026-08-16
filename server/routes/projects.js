@@ -3,6 +3,7 @@ const router = express.Router();
 const Project = require('../models/Project');
 const auth = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const { logAction } = require('../middleware/logger');
 
 router.get('/', async (req, res) => {
   try {
@@ -45,6 +46,7 @@ router.post('/', auth, upload.array('photos', 4), async (req, res) => {
     const project = await Project.create({ client: req.user.id, titre, description, budget: +budget, localisation, categorie, photos });
     const populated = await Project.findById(project._id).populate('client', 'name avatar city');
     notifierTousArtisans(populated);
+    logAction({ userId: req.user.id, nom: '', email: '', role: req.user.role, action: 'PROJET_PUBLIE', details: { titre: populated.titre, localisation: populated.localisation, budget: populated.budget } });
     res.status(201).json(populated);
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
