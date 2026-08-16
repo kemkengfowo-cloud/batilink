@@ -92,6 +92,7 @@ function AppRoutes() {
           <Route path="/devis/creer" element={<PrivateRoute role={['artisan','entreprise']}><CreerDevis/></PrivateRoute>}/>
           <Route path="/devis/:id" element={<PrivateRoute><DevisDetail/></PrivateRoute>}/>
           <Route path="/demandes-personnel" element={<PrivateRoute><MesDemandesPersonnel/></PrivateRoute>}/>
+          <Route path="/demandes-personnel/:id" element={<PrivateRoute><MesDemandesPersonnel/></PrivateRoute>}/>
           <Route path="/demandes-personnel/new" element={<PrivateRoute role={['entreprise']}><DemanderPersonnel/></PrivateRoute>}/>
           <Route path="/create-mission" element={<PrivateRoute role={['entreprise']}><CreateMission/></PrivateRoute>}/>
 

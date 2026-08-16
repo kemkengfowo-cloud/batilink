@@ -47,7 +47,7 @@ export default function DemanderPersonnel() {
         budgetPropose: parseInt(form.budgetPropose),
         nombrePersonnes: parseInt(form.nombrePersonnes)
       });
-      navigate('/demandes-personnel/' + res.data._id);
+      navigate('/demandes-personnel');
     } catch(err) { setError(err.response?.data?.message || 'Erreur lors de la demande'); }
     finally { setLoading(false); }
   };
