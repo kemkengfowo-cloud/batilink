@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import { formatDate, getAvatarUrl } from '../utils/helpers';
+import { formatDate, formatBudget, getAvatarUrl } from '../utils/helpers';
 
 const BADGE_CONFIG = {
-  verifie:  { label:'Vérifié', icon:'✓', color:'bg-blue-500 text-white', desc:'Identité vérifiée par Batilink' },
-  complet:  { label:'Complet', icon:'★', color:'bg-green-500 text-white', desc:'Profil 100% complété' },
+  verifie:  { label:'Verifie', icon:'✓', color:'bg-blue-500 text-white', desc:'Identite verifiee par Batilink' },
+  complet:  { label:'Complet', icon:'★', color:'bg-green-500 text-white', desc:'Profil 100% complete' },
   topRated: { label:'Top', icon:'⭐', color:'bg-amber-500 text-white', desc:'Note > 4.5 avec 5+ avis' },
   premium:  { label:'Premium', icon:'👑', color:'bg-purple-600 text-white', desc:'Partenaire premium' },
 };
@@ -16,7 +16,7 @@ function BadgeToggle({ badges={}, onToggle, type }) {
   const active = badges?.[type];
   return (
     <button onClick={() => onToggle(type, !active)}
-      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all ${active ? `${cfg.color} border-transparent shadow-sm` : 'bg-gray-100 text-gray-400 border-gray-200 hover:border-gray-300'}`}
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all ${active?`${cfg.color} border-transparent shadow-sm`:'bg-gray-100 text-gray-400 border-gray-200 hover:border-gray-300'}`}
       title={cfg.desc}>
       {cfg.icon} {cfg.label}
     </button>
@@ -32,6 +32,8 @@ export default function Admin() {
   const [artisans, setArtisans] = useState([]);
   const [entreprises, setEntreprises] = useState([]);
   const [signalements, setSignalements] = useState([]);
+  const [litiges, setLitiges] = useState([]);
+  const [visites, setVisites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [broadcast, setBroadcast] = useState({ contenu:'', roleFilter:'' });
@@ -46,18 +48,22 @@ export default function Admin() {
   const loadAll = async () => {
     setLoading(true);
     try {
-      const [s, u, a, e, sig] = await Promise.allSettled([
+      const [s, u, a, e, sig, lit, vis] = await Promise.allSettled([
         api.get('/admin/stats'),
         api.get('/admin/users'),
         api.get('/admin/artisans'),
         api.get('/admin/entreprises'),
         api.get('/admin/signalements'),
+        api.get('/litiges/mes-litiges'),
+        api.get('/visites/admin/toutes'),
       ]);
       if (s.status==='fulfilled') setStats(s.value.data);
       if (u.status==='fulfilled') setUsers(u.value.data.users || []);
       if (a.status==='fulfilled') setArtisans(a.value.data.artisans || []);
       if (e.status==='fulfilled') setEntreprises(e.value.data.entreprises || []);
       if (sig.status==='fulfilled') setSignalements(sig.value.data || []);
+      if (lit.status==='fulfilled') setLitiges(lit.value.data || []);
+      if (vis.status==='fulfilled') setVisites(vis.value.data || []);
     } finally { setLoading(false); }
   };
 
@@ -92,6 +98,11 @@ export default function Admin() {
     setSignalements(prev => prev.map(s => s._id===id ? {...s, statut} : s));
   };
 
+  const resoudreLitige = async (id, statut, decision) => {
+    await api.put(`/litiges/${id}/resoudre`, { statut, decisionAdmin: decision });
+    setLitiges(prev => prev.map(l => l._id===id ? {...l, statut, decisionAdmin: decision} : l));
+  };
+
   const sendBroadcast = async () => {
     if (!broadcast.contenu.trim()) return;
     setSending(true);
@@ -104,12 +115,17 @@ export default function Admin() {
     finally { setSending(false); }
   };
 
+  const litiesOuverts = litiges.filter(l=>l.statut==='ouvert').length;
+  const visitesEnAttente = visites.filter(v=>v.statut==='en_attente').length;
+
   const TABS = [
     { id:'stats', label:'Tableau de bord', icon:'📊', badge:null },
     { id:'users', label:'Utilisateurs', icon:'👥', badge:users.length },
     { id:'artisans', label:'Artisans', icon:'🔨', badge:artisans.filter(a=>!a.verifie).length||null },
     { id:'entreprises', label:'Entreprises', icon:'🏢', badge:entreprises.filter(e=>!e.verifie).length||null },
     { id:'signalements', label:'Signalements', icon:'🚨', badge:signalements.filter(s=>s.statut==='en_attente').length||null },
+    { id:'litiges', label:'Litiges', icon:'⚖️', badge:litiesOuverts||null },
+    { id:'visites', label:'Visites', icon:'🔍', badge:visitesEnAttente||null },
     { id:'messagerie', label:'Messagerie', icon:'📢', badge:null },
   ];
 
@@ -170,15 +186,29 @@ export default function Admin() {
                 </div>
               ))}
             </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { label:'Projets', value:stats.projects, icon:'📋', color:'border-orange-200 bg-orange-50 text-orange-700' },
+                { label:'Missions', value:stats.missions, icon:'👷', color:'border-yellow-200 bg-yellow-50 text-yellow-700' },
+                { label:'Litiges ouverts', value:litiesOuverts, icon:'⚖️', color:'border-red-200 bg-red-50 text-red-700' },
+                { label:'Visites en attente', value:visitesEnAttente, icon:'🔍', color:'border-indigo-200 bg-indigo-50 text-indigo-700' },
+              ].map(s=>(
+                <div key={s.label} className={`bg-white rounded-2xl p-5 border-2 ${s.color}`}>
+                  <div className="text-3xl mb-2">{s.icon}</div>
+                  <p className="text-3xl font-display font-black">{s.value}</p>
+                  <p className="text-sm font-semibold mt-1">{s.label}</p>
+                </div>
+              ))}
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
                 <h3 className="font-display font-bold text-gray-900 mb-4">Activite plateforme</h3>
                 <div className="space-y-3">
                   {[
-                    { label:'Nouveaux (7j)', value:stats.newUsers7j, color:'bg-blue-500' },
-                    { label:'Nouveaux (30j)', value:stats.newUsers30j, color:'bg-blue-400' },
-                    { label:'Projets ouverts', value:stats.projectsOuverts, color:'bg-green-500' },
-                    { label:'Missions ouvertes', value:stats.missionsOuvertes, color:'bg-purple-500' },
+                    { label:'Nouveaux (7j)', value:stats.newUsers7j||0, color:'bg-blue-500' },
+                    { label:'Nouveaux (30j)', value:stats.newUsers30j||0, color:'bg-blue-400' },
+                    { label:'Projets ouverts', value:stats.projectsOuverts||0, color:'bg-green-500' },
+                    { label:'Missions ouvertes', value:stats.missionsOuvertes||0, color:'bg-purple-500' },
                   ].map(i=>(
                     <div key={i.label} className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">{i.label}</span>
@@ -193,34 +223,21 @@ export default function Admin() {
                 </div>
               </div>
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                <h3 className="font-display font-bold text-gray-900 mb-4">Villes les plus actives</h3>
-                <div className="space-y-3">
-                  {(stats.villesActives||[]).map((v,i)=>(
-                    <div key={v._id} className="flex items-center gap-3">
-                      <span className="text-lg font-bold text-gray-300 w-6">#{i+1}</span>
-                      <div className="flex-1">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-semibold text-gray-700">{v._id}</span>
-                          <span className="text-sm font-bold text-blue-600">{v.count}</span>
-                        </div>
-                        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-blue-500 rounded-full" style={{width:`${(v.count/(stats.villesActives[0]?.count||1))*100}%`}}></div>
+                <h3 className="font-display font-bold text-gray-900 mb-4">Derniers inscrits</h3>
+                <div className="space-y-2">
+                  {(stats.recentUsers||[]).slice(0,5).map(u=>(
+                    <div key={u._id} className="flex items-center justify-between p-2">
+                      <div className="flex items-center gap-2">
+                        <img src={getAvatarUrl(u.avatar, u.name)} alt={u.name} className="w-8 h-8 rounded-lg object-cover"/>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900 leading-none">{u.name}</p>
+                          <p className="text-xs text-gray-400 mt-0.5">{u.city}</p>
                         </div>
                       </div>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${u.role==='client'?'bg-blue-50 text-blue-700':u.role==='artisan'?'bg-green-50 text-green-700':'bg-purple-50 text-purple-700'}`}>{u.role}</span>
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-2xl border border-gray-100 p-6">
-              <h3 className="font-display font-bold text-gray-900 mb-4">Legende des badges</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {Object.entries(BADGE_CONFIG).map(([key, cfg])=>(
-                  <div key={key} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${cfg.color}`}>{cfg.icon} {cfg.label}</span>
-                    <span className="text-xs text-gray-500">{cfg.desc}</span>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
@@ -304,10 +321,7 @@ export default function Admin() {
                   <div className="flex items-center gap-3 text-xs text-gray-400 mb-4">
                     <span>📍 {a.ville}</span>
                     {a.user?.phone && <span>📞 {a.user.phone}</span>}
-                    <span>📅 {formatDate(a.createdAt)}</span>
                   </div>
-
-                  {/* Badges */}
                   <div className="mb-4">
                     <p className="text-xs font-semibold text-gray-500 mb-2">Badges :</p>
                     <div className="flex flex-wrap gap-2">
@@ -316,7 +330,6 @@ export default function Admin() {
                       ))}
                     </div>
                   </div>
-
                   {!a.verifie ? (
                     <button onClick={()=>verifyArtisan(a._id, true)}
                       className="w-full py-2.5 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600 transition-colors">
@@ -360,8 +373,6 @@ export default function Admin() {
                   <div className="flex flex-wrap gap-1 mb-3">
                     {(e.lotsTravauxPropose||[]).map(l=><span key={l} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">{l}</span>)}
                   </div>
-
-                  {/* Badges */}
                   <div className="mb-4">
                     <p className="text-xs font-semibold text-gray-500 mb-2">Badges :</p>
                     <div className="flex flex-wrap gap-2">
@@ -370,7 +381,6 @@ export default function Admin() {
                       ))}
                     </div>
                   </div>
-
                   {!e.verifie ? (
                     <button onClick={()=>verifyEntreprise(e._id, true)}
                       className="w-full py-2.5 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600 transition-colors">
@@ -399,7 +409,7 @@ export default function Admin() {
               </div>
             ) : signalements.map(s=>(
               <div key={s._id} className={`bg-white rounded-2xl border-2 p-5 ${s.statut==='en_attente'?'border-red-200':'border-gray-100'}`}>
-                <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
+                <div className="flex items-start justify-between mb-3 flex-wrap gap-2">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${s.statut==='en_attente'?'bg-red-50 text-red-700':s.statut==='traite'?'bg-green-50 text-green-700':'bg-gray-100 text-gray-500'}`}>
@@ -408,18 +418,17 @@ export default function Admin() {
                       <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold capitalize">{s.type}</span>
                     </div>
                     <p className="font-bold text-gray-900">{s.motif}</p>
-                    {s.description && <p className="text-gray-500 text-sm mt-1">{s.description}</p>}
                   </div>
                   <span className="text-xs text-gray-400">{formatDate(s.createdAt)}</span>
                 </div>
                 {s.statut==='en_attente' && (
                   <div className="flex gap-2">
                     <button onClick={()=>traiterSignalement(s._id,'traite')}
-                      className="flex-1 py-2.5 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600 transition-colors">
-                      Marquer comme traite
+                      className="flex-1 py-2.5 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600">
+                      Marquer traite
                     </button>
                     <button onClick={()=>traiterSignalement(s._id,'rejete')}
-                      className="flex-1 py-2.5 bg-gray-100 text-gray-600 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors">
+                      className="flex-1 py-2.5 bg-gray-100 text-gray-600 rounded-xl text-sm font-semibold hover:bg-gray-200">
                       Rejeter
                     </button>
                   </div>
@@ -429,12 +438,163 @@ export default function Admin() {
           </div>
         )}
 
+        {/* LITIGES */}
+        {tab==='litiges' && (
+          <div className="space-y-5">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <h2 className="text-xl font-display font-bold text-gray-900">Litiges ({litiges.length})</h2>
+              <span className="px-3 py-1.5 bg-red-50 text-red-700 rounded-full text-xs font-bold">
+                {litiesOuverts} ouvert{litiesOuverts>1?'s':''}
+              </span>
+            </div>
+            {litiges.length===0 ? (
+              <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
+                <div className="text-6xl mb-4">⚖️</div>
+                <h3 className="text-xl font-display font-bold text-gray-700">Aucun litige</h3>
+                <p className="text-gray-400 mt-2">Toutes les transactions se passent bien !</p>
+              </div>
+            ) : litiges.map(l=>(
+              <div key={l._id} className={`bg-white rounded-2xl border-2 p-5 ${l.statut==='ouvert'?'border-red-200':l.statut==='en_examen'?'border-amber-200':'border-gray-100'}`}>
+                <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${l.statut==='ouvert'?'bg-red-50 text-red-700':l.statut==='en_examen'?'bg-amber-50 text-amber-700':l.statut.includes('resolu')?'bg-green-50 text-green-700':'bg-gray-100 text-gray-500'}`}>
+                        {l.statut==='ouvert'?'Ouvert':l.statut==='en_examen'?'En examen':l.statut==='resolu_plaignant'?'Resolu en faveur du plaignant':l.statut==='resolu_accuse'?'Resolu en faveur de l accuse':'Classe'}
+                      </span>
+                    </div>
+                    <p className="font-bold text-gray-900">{l.motif}</p>
+                    <p className="text-gray-500 text-sm mt-1">{l.description}</p>
+                  </div>
+                  <span className="text-xs text-gray-400">{formatDate(l.createdAt)}</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-xl">
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Plaignant</p>
+                    <div className="flex items-center gap-2">
+                      <img src={getAvatarUrl(l.plaignant?.avatar, l.plaignant?.name)} alt="" className="w-7 h-7 rounded-lg"/>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">{l.plaignant?.name}</p>
+                        <p className="text-xs text-gray-400">{l.plaignant?.email}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Accuse</p>
+                    <div className="flex items-center gap-2">
+                      <img src={getAvatarUrl(l.accuse?.avatar, l.accuse?.name)} alt="" className="w-7 h-7 rounded-lg"/>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">{l.accuse?.name}</p>
+                        <p className="text-xs text-gray-400">{l.accuse?.email}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {['ouvert','en_examen'].includes(l.statut) && (
+                  <div className="space-y-3">
+                    <textarea
+                      placeholder="Decision de l administrateur..."
+                      id={`decision-${l._id}`}
+                      rows={2}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 resize-none text-sm"/>
+                    <div className="flex gap-2 flex-wrap">
+                      <button onClick={()=>resoudreLitige(l._id,'resolu_plaignant',document.getElementById(`decision-${l._id}`).value)}
+                        className="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700">
+                        Donner raison au plaignant
+                      </button>
+                      <button onClick={()=>resoudreLitige(l._id,'resolu_accuse',document.getElementById(`decision-${l._id}`).value)}
+                        className="flex-1 py-2.5 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600">
+                        Donner raison a l accuse
+                      </button>
+                      <button onClick={()=>resoudreLitige(l._id,'classe',document.getElementById(`decision-${l._id}`).value)}
+                        className="px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl text-sm font-semibold hover:bg-gray-200">
+                        Classer
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {l.decisionAdmin && (
+                  <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
+                    <strong>Decision :</strong> {l.decisionAdmin}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* VISITES */}
+        {tab==='visites' && (
+          <div className="space-y-5">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <h2 className="text-xl font-display font-bold text-gray-900">Visites d evaluation ({visites.length})</h2>
+              <span className="px-3 py-1.5 bg-yellow-50 text-yellow-700 rounded-full text-xs font-bold">
+                {visitesEnAttente} en attente
+              </span>
+            </div>
+            {visites.length===0 ? (
+              <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-display font-bold text-gray-700">Aucune visite</h3>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {visites.map(v=>(
+                  <div key={v._id} className={`bg-white rounded-2xl border-2 p-5 ${v.statut==='en_attente'?'border-yellow-200':v.statut==='rapport_soumis'?'border-green-200':'border-gray-100'}`}>
+                    <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                            v.statut==='en_attente'?'bg-yellow-50 text-yellow-700':
+                            v.statut==='evaluateur_assigne'?'bg-blue-50 text-blue-700':
+                            v.statut==='rapport_soumis'?'bg-green-50 text-green-700':
+                            'bg-gray-100 text-gray-500'}`}>
+                            {v.statut==='en_attente'?'En attente':
+                             v.statut==='evaluateur_assigne'?'Technicien assigne':
+                             v.statut==='rapport_soumis'?'Rapport disponible':v.statut}
+                          </span>
+                          {v.typeProbleme && <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs">{v.typeProbleme}</span>}
+                        </div>
+                        <p className="font-bold text-gray-900">{v.description?.substring(0,80)}...</p>
+                        <p className="text-gray-500 text-sm mt-1">📍 {v.adresse}, {v.ville}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-blue-600">{formatBudget(v.fraisVisite)}</p>
+                        <p className="text-xs text-gray-400">{formatDate(v.createdAt)}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 p-3 bg-gray-50 rounded-xl text-sm">
+                      <div>
+                        <p className="text-xs text-gray-400 mb-1">Client</p>
+                        <p className="font-semibold text-gray-900">{v.client?.name}</p>
+                        <p className="text-gray-400 text-xs">{v.client?.phone}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400 mb-1">Evaluateur</p>
+                        <p className="font-semibold text-gray-900">{v.evaluateur?.name||'Non assigne'}</p>
+                        <p className="text-gray-400 text-xs">{v.evaluateur?.phone||''}</p>
+                      </div>
+                    </div>
+                    {v.rapport?.estimationCout > 0 && (
+                      <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
+                        <strong>Estimation :</strong> {formatBudget(v.rapport.estimationCout)} — {v.rapport.estimationDuree}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* MESSAGERIE */}
         {tab==='messagerie' && (
           <div className="space-y-6 max-w-2xl">
             <h2 className="text-xl font-display font-bold text-gray-900">Messagerie administrative</h2>
             <div className="bg-white rounded-2xl border border-gray-100 p-6">
-              <h3 className="font-bold text-gray-900 mb-5">Envoyer un message groupé</h3>
+              <h3 className="font-bold text-gray-900 mb-5">Envoyer un message groupe</h3>
               {broadcastMsg && <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm font-medium">{broadcastMsg}</div>}
               <div className="space-y-4">
                 <div>
@@ -465,4 +625,3 @@ export default function Admin() {
     </div>
   );
 }
-// Note: Les onglets Litiges et Visites sont geres dans le composant Admin principal
