@@ -31,7 +31,7 @@ export default function Dashboard() {
         }))
         .finally(() => setLoading(false));
     } else if (user.role === 'entreprise') {
-      Promise.allSettled([api.get('/entreprises/me'), api.get('/missions/my'), api.get('/contrats/mes-contrats')])
+      Promise.allSettled([api.get('/entreprises/me'), api.get('/demandes-personnel/mes-demandes'), api.get('/contrats/mes-contrats')])
         .then(([e, m, c]) => setData({
           entreprise: e.status==='fulfilled' ? e.value.data : null,
           missions: m.status==='fulfilled' ? (m.value.data||[]) : [],
@@ -68,7 +68,7 @@ export default function Dashboard() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {user.role === 'client' && <ClientDashboard projects={data.projects} devis={data.devis} user={user} visites={data.visites||[]}/>}
         {user.role === 'artisan' && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user}/>}
-        {user.role === 'entreprise' && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} contrats={data.contrats}/>}
+        {user.role === 'entreprise' && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} demandes={data.missions} contrats={data.contrats}/>}
       </div>
     </div>
   );
@@ -331,7 +331,6 @@ function ArtisanDashboard({ artisan, devis, user }) {
           </div>
         </div>
       )}
-      )}
       {/* Liens rapides */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5">
         <h2 className="font-display font-bold text-gray-900 mb-4">Acces rapide</h2>
@@ -354,10 +353,11 @@ function ArtisanDashboard({ artisan, devis, user }) {
   );
 }
 
-function EntrepriseDashboard({ entreprise, missions, contrats }) {
+function EntrepriseDashboard({ entreprise, missions, contrats, demandes }) {
   const m = missions || [];
   const c = contrats || [];
-  const missionsOuvertes = m.filter(x=>x.statut==='ouverte').length;
+  const d = demandes || [];
+  const demandesEnAttente = d.filter(x=>['en_attente','en_negociation'].includes(x.statut)).length;
   const contratsEnCours = c.filter(x=>x.statut==='en_cours').length;
   const contratsEnAttente = c.filter(x=>x.statut==='en_attente_signatures').length;
 
@@ -392,7 +392,7 @@ function EntrepriseDashboard({ entreprise, missions, contrats }) {
       {(m.length > 0 || c.length > 0) && (
         <div className="grid grid-cols-3 gap-4">
           {[
-            { label:'Demandes en attente', value:missionsOuvertes, icon:'👷', color:'text-blue-600' },
+            { label:'Demandes en attente', value:demandesEnAttente, icon:'👷', color:'text-blue-600' },
             { label:'Contrats en cours', value:contratsEnCours, icon:'✍️', color:'text-green-600' },
             { label:'En attente signature', value:contratsEnAttente, icon:'⏳', color:'text-amber-600' },
           ].map(s=>(
