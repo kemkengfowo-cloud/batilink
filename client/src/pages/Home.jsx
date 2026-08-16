@@ -2,17 +2,29 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+const PHOTOS = {
+  hero: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1920&q=80&auto=format&fit=crop',
+  stats: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1920&q=80&auto=format&fit=crop',
+  service1: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80&auto=format&fit=crop',
+  service2: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80&auto=format&fit=crop',
+  service3: 'https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=800&q=80&auto=format&fit=crop',
+};
+
 export default function Home() {
   const { user } = useAuth();
 
   return (
     <div className="bg-white">
 
-      {/* HERO */}
-      <section className="relative min-h-screen flex items-center overflow-hidden"
-        style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 40%, #0a3272 70%, #1a4a8a 100%)'}}>
-        <div className="absolute inset-0 opacity-10"
-          style={{backgroundImage:`url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`}}></div>
+      {/* HERO avec photo de fond */}
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        {/* Photo de fond */}
+        <div className="absolute inset-0">
+          <img src={PHOTOS.hero} alt="Chantier BTP" className="w-full h-full object-cover"/>
+          <div className="absolute inset-0" style={{background:'linear-gradient(135deg, rgba(10,22,40,0.92) 0%, rgba(13,32,68,0.88) 40%, rgba(26,74,138,0.75) 100%)'}}></div>
+        </div>
+
+        {/* Grille decorative */}
         <div className="absolute inset-0 opacity-5"
           style={{backgroundImage:'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize:'50px 50px'}}></div>
 
@@ -31,8 +43,7 @@ export default function Home() {
               Batilink connecte clients, artisans et entreprises BTP au Cameroun. Devis securise, paiement garanti, suivi photos.
             </p>
 
-            {/* 3 CTA */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-16">
+            <div className="flex flex-col sm:flex-row gap-4 mb-12">
               <Link to={user?.role==='client'?'/create-project':'/register?role=client'}
                 className="px-8 py-4 bg-blue-500 hover:bg-blue-400 text-white font-bold rounded-xl text-center text-lg transition-all shadow-lg">
                 Je suis un client
@@ -47,16 +58,16 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Citation */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-lg backdrop-blur">
-              <div className="text-blue-300 text-3xl mb-2">"</div>
-              <p className="text-white/80 italic text-sm leading-relaxed">La qualite n est jamais un accident : elle est toujours le resultat d un effort intelligent.</p>
-              <p className="text-blue-300 text-xs mt-3 font-semibold">— John Ruskin</p>
+            {/* Badges confiance */}
+            <div className="flex flex-wrap gap-6 text-blue-200 text-sm">
+              <span className="flex items-center gap-2"><span className="text-green-400">✓</span> Paiement securise</span>
+              <span className="flex items-center gap-2"><span className="text-blue-400">✓</span> Artisans verifies</span>
+              <span className="flex items-center gap-2"><span className="text-amber-400">✓</span> Inscription gratuite</span>
+              <span className="flex items-center gap-2"><span className="text-purple-400">✓</span> Support 24/7</span>
             </div>
           </div>
         </div>
 
-        {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40">
           <span className="text-xs tracking-widest uppercase">Decouvrir</span>
           <div className="w-px h-12 bg-gradient-to-b from-white/40 to-transparent animate-pulse"></div>
@@ -82,7 +93,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3 SERVICES */}
+      {/* 3 SERVICES avec photos */}
       <section className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -93,37 +104,44 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
+                photo: PHOTOS.service1,
                 icon:'🏗️',
                 titre:'Travaux & Renovation',
-                desc:'Trouvez le bon artisan pour tous vos travaux : maconnerie, plomberie, electricite, peinture. Devis securise et paiement garanti.',
-                color:'bg-blue-50 text-blue-600',
-                link:'/artisans',
+                desc:'Trouvez le bon artisan pour tous vos travaux. Devis securise et paiement garanti.',
+                link:'/register',
                 cta:'Trouver un artisan'
               },
               {
+                photo: PHOTOS.service2,
                 icon:'👷',
                 titre:'Location de Personnel',
-                desc:'Louez de la main-d oeuvre qualifiee a la journee ou a la semaine. Coffreur, Ferrailleur, Dalleur, Macon disponibles.',
-                color:'bg-indigo-50 text-indigo-600',
-                link:'/missions',
+                desc:'Louez de la main-d oeuvre qualifiee. Coffreur, Ferrailleur, Dalleur disponibles.',
+                link:'/register?role=entreprise',
                 cta:'Voir les missions'
               },
               {
+                photo: PHOTOS.service3,
                 icon:'🏢',
                 titre:'Entreprises BTP',
-                desc:'Pour vos grands travaux, faites appel a des entreprises certifiees. Gros oeuvre, finition, renovation et architecture.',
-                color:'bg-sky-50 text-sky-600',
-                link:'/entreprises',
+                desc:'Pour vos grands travaux, faites appel a des entreprises certifiees.',
+                link:'/register',
                 cta:'Voir les entreprises'
               },
             ].map(s=>(
-              <div key={s.titre} className="group p-8 rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className={`w-14 h-14 rounded-2xl ${s.color} flex items-center justify-center text-2xl mb-6`}>{s.icon}</div>
-                <h3 className="text-xl font-display font-bold text-gray-900 mb-3">{s.titre}</h3>
-                <p className="text-gray-500 leading-relaxed mb-6">{s.desc}</p>
-                <Link to={s.link} className="inline-flex items-center gap-2 text-blue-600 font-semibold text-sm group-hover:gap-3 transition-all">
-                  {s.cta} →
-                </Link>
+              <div key={s.titre} className="group rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                {/* Photo */}
+                <div className="relative h-48 overflow-hidden">
+                  <img src={s.photo} alt={s.titre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <span className="absolute bottom-4 left-4 text-3xl">{s.icon}</span>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-display font-bold text-gray-900 mb-3">{s.titre}</h3>
+                  <p className="text-gray-500 leading-relaxed mb-6">{s.desc}</p>
+                  <Link to={s.link} className="inline-flex items-center gap-2 text-blue-600 font-semibold text-sm group-hover:gap-3 transition-all">
+                    {s.cta} →
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -164,15 +182,15 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              {name:'Marie Nkomo', role:'Cliente, Yaounde', text:'J ai trouve un excellent carreleur en moins de 24h. Travail impeccable et prix honnete. Je recommande vivement Batilink !'},
-              {name:'Paul Fotso', role:'Macon, Douala', text:'Batilink m a permis de tripler mon nombre de clients. La plateforme est simple et le paiement est toujours garanti.'},
-              {name:'SOBTP Sarl', role:'Entreprise BTP, Bafoussam', text:'Nous utilisons Batilink pour louer du personnel qualifie pour nos chantiers. Service excellent et contrats securises.'},
+              {name:'Marie Nkomo', role:'Cliente, Yaounde', color:'bg-blue-600', text:'J ai trouve un excellent carreleur en moins de 24h. Travail impeccable et prix honnete. Je recommande vivement Batilink !'},
+              {name:'Paul Fotso', role:'Macon, Douala', color:'bg-green-600', text:'Batilink m a permis de tripler mon nombre de clients. La plateforme est simple et le paiement est toujours garanti.'},
+              {name:'SOBTP Sarl', role:'Entreprise BTP, Bafoussam', color:'bg-purple-600', text:'Nous utilisons Batilink pour louer du personnel qualifie. Service excellent et contrats securises.'},
             ].map(t=>(
               <div key={t.name} className="p-8 rounded-2xl border border-gray-100 hover:shadow-xl transition-all">
                 <div className="text-amber-400 text-xl mb-4">★★★★★</div>
                 <p className="text-gray-600 leading-relaxed mb-6 italic">"{t.text}"</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">{t.name[0]}</div>
+                  <div className={`w-10 h-10 ${t.color} rounded-full flex items-center justify-center text-white font-bold text-sm`}>{t.name[0]}</div>
                   <div>
                     <p className="font-bold text-gray-900 text-sm">{t.name}</p>
                     <p className="text-gray-400 text-xs">{t.role}</p>
@@ -184,9 +202,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA FINAL */}
-      <section className="py-24 relative overflow-hidden"
-        style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 50%, #1a4a8a 100%)'}}>
+      {/* CTA FINAL avec photo de fond */}
+      <section className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0">
+          <img src={PHOTOS.stats} alt="Construction" className="w-full h-full object-cover"/>
+          <div className="absolute inset-0" style={{background:'linear-gradient(135deg, rgba(10,22,40,0.92) 0%, rgba(13,32,68,0.88) 100%)'}}></div>
+        </div>
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-6">
             Pret a lancer votre projet ?
