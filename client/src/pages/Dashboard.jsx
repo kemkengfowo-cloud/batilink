@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
-import { getAvatarUrl, formatBudget, formatDate } from '../utils/helpers';
+import { getAvatarUrl, formatBudget } from '../utils/helpers';
 
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [data, setData] = useState({ projects:[], missions:[], artisan:null, entreprise:null, devis:[] });
+  const [data, setData] = useState({ projects:[], missions:[], artisan:null, entreprise:null, devis:[], contrats:[] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function Dashboard() {
         .then(([p, d]) => setData({
           projects: p.status==='fulfilled' ? (p.value.data||[]) : [],
           devis: d.status==='fulfilled' ? (d.value.data||[]) : [],
-          missions:[], artisan:null, entreprise:null
+          missions:[], artisan:null, entreprise:null, contrats:[]
         }))
         .finally(() => setLoading(false));
     } else if (user.role === 'artisan') {
@@ -27,7 +27,7 @@ export default function Dashboard() {
         .then(([a, d]) => setData({
           artisan: a.status==='fulfilled' ? a.value.data : null,
           devis: d.status==='fulfilled' ? (d.value.data||[]) : [],
-          projects:[], missions:[], entreprise:null
+          projects:[], missions:[], entreprise:null, contrats:[]
         }))
         .finally(() => setLoading(false));
     } else if (user.role === 'entreprise') {
@@ -35,8 +35,8 @@ export default function Dashboard() {
         .then(([e, m, c]) => setData({
           entreprise: e.status==='fulfilled' ? e.value.data : null,
           missions: m.status==='fulfilled' ? (m.value.data||[]) : [],
-          devis: c.status==='fulfilled' ? (c.value.data||[]) : [],
-          projects:[], artisan:null
+          contrats: c.status==='fulfilled' ? (c.value.data||[]) : [],
+          projects:[], artisan:null, devis:[]
         }))
         .finally(() => setLoading(false));
     }
@@ -50,7 +50,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header simple */}
       <div style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 100%)'}} className="py-8">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex items-center gap-4">
@@ -67,15 +66,15 @@ export default function Dashboard() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {user.role === 'client' && <ClientDashboard projects={data.projects} devis={data.devis}/>}
-        {user.role === 'artisan' && <ArtisanDashboard artisan={data.artisan} devis={data.devis}/>}
-        {user.role === 'entreprise' && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} contrats={data.devis}/>}
+        {user.role === 'client' && <ClientDashboard projects={data.projects} devis={data.devis} user={user}/>}
+        {user.role === 'artisan' && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user}/>}
+        {user.role === 'entreprise' && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} contrats={data.contrats}/>}
       </div>
     </div>
   );
 }
 
-function ClientDashboard({ projects, devis }) {
+function ClientDashboard({ projects, devis, user }) {
   const p = projects || [];
   const d = devis || [];
   const devisEnAttente = d.filter(x=>x.statut==='envoye').length;
@@ -103,7 +102,7 @@ function ClientDashboard({ projects, devis }) {
         </Link>
       </div>
 
-      {/* Stats simples */}
+      {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         {[
           { label:'Projets', value:p.length, icon:'📋', color:'text-blue-600' },
@@ -117,7 +116,7 @@ function ClientDashboard({ projects, devis }) {
         ))}
       </div>
 
-      {/* Devis en attente */}
+      {/* Alertes */}
       {devisEnAttente > 0 && (
         <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5">
           <div className="flex items-center justify-between">
@@ -128,14 +127,11 @@ function ClientDashboard({ projects, devis }) {
                 <p className="text-gray-500 text-sm">Repondez avant expiration</p>
               </div>
             </div>
-            <Link to="/devis" className="px-4 py-2 bg-amber-500 text-white rounded-xl font-semibold text-sm hover:bg-amber-600">
-              Voir →
-            </Link>
+            <Link to="/devis" className="px-4 py-2 bg-amber-500 text-white rounded-xl font-semibold text-sm hover:bg-amber-600">Voir →</Link>
           </div>
         </div>
       )}
 
-      {/* Travaux en cours */}
       {devisAcceptes > 0 && (
         <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5">
           <div className="flex items-center justify-between">
@@ -146,9 +142,7 @@ function ClientDashboard({ projects, devis }) {
                 <p className="text-gray-500 text-sm">Suivez l avancement de vos travaux</p>
               </div>
             </div>
-            <Link to="/devis" className="px-4 py-2 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700">
-              Suivre →
-            </Link>
+            <Link to="/devis" className="px-4 py-2 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700">Suivre →</Link>
           </div>
         </div>
       )}
@@ -175,43 +169,115 @@ function ClientDashboard({ projects, devis }) {
   );
 }
 
-function ArtisanDashboard({ artisan, devis }) {
+function ProfilProgression({ artisan, user }) {
+  const etapes = [
+    { label:'Photo de profil', done: !!user?.avatar },
+    { label:'Description', done: !!artisan?.description },
+    { label:'WhatsApp', done: !!artisan?.whatsapp },
+    { label:'Specialites', done: (artisan?.specialites||[]).length > 0 },
+    { label:'Photos realisations', done: (artisan?.photos||[]).length > 0 },
+  ];
+  const score = etapes.filter(e=>e.done).length;
+  const pct = Math.round((score / etapes.length) * 100);
+
+  if (pct === 100) return null;
+
+  return (
+    <div className="bg-white rounded-2xl border-2 border-blue-200 p-5">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-bold text-gray-900">Completez votre profil</h3>
+        <span className={`text-lg font-black ${pct>=60?'text-green-600':pct>=40?'text-amber-500':'text-red-500'}`}>{pct}%</span>
+      </div>
+
+      {/* Barre de progression */}
+      <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden mb-4">
+        <div className={`h-full rounded-full transition-all duration-500 ${pct>=60?'bg-green-500':pct>=40?'bg-amber-500':'bg-red-400'}`}
+          style={{width:`${pct}%`}}></div>
+      </div>
+
+      <div className="space-y-2 mb-4">
+        {etapes.map(e=>(
+          <div key={e.label} className="flex items-center gap-2 text-sm">
+            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${e.done?'bg-green-100 text-green-600':'bg-gray-100 text-gray-400'}`}>
+              {e.done?'✓':'○'}
+            </span>
+            <span className={e.done?'text-gray-400 line-through':'text-gray-700 font-medium'}>{e.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-700 mb-4">
+        💡 Un profil complet recoit <strong>3x plus de demandes</strong> qu un profil incomplet.
+      </div>
+
+      <Link to="/profile"
+        className="block w-full text-center py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors text-sm">
+        Completer mon profil →
+      </Link>
+    </div>
+  );
+}
+
+function ArtisanDashboard({ artisan, devis, user }) {
   const d = devis || [];
   const devisEnvoyes = d.filter(x=>x.statut==='envoye').length;
   const devisAcceptes = d.filter(x=>x.statut==='accepte').length;
   const devisTermines = d.filter(x=>x.statut==='termine').length;
+  const gainTotal = d.filter(x=>x.statut==='termine').reduce((s,x)=>s+(x.montantArtisan||0),0);
+  const profilVide = !artisan;
 
   return (
     <div className="space-y-6">
-      {/* Statut profil */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <div className={`w-3 h-3 rounded-full ${artisan?.disponible?'bg-green-400':'bg-gray-300'}`}></div>
-            <div>
-              <p className="font-bold text-gray-900">{artisan?.metier || 'Completez votre profil'}</p>
-              <p className="text-gray-400 text-sm">{artisan?.ville} {artisan?.disponible?'· Disponible':'· Non disponible'}</p>
-            </div>
-          </div>
-          <Link to="/profile" className="px-4 py-2 border-2 border-blue-200 text-blue-600 rounded-xl font-semibold text-sm hover:bg-blue-50">
-            Modifier profil
+
+      {/* Barre de progression profil */}
+      <ProfilProgression artisan={artisan} user={user}/>
+
+      {/* Message si aucun devis */}
+      {d.length === 0 && !profilVide && (
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 text-center">
+          <div className="text-4xl mb-3">🚀</div>
+          <h3 className="font-bold text-gray-900 mb-2">Commencez a recevoir des demandes</h3>
+          <p className="text-gray-500 text-sm mb-4">Parcourez les projets disponibles et envoyez vos premiers devis</p>
+          <Link to="/projects" className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 text-sm">
+            Voir les projets →
           </Link>
         </div>
-      </div>
+      )}
+
+      {/* Statut disponibilite */}
+      {artisan && (
+        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <div className={`w-3 h-3 rounded-full ${artisan.disponible?'bg-green-400 animate-pulse':'bg-gray-300'}`}></div>
+              <div>
+                <p className="font-bold text-gray-900">{artisan.metier}</p>
+                <p className="text-gray-400 text-sm">{artisan.ville} · {artisan.disponible?'Disponible pour des missions':'Non disponible'}</p>
+              </div>
+            </div>
+            <Link to="/profile" className="px-4 py-2 border-2 border-blue-200 text-blue-600 rounded-xl font-semibold text-sm hover:bg-blue-50">
+              Modifier
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        {[
-          { label:'Devis envoyes', value:devisEnvoyes, icon:'📤', color:'text-blue-600' },
-          { label:'En cours', value:devisAcceptes, icon:'🔨', color:'text-green-600' },
-          { label:'Termines', value:devisTermines, icon:'✅', color:'text-purple-600' },
-        ].map(s=>(
-          <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-4 text-center">
-            <p className={`text-3xl font-display font-black ${s.color}`}>{s.value}</p>
-            <p className="text-gray-500 text-xs mt-1">{s.label}</p>
-          </div>
-        ))}
-      </div>
+      {d.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[
+            { label:'Devis envoyes', value:devisEnvoyes, icon:'📤', color:'text-blue-600' },
+            { label:'En cours', value:devisAcceptes, icon:'🔨', color:'text-green-600' },
+            { label:'Termines', value:devisTermines, icon:'✅', color:'text-purple-600' },
+            { label:'Gains totaux', value:gainTotal>0?formatBudget(gainTotal):'--', icon:'💰', color:'text-amber-600' },
+          ].map(s=>(
+            <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+              <p className={`text-2xl font-display font-black ${s.color}`}>{s.value}</p>
+              <p className="text-gray-500 text-xs mt-1">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Actions rapides */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -233,7 +299,7 @@ function ArtisanDashboard({ artisan, devis }) {
         </Link>
       </div>
 
-      {/* Devis acceptes - travaux en cours */}
+      {/* Alerte travaux en cours */}
       {devisAcceptes > 0 && (
         <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
           <div className="flex items-center justify-between">
@@ -244,9 +310,7 @@ function ArtisanDashboard({ artisan, devis }) {
                 <p className="text-gray-500 text-sm">Soumettez vos photos d avancement</p>
               </div>
             </div>
-            <Link to="/devis" className="px-4 py-2 bg-green-500 text-white rounded-xl font-semibold text-sm hover:bg-green-600">
-              Voir →
-            </Link>
+            <Link to="/devis" className="px-4 py-2 bg-green-500 text-white rounded-xl font-semibold text-sm hover:bg-green-600">Voir →</Link>
           </div>
         </div>
       )}
@@ -278,6 +342,7 @@ function EntrepriseDashboard({ entreprise, missions, contrats }) {
   const c = contrats || [];
   const missionsOuvertes = m.filter(x=>x.statut==='ouverte').length;
   const contratsEnCours = c.filter(x=>x.statut==='en_cours').length;
+  const contratsEnAttente = c.filter(x=>x.statut==='en_attente_signatures').length;
 
   return (
     <div className="space-y-6">
@@ -294,19 +359,64 @@ function EntrepriseDashboard({ entreprise, missions, contrats }) {
         </div>
       </div>
 
+      {/* Message si aucune activite */}
+      {m.length === 0 && c.length === 0 && (
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 text-center">
+          <div className="text-4xl mb-3">👷</div>
+          <h3 className="font-bold text-gray-900 mb-2">Commencez a louer du personnel</h3>
+          <p className="text-gray-500 text-sm mb-4">Publiez votre premiere mission ou creez un contrat officiel</p>
+          <Link to="/create-mission" className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 text-sm">
+            Publier une mission →
+          </Link>
+        </div>
+      )}
+
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        {[
-          { label:'Missions ouvertes', value:missionsOuvertes, icon:'👷', color:'text-blue-600' },
-          { label:'Contrats en cours', value:contratsEnCours, icon:'✍️', color:'text-green-600' },
-          { label:'Total missions', value:m.length, icon:'📋', color:'text-purple-600' },
-        ].map(s=>(
-          <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-4 text-center">
-            <p className={`text-3xl font-display font-black ${s.color}`}>{s.value}</p>
-            <p className="text-gray-500 text-xs mt-1">{s.label}</p>
+      {(m.length > 0 || c.length > 0) && (
+        <div className="grid grid-cols-3 gap-4">
+          {[
+            { label:'Missions ouvertes', value:missionsOuvertes, icon:'👷', color:'text-blue-600' },
+            { label:'Contrats en cours', value:contratsEnCours, icon:'✍️', color:'text-green-600' },
+            { label:'En attente signature', value:contratsEnAttente, icon:'⏳', color:'text-amber-600' },
+          ].map(s=>(
+            <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+              <p className={`text-3xl font-display font-black ${s.color}`}>{s.value}</p>
+              <p className="text-gray-500 text-xs mt-1">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Alertes */}
+      {contratsEnAttente > 0 && (
+        <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">✍️</span>
+              <div>
+                <p className="font-bold text-gray-900">{contratsEnAttente} contrat{contratsEnAttente>1?'s':''} en attente de signature</p>
+                <p className="text-gray-500 text-sm">Les deux parties doivent signer</p>
+              </div>
+            </div>
+            <Link to="/contrats" className="px-4 py-2 bg-amber-500 text-white rounded-xl font-semibold text-sm hover:bg-amber-600">Voir →</Link>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+
+      {contratsEnCours > 0 && (
+        <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🔨</span>
+              <div>
+                <p className="font-bold text-gray-900">{contratsEnCours} mission{contratsEnCours>1?'s':''} en cours</p>
+                <p className="text-gray-500 text-sm">Validez a la fin pour liberer le paiement</p>
+              </div>
+            </div>
+            <Link to="/contrats" className="px-4 py-2 bg-green-500 text-white rounded-xl font-semibold text-sm hover:bg-green-600">Voir →</Link>
+          </div>
+        </div>
+      )}
 
       {/* Actions rapides */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -327,24 +437,6 @@ function EntrepriseDashboard({ entreprise, missions, contrats }) {
           </div>
         </Link>
       </div>
-
-      {/* Alerte contrats en cours */}
-      {contratsEnCours > 0 && (
-        <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🔨</span>
-              <div>
-                <p className="font-bold text-gray-900">{contratsEnCours} mission{contratsEnCours>1?'s':''} en cours</p>
-                <p className="text-gray-500 text-sm">Validez a la fin pour liberer le paiement</p>
-              </div>
-            </div>
-            <Link to="/contrats" className="px-4 py-2 bg-green-500 text-white rounded-xl font-semibold text-sm hover:bg-green-600">
-              Voir →
-            </Link>
-          </div>
-        </div>
-      )}
 
       {/* Liens rapides */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5">
