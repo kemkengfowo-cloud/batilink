@@ -61,13 +61,13 @@ function AppRoutes() {
           <Route path="/register" element={<PublicOnly><Register/></PublicOnly>}/>
 
           {/* Pages publiques */}
-          <Route path="/artisans" element={<ArtisanList/>}/>
-          <Route path="/artisans/:id" element={<ArtisanProfile/>}/>
-          <Route path="/projects" element={<ProjectList/>}/>
-          <Route path="/projects/:id" element={<ProjectDetail/>}/>
-          <Route path="/entreprises" element={<EntrepriseList/>}/>
-          <Route path="/entreprises/:id" element={<EntrepriseProfile/>}/>
-          <Route path="/missions" element={<MissionList/>}/>
+          <Route path="/artisans" element={<PrivateRoute><ArtisanList/></PrivateRoute>}/>
+          <Route path="/artisans/:id" element={<PrivateRoute><ArtisanProfile/></PrivateRoute>}/>
+          <Route path="/projects" element={<PrivateRoute><ProjectList/></PrivateRoute>}/>
+          <Route path="/projects/:id" element={<PrivateRoute><ProjectDetail/></PrivateRoute>}/>
+          <Route path="/entreprises" element={<PrivateRoute><EntrepriseList/></PrivateRoute>}/>
+          <Route path="/entreprises/:id" element={<PrivateRoute><EntrepriseProfile/></PrivateRoute>}/>
+          <Route path="/missions" element={<PrivateRoute><MissionList/></PrivateRoute>}/>
 
           {/* Pages protégées */}
           <Route path="/dashboard" element={<PrivateRoute><Dashboard/></PrivateRoute>}/>
@@ -79,7 +79,7 @@ function AppRoutes() {
 
           {/* Entreprise uniquement */}
           <Route path="/contrats" element={<PrivateRoute><MesContrats/></PrivateRoute>}/>
-          <Route path="/missions/:id" element={<MissionDetail/>}/>
+          <Route path="/missions/:id" element={<PrivateRoute><MissionDetail/></PrivateRoute>}/>
           <Route path="/visites" element={<PrivateRoute><MesVisites/></PrivateRoute>}/>
           <Route path="/visites/demander" element={<PrivateRoute role={['client']}><DemanderVisite/></PrivateRoute>}/>
           <Route path="/visites/:id" element={<PrivateRoute><VisiteDetail/></PrivateRoute>}/>
