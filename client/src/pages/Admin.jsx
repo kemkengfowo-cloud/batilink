@@ -40,6 +40,11 @@ export default function Admin() {
   const [broadcast, setBroadcast] = useState({ contenu:'', roleFilter:'' });
   const [broadcastMsg, setBroadcastMsg] = useState('');
   const [sending, setSending] = useState(false);
+  const [demandesPersonnel, setDemandesPersonnel] = useState([]);
+  const [selectedDemande, setSelectedDemande] = useState(null);
+  const [artisansDispos, setArtisansDispos] = useState([]);
+  const [showProposer, setShowProposer] = useState(false);
+  const [propositionForm, setPropositionForm] = useState({ artisansIds:[], prixParArtisan:'', message:'' });
 
   useEffect(() => {
     if (!user || user.role !== 'admin') { navigate('/'); return; }
@@ -49,7 +54,7 @@ export default function Admin() {
   const loadAll = async () => {
     setLoading(true);
     try {
-      const [s, u, a, e, sig, lit, vis] = await Promise.allSettled([
+      const [s, u, a, e, sig, lit, vis, dem] = await Promise.allSettled([
         api.get('/admin/stats'),
         api.get('/admin/users'),
         api.get('/admin/artisans'),
@@ -57,6 +62,7 @@ export default function Admin() {
         api.get('/admin/signalements'),
         api.get('/litiges'),
         api.get('/visites/admin/toutes'),
+        api.get('/demandes-personnel/mes-demandes'),
       ]);
       if (s.status==='fulfilled') setStats(s.value.data);
       if (u.status==='fulfilled') setUsers(u.value.data.users || []);
@@ -65,6 +71,7 @@ export default function Admin() {
       if (sig.status==='fulfilled') setSignalements(sig.value.data || []);
       if (lit.status==='fulfilled') setLitiges(lit.value.data || []);
       if (vis.status==='fulfilled') setVisites(vis.value.data || []);
+      if (dem.status==='fulfilled') setDemandesPersonnel(dem.value.data || []);
     } finally { setLoading(false); }
   };
 
@@ -609,6 +616,63 @@ export default function Admin() {
               </Link>
             </div>
           </div>
+        {tab==="demandes" && (
+          <div className="space-y-5">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <h2 className="text-xl font-display font-bold text-gray-900">Demandes de personnel ({demandesPersonnel.length})</h2>
+              <div className="flex gap-2">
+                <span className="px-3 py-1.5 bg-yellow-50 text-yellow-700 rounded-full text-xs font-bold">{demandesPersonnel.filter(d=>d.statut==="en_attente").length} en attente</span>
+                <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-xs font-bold">{demandesPersonnel.filter(d=>d.statut==="en_negociation").length} en negociation</span>
+              </div>
+            </div>
+            {demandesPersonnel.length===0 ? (
+              <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
+                <div className="text-6xl mb-4">👷</div>
+                <h3 className="text-xl font-display font-bold text-gray-700">Aucune demande</h3>
+              </div>
+            ) : demandesPersonnel.map(d=>(
+              <div key={d._id} className={`bg-white rounded-2xl border-2 p-5 ${d.statut==="en_attente"?"border-yellow-200":d.statut==="en_negociation"?"border-blue-200":"border-gray-100"}`}>
+                <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${d.statut==="en_attente"?"bg-yellow-50 text-yellow-700":d.statut==="en_negociation"?"bg-blue-50 text-blue-700":d.statut==="accord_trouve"?"bg-green-50 text-green-700":"bg-gray-100 text-gray-500"}`}>
+                        {d.statut==="en_attente"?"En attente":d.statut==="en_negociation"?"En negociation":d.statut==="accord_trouve"?"Accord trouve":d.statut}
+                      </span>
+                      {d.typePersonnel?.map(t=><span key={t} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">{t}</span>)}
+                    </div>
+                    <p className="font-bold text-gray-900">{d.nombrePersonnes} personne(s) - {d.ville}</p>
+                    <p className="text-gray-500 text-sm mt-1">Du {formatDate(d.dateDebut)} au {formatDate(d.dateFin)}</p>
+                    <p className="text-gray-400 text-xs mt-1">Entreprise: {d.entreprise?.name} · {d.entreprise?.phone}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xl font-bold text-blue-600">{formatBudget(d.budgetFinal||d.budgetPropose)}</p>
+                    {d.budgetFinal && <p className="text-xs text-green-600 font-semibold">Prix negocie</p>}
+                    <p className="text-xs text-gray-400">{formatDate(d.createdAt)}</p>
+                  </div>
+                </div>
+                {d.description && <p className="text-gray-500 text-sm mb-4 p-3 bg-gray-50 rounded-xl">{d.description}</p>}
+                <div className="flex gap-2 flex-wrap">
+                  <button onClick={()=>{ const msg = `Bonjour, concernant votre demande de ${d.typePersonnel?.join(", ")} a ${d.ville}, nous avons identifie des techniciens disponibles. Pouvez-vous confirmer votre budget de ${new Intl.NumberFormat("fr-FR").format(d.budgetPropose)} FCFA ?`; api.post("/messages", {destinataire: d.entreprise?._id, contenu: msg}); alert("Message envoye a l entreprise !"); }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700">
+                    Message entreprise
+                  </button>
+                  {["en_attente","en_negociation"].includes(d.statut) && (
+                    <button onClick={()=>{ const prix = prompt("Prix final agree (FCFA):"); if(prix) { api.put(`/demandes-personnel/${d._id}/valider-accord`, {budgetFinal: parseInt(prix), message: "Accord valide par admin Batilink"}).then(()=>{ loadAll(); alert("Accord valide ! Generez maintenant le contrat."); }).catch(()=>alert("Erreur")); } }}
+                      className="px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600">
+                      Valider accord
+                    </button>
+                  )}
+                  {d.statut==="accord_trouve" && (
+                    <Link to={`/contrats/creer?demandeId=${d._id}&entrepriseId=${d.entreprise?._id}`}
+                      className="px-4 py-2 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700">
+                      Generer contrat
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         )}
 
         {/* MESSAGERIE */}
