@@ -15,11 +15,11 @@ export default function Dashboard() {
     if (user.role === 'admin') { navigate('/admin'); return; }
 
     if (user.role === 'client') {
-      Promise.allSettled([api.get('/projects/my'), api.get('/devis/mes-devis')])
-        .then(([p, d]) => setData({
+      Promise.allSettled([api.get('/projects/my'), api.get('/devis/mes-devis'), api.get('/visites/mes-visites')])
+        .then(([p, d, v]) => setData({
           projects: p.status==='fulfilled' ? (p.value.data||[]) : [],
           devis: d.status==='fulfilled' ? (d.value.data||[]) : [],
-          missions:[], artisan:null, entreprise:null, contrats:[]
+          missions:[], artisan:null, entreprise:null, contrats:[], visites: v.status==='fulfilled' ? (v.value.data||[]) : []
         }))
         .finally(() => setLoading(false));
     } else if (user.role === 'artisan') {
@@ -66,7 +66,7 @@ export default function Dashboard() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {user.role === 'client' && <ClientDashboard projects={data.projects} devis={data.devis} user={user}/>}
+        {user.role === 'client' && <ClientDashboard projects={data.projects} devis={data.devis} user={user} visites={data.visites||[]}/>}
         {user.role === 'artisan' && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user}/>}
         {user.role === 'entreprise' && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} contrats={data.contrats}/>}
       </div>
@@ -74,11 +74,14 @@ export default function Dashboard() {
   );
 }
 
-function ClientDashboard({ projects, devis, user }) {
+function ClientDashboard({ projects, devis, user, visites }) {
   const p = projects || [];
   const d = devis || [];
   const devisEnAttente = d.filter(x=>x.statut==='envoye').length;
   const devisAcceptes = d.filter(x=>x.statut==='accepte').length;
+  const v = visites || [];
+  const visitesEnAttente = v.filter(x=>x.statut==='en_attente').length;
+  const visitesRapport = v.filter(x=>x.statut==='rapport_soumis').length;
 
   return (
     <div className="space-y-6">
@@ -147,6 +150,20 @@ function ClientDashboard({ projects, devis, user }) {
         </div>
       )}
 
+      {visitesRapport > 0 && (
+        <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🔍</span>
+              <div>
+                <p className="font-bold text-gray-900">{visitesRapport} rapport{visitesRapport>1?'s':''} de visite disponible{visitesRapport>1?'s':''}</p>
+                <p className="text-gray-500 text-sm">Un technicien a evalue votre chantier</p>
+              </div>
+            </div>
+            <Link to="/visites" className="px-4 py-2 bg-green-600 text-white rounded-xl font-semibold text-sm hover:bg-green-700">Voir →</Link>
+          </div>
+        </div>
+      )}
       {/* Liens rapides */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5">
         <h2 className="font-display font-bold text-gray-900 mb-4">Acces rapide</h2>
@@ -222,6 +239,9 @@ function ArtisanDashboard({ artisan, devis, user }) {
   const d = devis || [];
   const devisEnvoyes = d.filter(x=>x.statut==='envoye').length;
   const devisAcceptes = d.filter(x=>x.statut==='accepte').length;
+  const v = visites || [];
+  const visitesEnAttente = v.filter(x=>x.statut==='en_attente').length;
+  const visitesRapport = v.filter(x=>x.statut==='rapport_soumis').length;
   const devisTermines = d.filter(x=>x.statut==='termine').length;
   const gainTotal = d.filter(x=>x.statut==='termine').reduce((s,x)=>s+(x.montantArtisan||0),0);
   const profilVide = !artisan;
@@ -315,6 +335,20 @@ function ArtisanDashboard({ artisan, devis, user }) {
         </div>
       )}
 
+      {visitesRapport > 0 && (
+        <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🔍</span>
+              <div>
+                <p className="font-bold text-gray-900">{visitesRapport} rapport{visitesRapport>1?'s':''} de visite disponible{visitesRapport>1?'s':''}</p>
+                <p className="text-gray-500 text-sm">Un technicien a evalue votre chantier</p>
+              </div>
+            </div>
+            <Link to="/visites" className="px-4 py-2 bg-green-600 text-white rounded-xl font-semibold text-sm hover:bg-green-700">Voir →</Link>
+          </div>
+        </div>
+      )}
       {/* Liens rapides */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5">
         <h2 className="font-display font-bold text-gray-900 mb-4">Acces rapide</h2>
@@ -438,6 +472,20 @@ function EntrepriseDashboard({ entreprise, missions, contrats }) {
         </Link>
       </div>
 
+      {visitesRapport > 0 && (
+        <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🔍</span>
+              <div>
+                <p className="font-bold text-gray-900">{visitesRapport} rapport{visitesRapport>1?'s':''} de visite disponible{visitesRapport>1?'s':''}</p>
+                <p className="text-gray-500 text-sm">Un technicien a evalue votre chantier</p>
+              </div>
+            </div>
+            <Link to="/visites" className="px-4 py-2 bg-green-600 text-white rounded-xl font-semibold text-sm hover:bg-green-700">Voir →</Link>
+          </div>
+        </div>
+      )}
       {/* Liens rapides */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5">
         <h2 className="font-display font-bold text-gray-900 mb-4">Acces rapide</h2>

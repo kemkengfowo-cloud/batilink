@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Litige = require('../models/Litige');
 const auth = require('../middleware/auth');
+const { logAction } = require('../middleware/logger');
 const upload = require('../middleware/upload');
 
 const adminOnly = (req, res, next) => {

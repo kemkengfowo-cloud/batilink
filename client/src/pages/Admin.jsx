@@ -55,7 +55,7 @@ export default function Admin() {
         api.get('/admin/artisans'),
         api.get('/admin/entreprises'),
         api.get('/admin/signalements'),
-        api.get('/litiges/mes-litiges'),
+        api.get('/litiges'),
         api.get('/visites/admin/toutes'),
       ]);
       if (s.status==='fulfilled') setStats(s.value.data);

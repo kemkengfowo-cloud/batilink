@@ -3,6 +3,7 @@ const router = express.Router();
 const Jalon = require('../models/Jalon');
 const Devis = require('../models/Devis');
 const auth = require('../middleware/auth');
+const { logAction } = require('../middleware/logger');
 const upload = require('../middleware/upload');
 
 // GET /api/jalons/:devisId
