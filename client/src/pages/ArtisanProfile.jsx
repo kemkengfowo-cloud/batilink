@@ -37,8 +37,10 @@ export default function ArtisanProfile() {
   if (loading) return <Loader/>;
   if (!artisan) return <div className="text-center py-20 text-gray-500">Artisan non trouve.</div>;
 
-  const { user: u, metier, ville, description, note, nbAvis, whatsapp, experience, specialites, photos, disponible, verifie, badges } = artisan;
-  const waMsg = `Bonjour ${u?.name}, j'ai vu votre profil sur Batilink et je souhaite vous contacter.`;
+  const { user: u, metier, ville, description, note, nbAvis, whatsapp, experience, specialites, photos, disponible, badges } = artisan;
+  const waMsg = `Bonjour ${u?.name}, j ai vu votre profil sur Batilink et je souhaite vous contacter.`;
+  const isOwner = user?._id === u?._id || user?.id === u?._id;
+  const isClient = user?.role === 'client';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -68,13 +70,11 @@ export default function ArtisanProfile() {
                 <span className="text-blue-300">📍 {ville}</span>
                 {experience > 0 && <span className="text-blue-300">{experience} ans exp.</span>}
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${disponible?'bg-green-500/20 text-green-300 border border-green-500/30':'bg-gray-500/20 text-gray-300'}`}>
-                  {disponible?'● Disponible':'○ Occupe'}
+                  {disponible ? '● Disponible' : '○ Occupe'}
                 </span>
               </div>
               {badges && Object.values(badges).some(Boolean) && (
-                <div className="mt-3">
-                  <BadgeList badges={badges} size="sm"/>
-                </div>
+                <div className="mt-3"><BadgeList badges={badges} size="sm"/></div>
               )}
               <div className="flex flex-wrap gap-3 mt-5">
                 {whatsapp && (
@@ -84,13 +84,13 @@ export default function ArtisanProfile() {
                     WhatsApp
                   </a>
                 )}
-                {user {user && user._id !== u?._id && ({user && user._id !== u?._id && ( user?.role === 'client' {user && user._id !== u?._id && ({user && user._id !== u?._id && ( (
-                  <Link to={'/devis/creer'}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors">
+                {isClient && (
+                  <Link to="/devis/creer"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-500 hover:bg-blue-400 text-white font-semibold rounded-xl transition-colors">
                     📄 Demander un devis
                   </Link>
                 )}
-                {user && user._id !== u?._id && (
+                {user && !isOwner && (
                   <button onClick={() => setMsgModal(true)}
                     className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl border border-white/20 transition-colors">
                     ✉ Message
@@ -111,7 +111,6 @@ export default function ArtisanProfile() {
                 <p className="text-gray-600 leading-relaxed">{description}</p>
               </div>
             )}
-
             {specialites?.length > 0 && (
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
                 <h2 className="font-display font-bold text-gray-900 mb-4 text-xl">Specialites</h2>
@@ -122,12 +121,11 @@ export default function ArtisanProfile() {
                 </div>
               </div>
             )}
-
             {photos?.length > 0 && (
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
                 <h2 className="font-display font-bold text-gray-900 mb-4 text-xl">Realisations ({photos.length})</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {photos.map((p, i) => (
+                  {photos.map((p,i)=>(
                     <div key={i} className="aspect-square rounded-xl overflow-hidden bg-gray-100">
                       <img src={getImageUrl(p)} alt={`Realisation ${i+1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"/>
                     </div>
@@ -135,16 +133,9 @@ export default function ArtisanProfile() {
                 </div>
               </div>
             )}
-
-            <AvisSection
-              cibleUserId={u?._id}
-              cibleType="artisan"
-              cibleRefId={artisan._id}
-              nomCible={u?.name}
-            />
+            <AvisSection cibleUserId={u?._id} cibleType="artisan" cibleRefId={artisan._id} nomCible={u?.name}/>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-4">
             <div className="bg-white rounded-2xl border border-gray-100 p-5">
               <h3 className="font-display font-bold text-gray-900 mb-4">Informations</h3>
@@ -152,7 +143,7 @@ export default function ArtisanProfile() {
                 {[
                   { label:'Ville', value:ville },
                   { label:'Metier', value:metier },
-                  { label:'Experience', value:experience > 0 ? `${experience} ans` : null },
+                  { label:'Experience', value:experience>0?`${experience} ans`:null },
                   { label:'Note', value:`${note?.toFixed(1)||'4.0'}/5 ⭐` },
                   { label:'Membre depuis', value:formatDate(artisan.createdAt) },
                 ].filter(i=>i.value).map(i=>(
@@ -163,21 +154,25 @@ export default function ArtisanProfile() {
                 ))}
               </div>
             </div>
-
             {badges && Object.values(badges).some(Boolean) && (
               <div className="bg-white rounded-2xl border border-gray-100 p-5">
                 <h3 className="font-display font-bold text-gray-900 mb-4">Badges</h3>
                 <BadgeList badges={badges} size="lg"/>
               </div>
             )}
-
             <div className="bg-blue-600 rounded-2xl p-5 text-white">
               <h3 className="font-bold mb-2">Contacter {u?.name?.split(' ')[0]}</h3>
-              <p className="text-blue-200 text-sm mb-4">Disponible pour vos projets de construction et renovation</p>
+              <p className="text-blue-200 text-sm mb-4">Disponible pour vos projets de construction</p>
+              {isClient && (
+                <Link to="/devis/creer"
+                  className="block w-full text-center py-2.5 bg-white text-blue-600 rounded-xl font-bold text-sm hover:bg-blue-50 transition-colors mb-2">
+                  📄 Demander un devis
+                </Link>
+              )}
               {whatsapp ? (
                 <a href={getWhatsAppLink(whatsapp, waMsg)} target="_blank" rel="noopener noreferrer"
-                  className="block w-full text-center py-2.5 bg-white text-blue-600 rounded-xl font-bold text-sm hover:bg-blue-50 transition-colors">
-                  Contacter sur WhatsApp
+                  className="block w-full text-center py-2.5 bg-white/20 text-white rounded-xl font-bold text-sm hover:bg-white/30 transition-colors">
+                  WhatsApp
                 </a>
               ) : (
                 <button onClick={() => setMsgModal(true)}
@@ -190,7 +185,6 @@ export default function ArtisanProfile() {
         </div>
       </div>
 
-      {/* Modal message */}
       {msgModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4" onClick={()=>setMsgModal(false)}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-md" onClick={e=>e.stopPropagation()}>
