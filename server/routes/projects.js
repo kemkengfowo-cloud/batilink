@@ -43,7 +43,9 @@ router.post('/', auth, upload.array('photos', 4), async (req, res) => {
       return res.status(400).json({ message: 'Tous les champs sont requis.' });
     const photos = req.files?.map(f => `/uploads/${f.filename}`) || [];
     const project = await Project.create({ client: req.user.id, titre, description, budget: +budget, localisation, categorie, photos });
-    res.status(201).json(await Project.findById(project._id).populate('client', 'name avatar city'));
+    const populated = await Project.findById(project._id).populate('client', 'name avatar city');
+    notifierTousArtisans(populated);
+    res.status(201).json(populated);
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
@@ -67,3 +69,32 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 module.exports = router;
+
+// Fonction matching automatique
+const notifierTousArtisans = async (projet) => {
+  try {
+    const User = require('../models/User');
+    const Message = require('../models/Message');
+    const Artisan = require('../models/Artisan');
+
+    const artisans = await Artisan.find({ disponible: true })
+      .populate('user', '_id name');
+
+    if (!artisans.length) return;
+
+    const admin = await User.findOne({ role: 'admin' });
+    const expediteur = admin?._id || projet.client;
+
+    const messages = artisans.map(a => ({
+      expediteur,
+      destinataire: a.user._id,
+      contenu: `🔔 Nouveau projet disponible sur Batilink !\n\n📋 "${projet.titre}"\n🔨 Categorie : ${projet.categorie}\n📍 Localisation : ${projet.localisation}\n💰 Budget : ${projet.budget ? new Intl.NumberFormat('fr-FR').format(projet.budget) + ' FCFA' : 'A negocier'}\n\nVoir le projet : www.batilink.org/projects/${projet._id}`,
+      lu: false
+    }));
+
+    await Message.insertMany(messages);
+    console.log(`✅ ${messages.length} artisans notifies pour le projet ${projet._id}`);
+  } catch(err) {
+    console.error('Erreur matching:', err.message);
+  }
+};

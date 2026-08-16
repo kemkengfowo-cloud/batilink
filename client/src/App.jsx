@@ -20,6 +20,8 @@ import MissionList from './pages/MissionList';
 import MesDevis from './pages/MesDevis';
 import MesContrats from './pages/MesContrats';
 import MesVisites from './pages/MesVisites';
+import MissionDetail from './pages/MissionDetail';
+import NotFound from './pages/NotFound';
 import VisiteDetail from './pages/VisiteDetail';
 import DemanderVisite from './pages/DemanderVisite';
 import CreerContrat from './pages/CreerContrat';
@@ -88,6 +90,7 @@ function AppRoutes() {
 
           {/* Entreprise uniquement */}
           <Route path="/contrats" element={<PrivateRoute><MesContrats/></PrivateRoute>}/>
+          <Route path="/missions/:id" element={<MissionDetail/>}/>
           <Route path="/visites" element={<PrivateRoute><MesVisites/></PrivateRoute>}/>
           <Route path="/visites/demander" element={<PrivateRoute role={['client']}><DemanderVisite/></PrivateRoute>}/>
           <Route path="/visites/:id" element={<PrivateRoute><VisiteDetail/></PrivateRoute>}/>

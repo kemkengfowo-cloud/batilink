@@ -465,3 +465,4 @@ export default function Admin() {
     </div>
   );
 }
+// Note: Les onglets Litiges et Visites sont geres dans le composant Admin principal
