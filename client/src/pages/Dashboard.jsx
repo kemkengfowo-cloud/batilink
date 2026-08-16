@@ -382,7 +382,7 @@ function EntrepriseDashboard({ entreprise, missions, contrats }) {
           <div className="text-4xl mb-3">👷</div>
           <h3 className="font-bold text-gray-900 mb-2">Commencez a louer du personnel</h3>
           <p className="text-gray-500 text-sm mb-4">Publiez votre premiere mission ou creez un contrat officiel</p>
-          <Link to="/create-mission" className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 text-sm">
+          <Link to="/demandes-personnel/new" className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 text-sm">
             Publier une mission →
           </Link>
         </div>
@@ -437,12 +437,12 @@ function EntrepriseDashboard({ entreprise, missions, contrats }) {
 
       {/* Actions rapides */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Link to="/create-mission"
+        <Link to="/demandes-personnel/new"
           className="flex items-center gap-4 p-5 bg-blue-600 rounded-2xl text-white hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
           <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">👷</div>
           <div>
-            <p className="font-bold text-lg">Louer du personnel</p>
-            <p className="text-blue-200 text-sm">Coffreur, Ferrailleur, Macon...</p>
+            <p className="font-bold text-lg">Demander du personnel</p>
+            <p className="text-blue-200 text-sm">Admin selectionne les meilleurs techniciens</p>
           </div>
         </Link>
         <Link to="/contrats/creer"

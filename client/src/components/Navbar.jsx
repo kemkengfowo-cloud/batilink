@@ -31,7 +31,7 @@ export default function Navbar() {
     ],
     entreprise: [
       { to:'/dashboard', label:'Tableau de bord' },
-      { to:'/missions', label:'Missions' },
+      { to:'/demandes-personnel', label:'Mes demandes' },
       { to:'/contrats', label:'Mes contrats' },
       { to:'/messages', label:'Messages' },
     ],
