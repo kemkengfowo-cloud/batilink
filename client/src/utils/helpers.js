@@ -22,3 +22,8 @@ export const VILLES = [
 ];
 
 export const getUserId = (user) => user?._id || user?.id || '';
+
+export const formatTimestamp = (d) => d ? new Date(d).toLocaleString('fr-FR', {
+  day:'2-digit', month:'2-digit', year:'numeric',
+  hour:'2-digit', minute:'2-digit', second:'2-digit'
+}) : '';

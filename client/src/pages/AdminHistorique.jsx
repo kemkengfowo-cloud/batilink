@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
-import { formatDate } from '../utils/helpers';
+import { formatDate, formatTimestamp } from '../utils/helpers';
 
 const ACTION_LABELS = {
   INSCRIPTION: { label:'Inscription', color:'bg-green-50 text-green-700', icon:'👤' },
@@ -215,8 +215,8 @@ export default function AdminHistorique() {
                             {h.statut}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">{formatDate(h.createdAt)}</td>
-                        <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">{formatDate(h.updatedAt)}</td>
+                        <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap font-mono">{formatTimestamp(h.createdAt)}</td>
+                        <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap font-mono">{formatTimestamp(h.updatedAt)}</td>
                       </tr>
                     ))}
                   </tbody>
