@@ -23,6 +23,7 @@ import MesVisites from './pages/MesVisites';
 import MissionDetail from './pages/MissionDetail';
 import DemanderPersonnel from './pages/DemanderPersonnel';
 import MesDemandesPersonnel from './pages/MesDemandesPersonnel';
+import DemandePersonnelDetail from './pages/DemandePersonnelDetail';
 import NotFound from './pages/NotFound';
 import VisiteDetail from './pages/VisiteDetail';
 import DemanderVisite from './pages/DemanderVisite';
@@ -92,7 +93,7 @@ function AppRoutes() {
           <Route path="/devis/creer" element={<PrivateRoute role={['artisan','entreprise']}><CreerDevis/></PrivateRoute>}/>
           <Route path="/devis/:id" element={<PrivateRoute><DevisDetail/></PrivateRoute>}/>
           <Route path="/demandes-personnel" element={<PrivateRoute><MesDemandesPersonnel/></PrivateRoute>}/>
-          <Route path="/demandes-personnel/:id" element={<PrivateRoute><MesDemandesPersonnel/></PrivateRoute>}/>
+          <Route path="/demandes-personnel/:id" element={<PrivateRoute><DemandePersonnelDetail/></PrivateRoute>}/>
           <Route path="/demandes-personnel/new" element={<PrivateRoute role={['entreprise']}><DemanderPersonnel/></PrivateRoute>}/>
           <Route path="/create-mission" element={<PrivateRoute role={['entreprise']}><CreateMission/></PrivateRoute>}/>
 

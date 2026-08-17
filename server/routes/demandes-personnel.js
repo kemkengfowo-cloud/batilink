@@ -185,3 +185,29 @@ router.put('/:id/annuler', auth, async (req, res) => {
 });
 
 module.exports = router;
+
+// PUT /api/demandes-personnel/:id — Entreprise modifie sa demande
+router.put('/:id', auth, async (req, res) => {
+  try {
+    const demande = await DemandePersonnel.findById(req.params.id);
+    if (!demande) return res.status(404).json({ message: 'Demande non trouvee.' });
+    if (demande.entreprise.toString() !== req.user.id && req.user.role !== 'admin')
+      return res.status(403).json({ message: 'Acces refuse.' });
+    if (!['en_attente'].includes(demande.statut))
+      return res.status(400).json({ message: 'Cette demande ne peut plus etre modifiee.' });
+
+    const { typePersonnel, nombrePersonnes, ville, adresseChantier, dateDebut, dateFin, description, budgetPropose } = req.body;
+
+    if (typePersonnel) demande.typePersonnel = typePersonnel;
+    if (nombrePersonnes) demande.nombrePersonnes = nombrePersonnes;
+    if (ville) demande.ville = ville;
+    if (adresseChantier !== undefined) demande.adresseChantier = adresseChantier;
+    if (dateDebut) demande.dateDebut = dateDebut;
+    if (dateFin) demande.dateFin = dateFin;
+    if (description !== undefined) demande.description = description;
+    if (budgetPropose) demande.budgetPropose = budgetPropose;
+
+    await demande.save();
+    res.json(demande);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
