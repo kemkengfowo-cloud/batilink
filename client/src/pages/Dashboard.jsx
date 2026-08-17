@@ -66,7 +66,7 @@ export default function Dashboard() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {user.role === client && <ClientDashboard projects={data.projects} devis={data.devis} user={user} visites={data.visites||[]} jalonsEnAttente={data.jalonsEnAttente||[]}\/>}
+        {user.role === 'client' && <ClientDashboard projects={data.projects} devis={data.devis} user={user} visites={data.visites||[]} jalonsEnAttente={data.jalonsEnAttente||[]}/> }
         {user.role === 'artisan' && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user} visitesDisponibles={data.visitesDisponibles||[]}/>}
         {user.role === 'entreprise' && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} demandes={data.missions} contrats={data.contrats}/>}
       </div>
