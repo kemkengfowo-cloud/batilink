@@ -265,6 +265,7 @@ export default function DevisDetail() {
                   {isArtisan ? `Vous recevrez ${formatBudget(devis.montantArtisan)} sur votre Mobile Money.` : `Le paiement a ete libere a l artisan.`}
                 </p>
               </div>
+            )}
             {devis.statut === "termine" && isClient && devis.artisan && (
               <AvisSection
                 cibleUserId={devis.artisan._id || devis.artisan}

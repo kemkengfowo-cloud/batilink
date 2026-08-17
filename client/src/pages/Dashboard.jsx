@@ -295,8 +295,6 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
               </button>
               <Link to="/profile" className="px-4 py-2 border-2 border-blue-200 text-blue-600 rounded-xl font-semibold text-sm hover:bg-blue-50">Modifier</Link>
             </div>
-              Modifier
-            </Link>
           </div>
         </div>
       )}
