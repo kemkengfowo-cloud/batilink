@@ -24,6 +24,7 @@ export default function JalonsSection({ devis }) {
   const [uploading, setUploading] = useState(false);
   const [activeJalon, setActiveJalon] = useState(null);
   const [photoFiles, setPhotoFiles] = useState([]);
+  const [lightbox, setLightbox] = useState(null);
   const [commentaire, setCommentaire] = useState('');
   const [message, setMessage] = useState('');
   const [raison, setRaison] = useState('');
@@ -88,6 +89,15 @@ export default function JalonsSection({ devis }) {
   const totalPourcentage = nouveauxJalons.reduce((s,j)=>s+j.pourcentage,0);
 
   return (
+    <>
+    {lightbox && (
+      <div onClick={()=>setLightbox(null)} className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 cursor-pointer">
+        <div className="relative max-w-4xl w-full">
+          <button onClick={()=>setLightbox(null)} className="absolute -top-10 right-0 text-white text-3xl font-bold hover:text-gray-300">✕</button>
+          <img src={lightbox} alt="Photo chantier" className="w-full rounded-2xl max-h-screen object-contain"/>
+        </div>
+      </div>
+    )}
     <div className="bg-white rounded-2xl border border-gray-100 p-6">
       <div className="flex items-center justify-between mb-5">
         <div>
@@ -276,6 +286,6 @@ export default function JalonsSection({ devis }) {
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }

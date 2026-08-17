@@ -145,3 +145,18 @@ router.put('/:id', auth, async (req, res) => {
     res.json(devis);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
+
+// PUT /api/devis/:id/annuler — Artisan annule son devis avant acceptation
+router.put('/:id/annuler', auth, async (req, res) => {
+  try {
+    const devis = await Devis.findById(req.params.id);
+    if (!devis) return res.status(404).json({ message: 'Devis non trouve.' });
+    if (devis.artisan.toString() !== req.user.id)
+      return res.status(403).json({ message: 'Acces refuse.' });
+    if (devis.statut !== 'envoye')
+      return res.status(400).json({ message: 'Ce devis ne peut plus etre annule.' });
+    devis.statut = 'refuse';
+    await devis.save();
+    res.json({ message: 'Devis annule.' });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});

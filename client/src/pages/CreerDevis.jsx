@@ -37,6 +37,20 @@ export default function CreerDevis() {
       api.get(`/users/profile/${clientIdParam}`).then(res => setClientFound(res.data)).catch(()=>{});
     }
   }, []);
+    const editId = searchParams.get("edit");
+    if (editId) {
+      api.get("/devis/" + editId).then(res => {
+        const d = res.data;
+        set("titre", d.titre || "");
+        set("description", d.description || "");
+        set("delaiExecution", d.delaiExecution || "");
+        set("validiteJours", d.validiteJours || 15);
+        set("materielsInclus", d.materielsInclus || false);
+        if (d.client) setClientId(d.client._id || d.client);
+        if (d.client) setClientFound(d.client);
+        if (d.lignes) setLignes(d.lignes);
+      }).catch(() => {});
+    }
 
   const searchClient = async () => {
     if (!form.clientEmail) return;

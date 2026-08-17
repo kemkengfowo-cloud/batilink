@@ -26,6 +26,8 @@ export default function MesDevis() {
   }, []);
 
   const filtered = filter === 'tous' ? devis : devis.filter(d => d.statut === filter);
+  const devisEnAttente = devis.filter(d=>d.statut==="envoye");
+  const [compareMode, setCompareMode] = useState(false);
 
   if (loading) return <Loader/>;
 
@@ -48,6 +50,33 @@ export default function MesDevis() {
         </div>
       </div>
 
+        {user?.role === "client" && devisEnAttente.length > 1 && (
+          <div className="mb-6 bg-amber-50 border-2 border-amber-200 rounded-2xl p-5">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <p className="font-bold text-gray-900">Vous avez {devisEnAttente.length} devis en attente de reponse</p>
+                <p className="text-amber-700 text-sm mt-0.5">Comparez-les avant d accepter</p>
+              </div>
+              <button onClick={()=>setCompareMode(!compareMode)}
+                className="px-4 py-2 bg-amber-500 text-white rounded-xl font-semibold text-sm hover:bg-amber-600">
+                {compareMode ? "Vue normale" : "Comparer les devis"}
+              </button>
+            </div>
+            {compareMode && (
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {devisEnAttente.map(d=>(
+                  <div key={d._id} className="bg-white rounded-xl border-2 border-amber-200 p-4">
+                    <p className="font-bold text-gray-900 text-sm mb-1">{d.artisan?.name || "Artisan"}</p>
+                    <p className="text-2xl font-black text-blue-600">{(d.total||0).toLocaleString("fr-FR")} FCFA</p>
+                    <p className="text-gray-500 text-xs mt-1">Delai: {d.delaiExecution || "Non precise"}</p>
+                    <p className="text-gray-500 text-xs">Valide {d.validiteJours || 15} jours</p>
+                    <Link to={"/devis/"+d._id} className="mt-3 block text-center py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700">Voir et repondre</Link>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Filtres */}
         <div className="flex gap-2 flex-wrap mb-6">

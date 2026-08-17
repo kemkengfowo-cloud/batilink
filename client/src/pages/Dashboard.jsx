@@ -23,11 +23,11 @@ export default function Dashboard() {
         }))
         .finally(() => setLoading(false));
     } else if (user.role === 'artisan') {
-      Promise.allSettled([api.get('/artisans/me'), api.get('/devis/mes-devis'), api.get('/visites/disponibles')])
-        .then(([a, d, vd]) => setData({
+      Promise.allSettled([api.get('/artisans/me'), api.get('/devis/mes-devis'), api.get('/visites/disponibles'), api.get('/jalons?role=artisan&statut=valide')])
+        .then(([a, d, vd, jv]) => setData({
           artisan: a.status==='fulfilled' ? a.value.data : null,
           devis: d.status==='fulfilled' ? (d.value.data||[]) : [],
-          projects:[], missions:[], entreprise:null, contrats:[], visitesDisponibles: vd.status==='fulfilled' ? (vd.value.data||[]) : []
+          projects:[], missions:[], entreprise:null, contrats:[], visitesDisponibles: vd.status==='fulfilled' ? (vd.value.data||[]) : [], jalonsValides: jv.status==='fulfilled' ? (jv.value.data||[]) : []
         }))
         .finally(() => setLoading(false));
     } else if (user.role === 'entreprise') {
@@ -81,10 +81,33 @@ function ClientDashboard({ projects, devis, user, visites, jalonsEnAttente }) {
   const devisAcceptes = d.filter(x=>x.statut==='accepte').length;
   const v = visites || [];
   const visitesEnAttente = v.filter(x=>x.statut==='en_attente').length;
-  const visitesRapport = v.filter(x=>x.statut===rapport_soumis).length;
+  const visitesRapport = v.filter(x=>x.statut==='rapport_soumis').length;
   const jea = jalonsEnAttente || [];
   const nbJalons = jea.length;
 
+      {/* Guide onboarding nouveau client */}
+      {p.length === 0 && d.length === 0 && (
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
+          <h3 className="font-display font-bold text-xl mb-4">Bienvenue sur Batilink ! 👋</h3>
+          <div className="space-y-3">
+            {[
+              { num:"1", text:"Publiez votre projet de construction ou renovation", done: p.length > 0 },
+              { num:"2", text:"Recevez des devis d artisans verifies", done: d.length > 0 },
+              { num:"3", text:"Choisissez le meilleur artisan et suivez les travaux", done: false },
+            ].map(s=>(
+              <div key={s.num} className={"flex items-center gap-3 " + (s.done?"opacity-60":"")}>
+                <div className={"w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 " + (s.done?"bg-green-400":"bg-white/20")}>
+                  {s.done ? "✓" : s.num}
+                </div>
+                <p className="text-blue-100 text-sm">{s.text}</p>
+              </div>
+            ))}
+          </div>
+          <Link to="/create-project" className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 bg-white text-blue-600 rounded-xl font-bold text-sm hover:bg-blue-50">
+            Commencer maintenant →
+          </Link>
+        </div>
+      )}
   return (
     <div className="space-y-6">
       {/* Actions rapides */}
@@ -266,6 +289,28 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
       {/* Barre de progression profil */}
       <ProfilProgression artisan={artisan} user={user}/>
 
+      {profilVide && (
+        <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-6 text-white">
+          <h3 className="font-display font-bold text-xl mb-4">Bienvenue sur Batilink ! 👋</h3>
+          <p className="text-green-100 text-sm mb-4">Completez votre profil pour recevoir des demandes des clients</p>
+          <div className="space-y-3">
+            {[
+              { num:"1", text:"Completez votre profil avec photo et description" },
+              { num:"2", text:"Ajoutez votre numero WhatsApp" },
+              { num:"3", text:"Ajoutez vos specialites et photos de realisations" },
+              { num:"4", text:"Parcourez les projets et envoyez des devis" },
+            ].map(s=>(
+              <div key={s.num} className="flex items-center gap-3">
+                <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center font-bold text-xs flex-shrink-0">{s.num}</div>
+                <p className="text-green-100 text-sm">{s.text}</p>
+              </div>
+            ))}
+          </div>
+          <Link to="/profile" className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 bg-white text-green-600 rounded-xl font-bold text-sm hover:bg-green-50">
+            Completer mon profil →
+          </Link>
+        </div>
+      )}
       {/* Message si aucun devis */}
       {d.length === 0 && !profilVide && (
         <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 text-center">

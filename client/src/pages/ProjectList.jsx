@@ -9,7 +9,7 @@ export default function ProjectList() {
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState({ categorie: '', localisation: '' });
+  const [filters, setFilters] = useState({ categorie: '', localisation: '', budgetMin: '', budgetMax: '' });
   const [applied, setApplied] = useState({});
 
   const fetch = useCallback(async () => {
@@ -43,6 +43,8 @@ export default function ProjectList() {
           className="flex-1 px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 bg-white">
           <option value="">Toutes villes</option>
           {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
+        <input type="number" value={filters.budgetMin} onChange={e=>setFilters(f=>({...f,budgetMin:e.target.value}))} placeholder="Budget min (FCFA)" className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm"/>
+        <input type="number" value={filters.budgetMax} onChange={e=>setFilters(f=>({...f,budgetMax:e.target.value}))} placeholder="Budget max (FCFA)" className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm"/>
         </select>
         <button type="submit" className="px-6 py-3 bg-brand-500 text-white rounded-xl font-semibold hover:bg-brand-600 shadow-brand transition-colors">Filtrer</button>
         {(applied.categorie||applied.localisation) && <button type="button" onClick={reset} className="px-4 py-3 border-2 border-earth-200 text-earth-600 rounded-xl font-medium hover:bg-earth-50">✕</button>}
