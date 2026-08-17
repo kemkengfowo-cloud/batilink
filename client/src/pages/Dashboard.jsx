@@ -23,11 +23,11 @@ export default function Dashboard() {
         }))
         .finally(() => setLoading(false));
     } else if (user.role === 'artisan') {
-      Promise.allSettled([api.get('/artisans/me'), api.get('/devis/mes-devis')])
-        .then(([a, d]) => setData({
+      Promise.allSettled([api.get('/artisans/me'), api.get('/devis/mes-devis'), api.get('/visites/disponibles')])
+        .then(([a, d, vd]) => setData({
           artisan: a.status==='fulfilled' ? a.value.data : null,
           devis: d.status==='fulfilled' ? (d.value.data||[]) : [],
-          projects:[], missions:[], entreprise:null, contrats:[]
+          projects:[], missions:[], entreprise:null, contrats:[], visitesDisponibles: vd.status==='fulfilled' ? (vd.value.data||[]) : []
         }))
         .finally(() => setLoading(false));
     } else if (user.role === 'entreprise') {
@@ -67,7 +67,7 @@ export default function Dashboard() {
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {user.role === 'client' && <ClientDashboard projects={data.projects} devis={data.devis} user={user} visites={data.visites||[]}/>}
-        {user.role === 'artisan' && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user}/>}
+        {user.role === artisan && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user} visitesDisponibles={data.visitesDisponibles||[]}/>}
         {user.role === 'entreprise' && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} demandes={data.missions} contrats={data.contrats}/>}
       </div>
     </div>
@@ -249,7 +249,7 @@ function ProfilProgression({ artisan, user }) {
   );
 }
 
-function ArtisanDashboard({ artisan, devis, user }) {
+function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
   const d = devis || [];
   const devisEnvoyes = d.filter(x=>x.statut==='envoye').length;
   const devisAcceptes = d.filter(x=>x.statut==='accepte').length;
@@ -307,6 +307,20 @@ function ArtisanDashboard({ artisan, devis, user }) {
               <p className="text-gray-500 text-xs mt-1">{s.label}</p>
             </div>
           ))}
+        </div>
+      )}
+      {visitesDisponibles && visitesDisponibles.length > 0 && (
+        <div className="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🔍</span>
+              <div>
+                <p className="font-bold text-gray-900">{visitesDisponibles.length} visite{visitesDisponibles.length>1?"s":""} disponible{visitesDisponibles.length>1?"s":""} dans votre ville</p>
+                <p className="text-gray-500 text-sm">Acceptez une visite et gagnez des frais d evaluation</p>
+              </div>
+            </div>
+            <Link to="/visites" className="px-4 py-2 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700">Voir →</Link>
+          </div>
         </div>
       )}
 
@@ -489,3 +503,4 @@ function EntrepriseDashboard({ entreprise, missions, contrats, demandes }) {
     </div>
   );
 }
+
