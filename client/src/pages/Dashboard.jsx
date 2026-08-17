@@ -314,6 +314,7 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
             </div>
           ))}
         </div>
+      )}
       {gainTotal > 0 && (
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-5 text-white">
           <h3 className="font-bold text-white/80 text-sm mb-3">Tableau financier</h3>
