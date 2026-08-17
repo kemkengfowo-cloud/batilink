@@ -149,10 +149,6 @@ router.put('/:id/contre-offre', auth, async (req, res) => {
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
 
-    res.json(demande);
-  } catch(err) { res.status(500).json({ message: err.message }); }
-});
-
 // PUT /api/demandes-personnel/:id/annuler
 router.put('/:id/annuler', auth, async (req, res) => {
   try {
