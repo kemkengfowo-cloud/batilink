@@ -1,4 +1,5 @@
 import React from 'react';
+import { ToastProvider } from './components/Toast';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -117,9 +118,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <ToastProvider>
+    <BrowserRouter>
         <AppRoutes/>
       </BrowserRouter>
+    </ToastProvider>
     </AuthProvider>
   );
 }

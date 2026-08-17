@@ -114,3 +114,34 @@ router.put('/:id/terminer', auth, async (req, res) => {
 });
 
 module.exports = router;
+
+// PUT /api/devis/:id — Artisan modifie son devis avant acceptation
+router.put('/:id', auth, async (req, res) => {
+  try {
+    const devis = await Devis.findById(req.params.id);
+    if (!devis) return res.status(404).json({ message: 'Devis non trouve.' });
+    if (devis.artisan.toString() !== req.user.id)
+      return res.status(403).json({ message: 'Acces refuse.' });
+    if (devis.statut !== 'envoye')
+      return res.status(400).json({ message: 'Ce devis ne peut plus etre modifie.' });
+
+    const { titre, description, lignes, delaiExecution, validiteJours, materielsInclus } = req.body;
+    if (lignes) {
+      const lignesCalculees = lignes.map(l => ({ ...l, total: l.quantite * l.prixUnitaire }));
+      const sousTotal = lignesCalculees.reduce((s, l) => s + l.total, 0);
+      devis.lignes = lignesCalculees;
+      devis.sousTotal = sousTotal;
+      devis.total = sousTotal;
+      devis.montantCommission = Math.round(sousTotal * devis.commission / 100);
+      devis.montantArtisan = sousTotal - devis.montantCommission;
+    }
+    if (titre) devis.titre = titre;
+    if (description) devis.description = description;
+    if (delaiExecution) devis.delaiExecution = delaiExecution;
+    if (validiteJours) devis.validiteJours = validiteJours;
+    if (materielsInclus !== undefined) devis.materielsInclus = materielsInclus;
+
+    await devis.save();
+    res.json(devis);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});

@@ -9,6 +9,7 @@ import Avertissement from '../components/Avertissement';
 import JalonsSection from '../components/JalonsSection';
 import LitigeModal from '../components/LitigeModal';
 import FacturePDF from '../components/FacturePDF';
+import AvisSection from '../components/AvisSection';
 
 const STATUT = {
   envoye:  { label:'En attente', color:'bg-yellow-50 text-yellow-700', icon:'⏳' },
@@ -264,6 +265,14 @@ export default function DevisDetail() {
                   {isArtisan ? `Vous recevrez ${formatBudget(devis.montantArtisan)} sur votre Mobile Money.` : `Le paiement a ete libere a l artisan.`}
                 </p>
               </div>
+            {devis.statut === "termine" && isClient && devis.artisan && (
+              <AvisSection
+                cibleUserId={devis.artisan._id || devis.artisan}
+                cibleType="artisan"
+                cibleRefId={devis.artisan._id || devis.artisan}
+                nomCible={devis.artisan.name || "Artisan"}
+              />
+            )}
             )}
           </>
         )}

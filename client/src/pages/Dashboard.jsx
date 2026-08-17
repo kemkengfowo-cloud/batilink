@@ -257,6 +257,7 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
   const devisAcceptes = d.filter(x=>x.statut==='accepte').length;
   const devisTermines = d.filter(x=>x.statut==='termine').length;
   const gainTotal = d.filter(x=>x.statut==='termine').reduce((s,x)=>s+(x.montantArtisan||0),0);
+  const gainCeMois = d.filter(x=>x.statut==="termine" && new Date(x.updatedAt).getMonth()===new Date().getMonth()).reduce((s,x)=>s+(x.montantArtisan||0),0);
   const profilVide = !artisan;
 
   return (
@@ -288,7 +289,12 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
                 <p className="text-gray-400 text-sm">{artisan.ville} · {artisan.disponible?'Disponible pour des missions':'Non disponible'}</p>
               </div>
             </div>
-            <Link to="/profile" className="px-4 py-2 border-2 border-blue-200 text-blue-600 rounded-xl font-semibold text-sm hover:bg-blue-50">
+            <div className="flex gap-2">
+              <button onClick={async()=>{ try{ await api.put("/artisans/profile",{disponible:!artisan.disponible}); window.location.reload(); }catch{} }} className={`px-4 py-2 rounded-xl font-semibold text-sm border-2 transition-colors ${artisan.disponible?"border-green-200 text-green-600 hover:bg-green-50 bg-green-50":"border-gray-200 text-gray-500 hover:bg-gray-50"}`}>
+                {artisan.disponible?"● Disponible":"○ Indisponible"}
+              </button>
+              <Link to="/profile" className="px-4 py-2 border-2 border-blue-200 text-blue-600 rounded-xl font-semibold text-sm hover:bg-blue-50">Modifier</Link>
+            </div>
               Modifier
             </Link>
           </div>
@@ -310,6 +316,29 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
             </div>
           ))}
         </div>
+      {gainTotal > 0 && (
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-5 text-white">
+          <h3 className="font-bold text-white/80 text-sm mb-3">Tableau financier</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-blue-200 text-xs mb-1">Gains ce mois</p>
+              <p className="text-2xl font-display font-black">{gainCeMois > 0 ? formatBudget(gainCeMois) : "--"}</p>
+            </div>
+            <div>
+              <p className="text-blue-200 text-xs mb-1">Gains totaux</p>
+              <p className="text-2xl font-display font-black">{formatBudget(gainTotal)}</p>
+            </div>
+            <div>
+              <p className="text-blue-200 text-xs mb-1">Missions terminees</p>
+              <p className="text-xl font-bold">{devisTermines}</p>
+            </div>
+            <div>
+              <p className="text-blue-200 text-xs mb-1">Commission Batilink</p>
+              <p className="text-xl font-bold">{formatBudget(Math.round(gainTotal * 0.111))}</p>
+            </div>
+          </div>
+        </div>
+      )}
       )}
       {visitesDisponibles && visitesDisponibles.length > 0 && (
         <div className="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-5">

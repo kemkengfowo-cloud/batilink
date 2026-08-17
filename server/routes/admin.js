@@ -260,3 +260,32 @@ router.get('/stats-litiges', auth, adminOnly, async (req, res) => {
     res.json({ ouverts, enExamen });
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
+
+// GET /api/admin/export/users — Export CSV utilisateurs
+router.get('/export/users', auth, adminOnly, async (req, res) => {
+  try {
+    const users = await User.find().select('-password').sort({ createdAt: -1 });
+    const csv = [
+      'Nom,Email,Role,Ville,Date inscription',
+      ...users.map(u => `${u.name},${u.email},${u.role},${u.city||''},${new Date(u.createdAt).toLocaleDateString('fr-FR')}`)
+    ].join('\n');
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=batilink-users.csv');
+    res.send(csv);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+// GET /api/admin/export/historique — Export CSV historique
+router.get('/export/historique', auth, adminOnly, async (req, res) => {
+  try {
+    const Historique = require('../models/Historique');
+    const hist = await Historique.find().sort({ createdAt: -1 }).limit(1000);
+    const csv = [
+      'Matricule,Utilisateur,Role,Action,Statut,Date',
+      ...hist.map(h => `${h.matricule},${h.utilisateur?.nom||''},${h.utilisateur?.role||''},${h.action},${h.statut},${new Date(h.createdAt).toLocaleString('fr-FR')}`)
+    ].join('\n');
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=batilink-historique.csv');
+    res.send(csv);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});

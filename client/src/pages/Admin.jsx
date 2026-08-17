@@ -95,6 +95,10 @@ export default function Admin() {
     setEntreprises(prev => prev.map(e => e._id===entrepriseId ? {...e, badges:{...e.badges, [badgeType]:value}} : e));
   };
 
+  const blockUser = async (id, blocked) => {
+    await api.put(`/admin/users/${id}/block`, { blocked });
+    setUsers(prev => prev.map(u => u._id===id ? {...u, blocked} : u));
+  };
   const deleteUser = async (id) => {
     if (!window.confirm('Supprimer cet utilisateur ?')) return;
     await api.delete(`/admin/users/${id}`);
@@ -218,7 +222,7 @@ export default function Admin() {
                     { label:'Nouveaux (7j)', value:stats.newUsers7j||0, color:'bg-blue-500' },
                     { label:'Nouveaux (30j)', value:stats.newUsers30j||0, color:'bg-blue-400' },
                     { label:'Projets ouverts', value:stats.projectsOuverts||0, color:'bg-green-500' },
-                    { label:'Missions ouvertes', value:stats.missionsOuvertes||0, color:'bg-purple-500' },
+                    { label:'Demandes personnel', value:demandesPersonnel.filter(d=>d.statut==='en_attente').length, color:'bg-purple-500' },
                   ].map(i=>(
                     <div key={i.label} className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">{i.label}</span>
@@ -257,7 +261,10 @@ export default function Admin() {
         {tab==='users' && (
           <div className="space-y-5">
             <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center justify-between flex-wrap gap-3">
               <h2 className="text-xl font-display font-bold text-gray-900">Utilisateurs ({users.length})</h2>
+              <a href={`${process.env.REACT_APP_API_URL}/api/admin/export/users`} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-green-600 text-white rounded-xl text-sm font-semibold hover:bg-green-700">📥 Export CSV</a>
+              </div>
               <input type="text" placeholder="Rechercher..." value={search} onChange={e=>setSearch(e.target.value)}
                 className="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm w-72"/>
             </div>

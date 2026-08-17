@@ -162,6 +162,7 @@ export default function AdminHistorique() {
               <div className="flex gap-2 mt-3">
                 <button type="submit" className="px-5 py-2 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700">Filtrer</button>
                 <button type="button" onClick={handleReset} className="px-5 py-2 border-2 border-gray-200 text-gray-600 rounded-xl font-semibold text-sm hover:bg-gray-50">Reset</button>
+                <a href={`${process.env.REACT_APP_API_URL}/api/admin/export/historique`} target="_blank" rel="noopener noreferrer" className="px-5 py-2 bg-green-600 text-white rounded-xl font-semibold text-sm hover:bg-green-700">📥 Export CSV</a>
               </div>
             </form>
 
