@@ -12,6 +12,7 @@ import ArtisanProfile from './pages/ArtisanProfile';
 import ProjectList from './pages/ProjectList';
 import ProjectDetail from './pages/ProjectDetail';
 import CreateProject from './pages/CreateProject';
+import MesProjets from './pages/MesProjets';
 import Profile from './pages/Profile';
 import Messages from './pages/Messages';
 import EntrepriseList from './pages/EntrepriseList';
@@ -79,6 +80,7 @@ function AppRoutes() {
           <Route path="/messages" element={<PrivateRoute><Messages/></PrivateRoute>}/>
 
           {/* Client uniquement */}
+          <Route path="/mes-projets" element={<PrivateRoute role={['client']}><MesProjets/></PrivateRoute>}/>
           <Route path="/create-project" element={<PrivateRoute role={['client']}><CreateProject/></PrivateRoute>}/>
 
           {/* Entreprise uniquement */}

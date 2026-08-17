@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import { formatBudget } from '../utils/helpers';
 import Avertissement from '../components/Avertissement';
 
 export default function CreerDevis() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [form, setForm] = useState({
     clientEmail: '', projetId: '',
     titre: '', description: '',
@@ -23,6 +24,19 @@ export default function CreerDevis() {
   const [clientFound, setClientFound] = useState(null);
 
   const set = (k,v) => setForm(f=>({...f,[k]:v}));
+
+  useEffect(() => {
+    const clientIdParam = searchParams.get('clientId');
+    const projetIdParam = searchParams.get('projetId');
+    const titreParam = searchParams.get('titre');
+    const categorieParam = searchParams.get('categorie');
+    if (clientIdParam) setClientId(clientIdParam);
+    if (projetIdParam) set('projetId', projetIdParam);
+    if (titreParam) set('titre', titreParam);
+    if (clientIdParam) {
+      api.get(`/users/profile/${clientIdParam}`).then(res => setClientFound(res.data)).catch(()=>{});
+    }
+  }, []);
 
   const searchClient = async () => {
     if (!form.clientEmail) return;

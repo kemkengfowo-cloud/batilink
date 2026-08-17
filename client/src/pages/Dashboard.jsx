@@ -15,11 +15,11 @@ export default function Dashboard() {
     if (user.role === 'admin') { navigate('/admin'); return; }
 
     if (user.role === 'client') {
-      Promise.allSettled([api.get('/projects/my'), api.get('/devis/mes-devis'), api.get('/visites/mes-visites')])
-        .then(([p, d, v]) => setData({
+      Promise.allSettled([api.get('/projects/my'), api.get('/devis/mes-devis'), api.get('/visites/mes-visites'), api.get('/jalons/en-attente')])
+        .then(([p, d, v, j]) => setData({
           projects: p.status==='fulfilled' ? (p.value.data||[]) : [],
           devis: d.status==='fulfilled' ? (d.value.data||[]) : [],
-          missions:[], artisan:null, entreprise:null, contrats:[], visites: v.status==='fulfilled' ? (v.value.data||[]) : []
+          missions:[], artisan:null, entreprise:null, contrats:[], visites: v.status==='fulfilled' ? (v.value.data||[]) : [], jalonsEnAttente: j.status==="fulfilled" ? (j.value.data||[]) : []
         }))
         .finally(() => setLoading(false));
     } else if (user.role === 'artisan') {
@@ -161,6 +161,20 @@ function ClientDashboard({ projects, devis, user, visites }) {
               </div>
             </div>
             <Link to="/visites" className="px-4 py-2 bg-green-600 text-white rounded-xl font-semibold text-sm hover:bg-green-700">Voir →</Link>
+          </div>
+        </div>
+      )}
+      {nbJalons > 0 && (
+        <div className="bg-purple-50 border-2 border-purple-200 rounded-2xl p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🔨</span>
+              <div>
+                <p className="font-bold text-gray-900">{nbJalons} jalon{nbJalons>1?"s":""} en attente de validation</p>
+                <p className="text-gray-500 text-sm">Un artisan a soumis des photos pour validation</p>
+              </div>
+            </div>
+            <Link to="/devis" className="px-4 py-2 bg-purple-600 text-white rounded-xl font-semibold text-sm hover:bg-purple-700">Valider →</Link>
           </div>
         </div>
       )}

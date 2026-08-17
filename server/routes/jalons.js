@@ -96,3 +96,18 @@ router.put('/:id/contester', auth, async (req, res) => {
 });
 
 module.exports = router;
+
+// GET /api/jalons/en-attente — Jalons soumis en attente de validation par le client
+router.get('/en-attente', auth, async (req, res) => {
+  try {
+    const Jalon = require('../models/Jalon');
+    const Devis = require('../models/Devis');
+    const devisClient = await Devis.find({ client: req.user.id, statut: 'accepte' });
+    const devisIds = devisClient.map(d => d._id);
+    const jalons = await Jalon.find({
+      devis: { $in: devisIds },
+      statut: 'soumis'
+    }).populate('devis', 'titre numeroDevis');
+    res.json(jalons);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
