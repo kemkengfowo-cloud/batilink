@@ -285,6 +285,7 @@ export default function DemandePersonnelDetail() {
               ))}
             </div>
           </div>
+        )}
         {/* Boutons negociation pour entreprise */}
         {isEntreprise && demande.statut === "en_negociation" && demande.propositions?.length > 0 && (() => {
           const derniereProposition = demande.propositions[demande.propositions.length - 1];
