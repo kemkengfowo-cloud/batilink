@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
-import { useAuth } from '../context/AuthContext';
-import Loader from '../components/Loader';
 import { getAvatarUrl, formatDate } from '../utils/helpers';
+import { useAuth } from '../context/AuthContext';
 
 export default function Messages() {
   const { user } = useAuth();
@@ -15,132 +15,162 @@ export default function Messages() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    api.get('/messages/conversations')
-      .then(res => setConversations(res.data))
-      .finally(() => setLoading(false));
+    fetchConversations();
+    const interval = setInterval(fetchConversations, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    if (!selected) return;
-    api.get(`/messages/${selected.contact._id}`)
-      .then(res => setMessages(res.data));
+    if (selected) fetchMessages(selected._id);
   }, [selected]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const fetchConversations = async () => {
+    try {
+      const res = await api.get('/messages/conversations');
+      setConversations(res.data || []);
+    } catch {}
+    finally { setLoading(false); }
+  };
+
+  const fetchMessages = async (contactId) => {
+    try {
+      const res = await api.get(`/messages/${contactId}`);
+      setMessages(res.data || []);
+    } catch {}
+  };
+
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!newMsg.trim() || !selected) return;
     setSending(true);
     try {
-      const res = await api.post('/messages', { destinataire: selected.contact._id, contenu: newMsg });
-      setMessages(prev => [...prev, res.data]);
+      await api.post('/messages', { destinataire: selected._id, contenu: newMsg });
       setNewMsg('');
-      setConversations(prev => prev.map(c =>
-        c.contact._id === selected.contact._id ? {...c, lastMessage: res.data} : c
-      ));
-    } catch (err) { alert(err.response?.data?.message || 'Erreur'); }
+      fetchMessages(selected._id);
+      fetchConversations();
+    } catch {}
     finally { setSending(false); }
   };
 
-  if (loading) return <Loader/>;
+  const getUserId = (u) => u?._id || u?.id || '';
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <Link to="/dashboard" className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 text-sm font-medium mb-4 transition-colors">← Tableau de bord</Link>
-      <h1 className="text-3xl font-display font-bold text-earth-900 mb-6">Messages</h1>
-      <div className="bg-white rounded-2xl shadow-card overflow-hidden" style={{ height: '70vh' }}>
-        <div className="flex h-full">
-          {/* Liste conversations */}
-          <div className={`${selected ? 'hidden md:flex' : 'flex'} flex-col w-full md:w-80 border-r border-earth-100`}>
-            <div className="p-4 border-b border-earth-100">
-              <h2 className="font-display font-semibold text-earth-900">Conversations</h2>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <Link to="/dashboard" className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 text-sm font-medium mb-6 transition-colors">
+          ← Tableau de bord
+        </Link>
+        <h1 className="text-3xl font-display font-bold text-gray-900 mb-6">Messages</h1>
+
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm" style={{height:'75vh'}}>
+          <div className="flex h-full">
+
+            {/* Liste conversations */}
+            <div className={`${selected?'hidden md:flex':'flex'} flex-col w-full md:w-80 border-r border-gray-100 flex-shrink-0`}>
+              <div className="p-4 border-b border-gray-100">
+                <h2 className="font-display font-semibold text-gray-900">Conversations</h2>
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                {loading ? (
+                  <div className="flex items-center justify-center h-32">
+                    <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                  </div>
+                ) : conversations.length === 0 ? (
+                  <div className="text-center py-16">
+                    <div className="text-4xl mb-3">💬</div>
+                    <p className="text-gray-400 text-sm">Aucune conversation</p>
+                  </div>
+                ) : conversations.map(c => (
+                  <button key={c.contact?._id} onClick={() => setSelected(c.contact)}
+                    className={`w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors border-b border-gray-50 text-left ${selected?._id === c.contact?._id ? 'bg-blue-50' : ''}`}>
+                    <div className="relative flex-shrink-0">
+                      <img src={getAvatarUrl(c.contact?.avatar, c.contact?.name)} alt={c.contact?.name}
+                        className="w-11 h-11 rounded-xl object-cover"/>
+                      {c.unread > 0 && (
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                          {c.unread}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <p className={`text-sm font-semibold truncate ${c.unread>0?'text-gray-900':'text-gray-700'}`}>
+                          {c.contact?.name}
+                        </p>
+                        <span className="text-xs text-gray-400 flex-shrink-0 ml-2">{formatDate(c.lastMessage?.createdAt)}</span>
+                      </div>
+                      <p className={`text-xs truncate mt-0.5 ${c.unread>0?'text-gray-800 font-medium':'text-gray-400'}`}>
+                        {c.lastMessage?.contenu}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex-1 overflow-y-auto">
-              {conversations.length === 0 ? (
-                <div className="text-center py-16 px-4">
-                  <div className="text-4xl mb-3">💬</div>
-                  <p className="text-earth-500 text-sm">Aucune conversation</p>
-                  <p className="text-earth-400 text-xs mt-1">Contactez un artisan ou un client pour commencer</p>
+
+            {/* Zone messages */}
+            <div className={`${selected?'flex':'hidden md:flex'} flex-col flex-1`}>
+              {!selected ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
+                  <div className="text-6xl mb-4">💬</div>
+                  <h3 className="text-xl font-display font-bold text-gray-700 mb-2">Vos messages</h3>
+                  <p className="text-gray-400">Selectionnez une conversation pour commencer</p>
                 </div>
-              ) : conversations.map((conv, i) => (
-                <button key={i} onClick={() => setSelected(conv)}
-                  className={`w-full flex items-center gap-3 p-4 text-left hover:bg-earth-50 transition-colors border-b border-earth-50 ${selected?.contact._id===conv.contact._id?'bg-brand-50':''}`}>
-                  <div className="relative flex-shrink-0">
-                    <img src={getAvatarUrl(conv.contact.avatar, conv.contact.name)} alt={conv.contact.name} className="w-11 h-11 rounded-xl object-cover"/>
-                    {conv.unread > 0 && (
-                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-500 text-white text-xs rounded-full flex items-center justify-center font-bold">{conv.unread}</span>
-                    )}
+              ) : (
+                <>
+                  {/* Header */}
+                  <div className="flex items-center gap-3 p-4 border-b border-gray-100 bg-white">
+                    <button onClick={() => setSelected(null)} className="md:hidden p-2 rounded-lg hover:bg-gray-100 mr-1">
+                      <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
+                      </svg>
+                    </button>
+                    <img src={getAvatarUrl(selected.avatar, selected.name)} alt={selected.name}
+                      className="w-10 h-10 rounded-xl object-cover"/>
+                    <div>
+                      <p className="font-semibold text-gray-900">{selected.name}</p>
+                      <p className="text-xs text-gray-400 capitalize">{selected.role}</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-earth-900 text-sm truncate">{conv.contact.name}</p>
-                    <p className="text-xs text-earth-400 truncate mt-0.5">{conv.lastMessage?.contenu}</p>
+
+                  {/* Messages */}
+                  <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+                    {messages.length === 0 ? (
+                      <div className="text-center py-10 text-gray-400 text-sm">Debut de la conversation</div>
+                    ) : messages.map(m => {
+                      const isMine = getUserId(m.expediteur) === getUserId(user);
+                      return (
+                        <div key={m._id} className={`flex ${isMine?'justify-end':'justify-start'}`}>
+                          <div className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl text-sm leading-relaxed ${isMine?'bg-blue-600 text-white rounded-br-sm':'bg-white text-gray-800 rounded-bl-sm border border-gray-100 shadow-sm'}`}>
+                            <p className="whitespace-pre-wrap">{m.contenu}</p>
+                            <p className={`text-xs mt-1 ${isMine?'text-blue-200':'text-gray-400'}`}>
+                              {formatDate(m.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div ref={bottomRef}/>
                   </div>
-                </button>
-              ))}
+
+                  {/* Input */}
+                  <form onSubmit={sendMessage} className="p-4 border-t border-gray-100 bg-white flex gap-3">
+                    <input type="text" value={newMsg} onChange={e=>setNewMsg(e.target.value)}
+                      placeholder="Ecrire un message..."
+                      className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm"/>
+                    <button type="submit" disabled={sending||!newMsg.trim()}
+                      className="px-5 py-3 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 disabled:opacity-50 transition-colors flex-shrink-0">
+                      {sending ? '...' : 'Envoyer'}
+                    </button>
+                  </form>
+                </>
+              )}
             </div>
           </div>
-
-          {/* Zone de chat */}
-          {selected ? (
-            <div className="flex-1 flex flex-col">
-              {/* Header chat */}
-              <div className="flex items-center gap-3 p-4 border-b border-earth-100 bg-earth-50">
-                <button className="md:hidden p-1.5 rounded-lg hover:bg-earth-200 transition-colors" onClick={() => setSelected(null)}>
-                  <svg className="w-5 h-5 text-earth-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/></svg>
-                </button>
-                <img src={getAvatarUrl(selected.contact.avatar, selected.contact.name)} alt={selected.contact.name} className="w-9 h-9 rounded-xl object-cover"/>
-                <div>
-                  <p className="font-semibold text-earth-900 text-sm">{selected.contact.name}</p>
-                  <p className="text-xs text-earth-400 capitalize">{selected.contact.role}</p>
-                </div>
-              </div>
-
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                {messages.length === 0 ? (
-                  <div className="text-center py-10 text-earth-400">
-                    <p className="text-sm">Démarrez la conversation</p>
-                  </div>
-                ) : messages.map((msg, i) => {
-                  const isMe = msg.expediteur._id === user._id || msg.expediteur._id === user.id;
-                  return (
-                    <div key={i} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-xs md:max-w-sm px-4 py-2.5 rounded-2xl text-sm ${isMe ? 'bg-brand-500 text-white rounded-br-sm' : 'bg-earth-100 text-earth-800 rounded-bl-sm'}`}>
-                        {msg.projet && <p className={`text-xs mb-1 ${isMe?'text-brand-200':'text-earth-400'}`}>Re: {msg.projet.titre}</p>}
-                        <p className="leading-relaxed">{msg.contenu}</p>
-                        <p className={`text-xs mt-1 ${isMe?'text-brand-200':'text-earth-400'}`}>{formatDate(msg.createdAt)}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-                <div ref={bottomRef}/>
-              </div>
-
-              {/* Input */}
-              <form onSubmit={sendMessage} className="p-4 border-t border-earth-100 flex gap-2">
-                <input type="text" value={newMsg} onChange={e=>setNewMsg(e.target.value)}
-                  className="flex-1 px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 transition-colors text-sm"
-                  placeholder="Écrire un message..."/>
-                <button type="submit" disabled={sending || !newMsg.trim()}
-                  className="px-5 py-3 bg-brand-500 text-white rounded-xl font-semibold hover:bg-brand-600 disabled:opacity-50 shadow-brand transition-colors">
-                  {sending ? '...' : (
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                  )}
-                </button>
-              </form>
-            </div>
-          ) : (
-            <div className="hidden md:flex flex-1 items-center justify-center">
-              <div className="text-center">
-                <div className="text-6xl mb-4">💬</div>
-                <h3 className="font-display font-bold text-earth-700 text-xl">Sélectionnez une conversation</h3>
-                <p className="text-earth-400 mt-2 text-sm">Cliquez sur une conversation pour l'ouvrir</p>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
