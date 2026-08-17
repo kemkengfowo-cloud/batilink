@@ -88,7 +88,7 @@ export default function DemandePersonnelDetail() {
   if (loading) return <Loader/>;
   if (!demande) return <div className="text-center py-20 text-gray-500">Demande non trouvee.</div>;
 
-  const isEntreprise = user?._id === demande.entreprise?._id || user?.id === demande.entreprise?._id;
+  const isEntreprise = user?.role === 'entreprise' || user?._id?.toString() === demande.entreprise?._id?.toString() || user?.id?.toString() === demande.entreprise?._id?.toString();
   const isAdmin = user?.role === 'admin';
   const peutModifier = isEntreprise && demande.statut === 'en_attente';
   const statut = STATUT[demande.statut];
