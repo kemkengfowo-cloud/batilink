@@ -114,6 +114,7 @@ export default function Navbar() {
                         <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Mon profil</Link>
                         <Link to="/messages" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Messages</Link>
                         {user.role==='client' && <Link to="/devis" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Mes devis</Link>}
+                        {(user.role==='client' || user.role==='artisan') && <Link to="/litiges" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Mes litiges</Link>}
                         {user.role==='client' && <Link to="/contrats" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Mes contrats</Link>}
                         {user.role==='artisan' && <Link to="/contrats" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={()=>setDrop(false)}>Mes contrats</Link>}
                         {user.role==='admin' && <Link to="/admin" className="block px-4 py-2 text-sm text-blue-600 font-semibold hover:bg-blue-50" onClick={()=>setDrop(false)}>Panel Admin</Link>}

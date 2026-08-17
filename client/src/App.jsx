@@ -19,6 +19,7 @@ import EntrepriseList from './pages/EntrepriseList';
 import EntrepriseProfile from './pages/EntrepriseProfile';
 import MissionList from './pages/MissionList';
 import MesDevis from './pages/MesDevis';
+import MesLitiges from './pages/MesLitiges';
 import MesContrats from './pages/MesContrats';
 import MesVisites from './pages/MesVisites';
 import MissionDetail from './pages/MissionDetail';
@@ -91,6 +92,7 @@ function AppRoutes() {
           <Route path="/visites/:id" element={<PrivateRoute><VisiteDetail/></PrivateRoute>}/>
           <Route path="/contrats/creer" element={<PrivateRoute role={['entreprise','client']}><CreerContrat/></PrivateRoute>}/>
           <Route path="/contrats/:id" element={<PrivateRoute><ContratDetail/></PrivateRoute>}/>
+          <Route path="/litiges" element={<PrivateRoute><MesLitiges/></PrivateRoute>}/>
           <Route path="/devis" element={<PrivateRoute><MesDevis/></PrivateRoute>}/>
           <Route path="/devis/creer" element={<PrivateRoute role={['artisan','entreprise']}><CreerDevis/></PrivateRoute>}/>
           <Route path="/devis/:id" element={<PrivateRoute><DevisDetail/></PrivateRoute>}/>
