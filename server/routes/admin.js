@@ -77,8 +77,6 @@ router.get('/stats', auth, adminOnly, async (req, res) => {
       { $sort: { count: -1 } },
       { $limit: 5 }
     ]);
-
-    const devisTermines = await Devis.find({ statut: "termine" });
     const recentUsers = await User.find().sort({ createdAt: -1 }).limit(10);
 
     res.json({
