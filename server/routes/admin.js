@@ -37,7 +37,6 @@ router.get('/stats', auth, adminOnly, async (req, res) => {
     const il30jours = new Date(now - 30*24*60*60*1000);
 
     const [clients, artisans, entreprises, projects, missions, signalements,
-      commissionTotale, commissionCeMois, chiffreAffaires, nbTransactions: devisTermines.length,
            newUsers7j, newUsers30j, projectsOuverts, missionsOuvertes] = await Promise.all([
       User.countDocuments({ role: 'client' }),
       User.countDocuments({ role: 'artisan' }),
@@ -50,6 +49,12 @@ router.get('/stats', auth, adminOnly, async (req, res) => {
       Project.countDocuments({ statut: 'ouvert' }),
       Mission.countDocuments({ statut: 'ouverte' }),
     ]);
+    const Devis = require("../models/Devis");
+    const devisTermines = await Devis.find({ statut: "termine" });
+    const commissionTotale = devisTermines.reduce((s,d)=>s+(d.montantCommission||0),0);
+    const commissionCeMois = devisTermines.filter(d=>new Date(d.updatedAt).getMonth()===now.getMonth()).reduce((s,d)=>s+(d.montantCommission||0),0);
+    const chiffreAffaires = devisTermines.reduce((s,d)=>s+(d.total||0),0);
+    const nbTransactions = devisTermines.length;
 
     // Inscriptions par jour sur 7 jours
     const inscriptionsParJour = await User.aggregate([
@@ -83,7 +88,7 @@ router.get('/stats', auth, adminOnly, async (req, res) => {
 
     res.json({
       clients, artisans, entreprises, projects, missions, signalements,
-      commissionTotale, commissionCeMois, chiffreAffaires, nbTransactions: devisTermines.length,
+      commissionTotale, commissionCeMois, chiffreAffaires, nbTransactions,
       newUsers7j, newUsers30j, projectsOuverts, missionsOuvertes,
       inscriptionsParJour, villesActives, metiersTop, recentUsers
     });
