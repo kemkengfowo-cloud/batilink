@@ -90,7 +90,7 @@ function AppRoutes() {
           <Route path="/visites" element={<PrivateRoute><MesVisites/></PrivateRoute>}/>
           <Route path="/visites/demander" element={<PrivateRoute role={['client']}><DemanderVisite/></PrivateRoute>}/>
           <Route path="/visites/:id" element={<PrivateRoute><VisiteDetail/></PrivateRoute>}/>
-          <Route path="/contrats/creer" element={<PrivateRoute role={['entreprise','client']}><CreerContrat/></PrivateRoute>}/>
+          <Route path="/contrats/creer" element={<PrivateRoute role={['entreprise','client','admin']}><CreerContrat/></PrivateRoute>}/>
           <Route path="/contrats/:id" element={<PrivateRoute><ContratDetail/></PrivateRoute>}/>
           <Route path="/litiges" element={<PrivateRoute><MesLitiges/></PrivateRoute>}/>
           <Route path="/devis" element={<PrivateRoute><MesDevis/></PrivateRoute>}/>

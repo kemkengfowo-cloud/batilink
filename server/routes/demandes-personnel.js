@@ -30,7 +30,7 @@ router.get('/:id', auth, async (req, res) => {
   try {
     const demande = await DemandePersonnel.findById(req.params.id)
       .populate('entreprise', 'name avatar phone city')
-      .populate('artisansProposed.artisan', 'name avatar phone city')
+      .populate('artisansProposes.artisan', 'name avatar phone city')
       .populate('propositions.auteur', 'name role')
       .populate('contrat');
     if (!demande) return res.status(404).json({ message: 'Demande non trouvee.' });
