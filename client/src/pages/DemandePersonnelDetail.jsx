@@ -88,7 +88,7 @@ export default function DemandePersonnelDetail() {
     } catch(err) { setMessage('Erreur'); }
   const handleAccepterPrix = async (montant) => {
     try {
-      await api.put(`/demandes-personnel/${id}/accepter-accord`, { budgetFinal: montant, message: "Prix accepte par l entreprise" });
+      await api.put(`/demandes-personnel/${id}/accepter-accord`, { montant: montant, message: "Prix accepte par l entreprise" });
       const res = await api.get(`/demandes-personnel/${id}`);
       setDemande(res.data);
       setMessage("Prix accepte ! L admin va generer le contrat.");
@@ -116,6 +116,7 @@ export default function DemandePersonnelDetail() {
   const statut = STATUT[demande.statut];
   const inputCls = "w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors";
 
+  const dernierePropositionAdmin = demande && demande.propositions?.length > 0 && demande.propositions[demande.propositions.length - 1]?.role === "admin" ? demande.propositions[demande.propositions.length - 1] : null;
   return (
     <div className="min-h-screen bg-gray-50">
       <div style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 100%)'}} className="py-8">
@@ -287,41 +288,28 @@ export default function DemandePersonnelDetail() {
           </div>
         )}
         {/* Boutons negociation pour entreprise */}
-        {isEntreprise && demande.statut === "en_negociation" && demande.propositions?.length > 0 && (() => {
-          const derniereProposition = demande.propositions[demande.propositions.length - 1];
-          if (derniereProposition?.role !== "admin") return null;
-          return (
-            <div className="bg-white rounded-2xl border-2 border-blue-200 p-6">
-              <h3 className="font-display font-bold text-gray-900 mb-2">Proposition de l admin</h3>
-              <p className="text-3xl font-black text-blue-600 mb-4">{formatBudget(derniereProposition.montant)}</p>
-              {derniereProposition.message && <p className="text-gray-500 text-sm mb-4">{derniereProposition.message}</p>}
-              {!showContreOffre ? (
-                <div className="flex gap-3 flex-wrap">
-                  <button onClick={() => handleAccepterPrix(derniereProposition.montant)}
-                    className="flex-1 py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600">Accepter ce prix</button>
-                  <button onClick={() => setShowContreOffre(true)}
-                    className="flex-1 py-3 bg-amber-50 text-amber-700 border-2 border-amber-200 rounded-xl font-bold hover:bg-amber-100">Faire une contre-offre</button>
+        {isEntreprise && demande.statut === "en_negociation" && dernierePropositionAdmin && (
+          <div className="bg-white rounded-2xl border-2 border-blue-200 p-6">
+            <h3 className="font-display font-bold text-gray-900 mb-2">Proposition de l admin Batilink</h3>
+            <p className="text-3xl font-black text-blue-600 mb-2">{formatBudget(dernierePropositionAdmin.montant)}</p>
+            {dernierePropositionAdmin.message && <p className="text-gray-500 text-sm mb-4">{dernierePropositionAdmin.message}</p>}
+            {!showContreOffre ? (
+              <div className="flex gap-3 flex-wrap">
+                <button onClick={()=>handleAccepterPrix(dernierePropositionAdmin.montant)} className="flex-1 py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600">Accepter ce prix</button>
+                <button onClick={()=>setShowContreOffre(true)} className="flex-1 py-3 bg-amber-50 text-amber-700 border-2 border-amber-200 rounded-xl font-bold">Faire une contre-offre</button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <input type="number" value={montantContreOffre} onChange={e=>setMontantContreOffre(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500" placeholder="Votre montant (FCFA)"/>
+                <input type="text" value={messageContreOffre} onChange={e=>setMessageContreOffre(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500" placeholder="Message (optionnel)"/>
+                <div className="flex gap-3">
+                  <button onClick={handleContreOffre} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">Envoyer la contre-offre</button>
+                  <button onClick={()=>setShowContreOffre(false)} className="px-5 py-3 border-2 border-gray-200 rounded-xl font-semibold text-gray-600">Annuler</button>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  <input type="number" value={montantContreOffre} onChange={e => setMontantContreOffre(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
-                    placeholder="Votre montant propose (FCFA)"/>
-                  <input type="text" value={messageContreOffre} onChange={e => setMessageContreOffre(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
-                    placeholder="Message (optionnel)"/>
-                  <div className="flex gap-3">
-                    <button onClick={handleContreOffre} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">Envoyer la contre-offre</button>
-                    <button onClick={() => setShowContreOffre(false)} className="px-5 py-3 border-2 border-gray-200 rounded-xl font-semibold text-gray-600">Annuler</button>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })()}
+              </div>
+            )}
+          </div>
         )}
-
-        {/* Actions */}
         {peutModifier && (
           <div className="text-center">
             <button onClick={handleAnnuler}
