@@ -1,106 +1,150 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useToast } from '../components/Toast';
 import api from '../utils/api';
 import { CATEGORIES, VILLES } from '../utils/helpers';
+import Avertissement from '../components/Avertissement';
 
 export default function CreateProject() {
   const navigate = useNavigate();
-  const toast = useToast();
-  const [form, setForm] = useState({ titre:'', description:'', budget:'', localisation:'', categorie:'' });
-  const [photos, setPhotos] = useState([]);
-  const [previews, setPreviews] = useState([]);
+  const [besoinEvaluation, setBesoinEvaluation] = useState(null);
+  const [form, setForm] = useState({
+    titre: '', description: '', budget: '', localisation: '', categorie: ''
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
   const set = (k,v) => setForm(f=>({...f,[k]:v}));
-
-  const handlePhotos = (e) => {
-    const files = Array.from(e.target.files).slice(0, 4);
-    setPhotos(files);
-    setPreviews(files.map(f => URL.createObjectURL(f)));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault(); setError(''); setLoading(true);
     try {
-      const data = new FormData();
-      Object.entries(form).forEach(([k,v]) => data.append(k, v));
-      photos.forEach(p => data.append('photos', p));
-      const res = await api.post('/projects', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const res = await api.post('/projects', form);
       navigate(`/projects/${res.data._id}`);
-    } catch (err) { setError(err.response?.data?.message || 'Erreur lors de la publication'); }
+    } catch(err) { setError(err.response?.data?.message || 'Erreur'); }
     finally { setLoading(false); }
   };
 
-  return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
-      <Link to="/dashboard" className="inline-flex items-center gap-2 text-earth-500 hover:text-earth-700 mb-6 font-medium transition-colors">← Retour</Link>
-      <h1 className="text-3xl font-display font-bold text-earth-900 mb-2">Publier un projet</h1>
-      <p className="text-earth-500 mb-8">Décrivez votre projet pour recevoir des offres d'artisans</p>
+  const inputCls = "w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors";
+  const labelCls = "block text-sm font-semibold text-gray-700 mb-1.5";
 
-      <div className="bg-white rounded-2xl shadow-card p-6 md:p-8">
-        {error && <div className="mb-5 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">{error}</div>}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-semibold text-earth-700 mb-1.5">Titre du projet *</label>
-            <input type="text" required value={form.titre} onChange={e=>set('titre',e.target.value)}
-              className="w-full px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 transition-colors"
-              placeholder="Ex: Rénovation salle de bain Bastos"/>
-          </div>
+  // Étape 0 — Choix du type de besoin
+  if (besoinEvaluation === null) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="max-w-2xl w-full">
+          <Link to="/dashboard" className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 text-sm font-medium mb-8">
+            ← Tableau de bord
+          </Link>
+          <h1 className="text-3xl font-display font-black text-gray-900 mb-3">Nouvelle demande de travaux</h1>
+          <p className="text-gray-500 mb-10">Comment voulez-vous proceder ?</p>
 
-          <div>
-            <label className="block text-sm font-semibold text-earth-700 mb-1.5">Catégorie *</label>
-            <select required value={form.categorie} onChange={e=>set('categorie',e.target.value)}
-              className="w-full px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 bg-white">
-              <option value="">Sélectionner une catégorie</option>
-              {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-earth-700 mb-1.5">Description *</label>
-            <textarea required value={form.description} onChange={e=>set('description',e.target.value)} rows={5}
-              className="w-full px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 resize-none transition-colors"
-              placeholder="Décrivez les travaux à réaliser en détail : dimensions, matériaux souhaités, contraintes..."/>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-earth-700 mb-1.5">Budget (FCFA) *</label>
-              <input type="number" required min="0" value={form.budget} onChange={e=>set('budget',e.target.value)}
-                className="w-full px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 transition-colors"
-                placeholder="150000"/>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-earth-700 mb-1.5">Localisation *</label>
-              <select required value={form.localisation} onChange={e=>set('localisation',e.target.value)}
-                className="w-full px-4 py-3 border-2 border-earth-200 rounded-xl focus:outline-none focus:border-brand-400 bg-white">
-                <option value="">Votre ville</option>
-                {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-earth-700 mb-1.5">Photos du projet (optionnel, max 4)</label>
-            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-earth-300 rounded-xl cursor-pointer hover:border-brand-400 hover:bg-brand-50 transition-all">
-              <svg className="w-8 h-8 text-earth-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-              <span className="text-sm text-earth-400">Cliquez pour ajouter des photos</span>
-              <input type="file" accept="image/*" multiple onChange={handlePhotos} className="hidden"/>
-            </label>
-            {previews.length > 0 && (
-              <div className="mt-3 grid grid-cols-4 gap-2">
-                {previews.map((p,i) => <img key={i} src={p} alt="" className="aspect-square rounded-lg object-cover"/>)}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Option A - Je sais ce que je veux */}
+            <button onClick={() => setBesoinEvaluation(false)}
+              className="text-left p-7 bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-500 hover:shadow-xl transition-all group">
+              <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl mb-5 group-hover:bg-blue-100 transition-colors">
+                📋
               </div>
-            )}
+              <h3 className="text-xl font-display font-bold text-gray-900 mb-2">Je sais ce que je veux</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Je connais exactement les travaux a realiser. Je publie mon projet et recois des devis des artisans.
+              </p>
+              <div className="mt-5 flex items-center gap-2 text-blue-600 font-semibold text-sm">
+                Publier un projet →
+              </div>
+            </button>
+
+            {/* Option B - J'ai besoin d'une évaluation */}
+            <button onClick={() => navigate('/visites/demander')}
+              className="text-left p-7 bg-white rounded-2xl border-2 border-gray-200 hover:border-green-500 hover:shadow-xl transition-all group">
+              <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-3xl mb-5 group-hover:bg-green-100 transition-colors">
+                🔍
+              </div>
+              <h3 className="text-xl font-display font-bold text-gray-900 mb-2">J'ai besoin d'une evaluation</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Je ne sais pas exactement quels travaux sont necessaires. Un technicien vient evaluer et chiffrer sur place.
+              </p>
+              <div className="mt-5 flex items-center gap-2 text-green-600 font-semibold text-sm">
+                Demander une visite →
+              </div>
+            </button>
           </div>
 
-          <button type="submit" disabled={loading}
-            className="w-full py-4 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl shadow-brand transition-colors disabled:opacity-50 text-lg">
-            {loading ? 'Publication en cours...' : '🚀 Publier le projet'}
+          <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-700 text-center">
+            ⚠️ Tous les paiements sont securises via Batilink. Ne payez jamais directement.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Étape 1 — Formulaire projet
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 100%)'}} className="py-10">
+        <div className="max-w-3xl mx-auto px-4">
+          <button onClick={() => setBesoinEvaluation(null)}
+            className="inline-flex items-center gap-2 text-blue-300 hover:text-white mb-6 font-medium">
+            ← Retour
           </button>
-        </form>
+          <h1 className="text-3xl font-display font-black text-white mb-2">Publier un projet</h1>
+          <p className="text-blue-200">Les artisans disponibles recevront une notification</p>
+        </div>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
+        <Avertissement type="devis"/>
+
+        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          {error && <div className="mb-5 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">{error}</div>}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className={labelCls}>Titre du projet *</label>
+              <input type="text" required value={form.titre} onChange={e=>set('titre',e.target.value)}
+                className={inputCls} placeholder="Ex: Renovation salle de bain, Installation electrique..."/>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className={labelCls}>Categorie *</label>
+                <select required value={form.categorie} onChange={e=>set('categorie',e.target.value)} className={inputCls}>
+                  <option value="">Selectionner</option>
+                  {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className={labelCls}>Localisation *</label>
+                <select required value={form.localisation} onChange={e=>set('localisation',e.target.value)} className={inputCls}>
+                  <option value="">Selectionner</option>
+                  {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className={labelCls}>Description detaillee *</label>
+              <textarea required value={form.description} onChange={e=>set('description',e.target.value)} rows={5}
+                className={`${inputCls} resize-none`}
+                placeholder="Decrivez precisement les travaux a realiser, les materiaux souhaites, les contraintes particulieres..."/>
+            </div>
+
+            <div>
+              <label className={labelCls}>Budget estime (FCFA)</label>
+              <input type="number" min="0" value={form.budget} onChange={e=>set('budget',e.target.value)}
+                className={inputCls} placeholder="Laissez vide si vous ne savez pas"/>
+              <p className="text-gray-400 text-xs mt-1">Le budget est indicatif. Les artisans feront leurs propres devis.</p>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-700">
+              <strong>✅ Apres publication :</strong> Tous les artisans disponibles dans votre ville seront notifies automatiquement.
+            </div>
+
+            <button type="submit" disabled={loading}
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50 text-lg shadow-lg shadow-blue-600/20">
+              {loading ? 'Publication...' : 'Publier le projet'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -108,6 +108,20 @@ export default function DevisDetail() {
 
         {activeTab === 'details' && (
           <>
+            {isClient && devis.statut === "accepte" && (
+              <div className="bg-amber-50 border-2 border-amber-400 rounded-2xl p-5 cursor-pointer hover:bg-amber-100 transition-colors" onClick={()=>setActiveTab("jalons")}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl animate-bounce">🔨</span>
+                    <div>
+                      <p className="font-bold text-gray-900">Travaux en cours — Validez les jalons</p>
+                      <p className="text-amber-700 text-sm mt-0.5">Cliquez pour voir les photos soumises par l artisan et valider son travail</p>
+                    </div>
+                  </div>
+                  <span className="text-amber-600 font-bold text-sm">Voir jalons →</span>
+                </div>
+              </div>
+            )}
             <Avertissement type="devis"/>
 
             {devis.statut === 'termine' && (
@@ -251,6 +265,7 @@ export default function DevisDetail() {
               <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5">
                 <p className="text-blue-700 font-semibold">En attente de la reponse du client</p>
                 <p className="text-blue-600 text-sm mt-1">Le client a {devis.validiteJours} jours pour repondre.</p>
+                <Link to={`/devis/creer?edit=${devis._id}`} className="inline-flex items-center gap-2 mt-3 px-4 py-2 border-2 border-blue-300 text-blue-600 rounded-xl font-semibold text-sm hover:bg-blue-100">✏️ Modifier ce devis</Link>
               </div>
             )}
 

@@ -214,6 +214,29 @@ export default function Admin() {
                 </div>
               ))}
             </div>
+            {/* Tableau financier Batilink */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-6 text-white">
+              <h3 className="font-bold text-white/80 mb-4 text-sm uppercase tracking-wider">💰 Finances Batilink</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div>
+                  <p className="text-blue-200 text-xs mb-1">Commissions ce mois</p>
+                  <p className="text-2xl font-display font-black">{(stats.commissionCeMois||0).toLocaleString("fr-FR")} FCFA</p>
+                </div>
+                <div>
+                  <p className="text-blue-200 text-xs mb-1">Commissions totales</p>
+                  <p className="text-2xl font-display font-black">{(stats.commissionTotale||0).toLocaleString("fr-FR")} FCFA</p>
+                </div>
+                <div>
+                  <p className="text-blue-200 text-xs mb-1">Chiffre d affaires total</p>
+                  <p className="text-2xl font-display font-black">{(stats.chiffreAffaires||0).toLocaleString("fr-FR")} FCFA</p>
+                </div>
+                <div>
+                  <p className="text-blue-200 text-xs mb-1">Transactions terminees</p>
+                  <p className="text-2xl font-display font-black">{stats.nbTransactions||0}</p>
+                </div>
+              </div>
+            </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
                 <h3 className="font-display font-bold text-gray-900 mb-4">Activite plateforme</h3>
