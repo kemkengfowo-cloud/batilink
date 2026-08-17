@@ -66,7 +66,7 @@ export default function Dashboard() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {user.role === 'client' && <ClientDashboard projects={data.projects} devis={data.devis} user={user} visites={data.visites||[]}/>}
+        {user.role === client && <ClientDashboard projects={data.projects} devis={data.devis} user={user} visites={data.visites||[]} jalonsEnAttente={data.jalonsEnAttente||[]}\/>}
         {user.role === 'artisan' && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user} visitesDisponibles={data.visitesDisponibles||[]}/>}
         {user.role === 'entreprise' && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} demandes={data.missions} contrats={data.contrats}/>}
       </div>
@@ -74,14 +74,16 @@ export default function Dashboard() {
   );
 }
 
-function ClientDashboard({ projects, devis, user, visites }) {
+function ClientDashboard({ projects, devis, user, visites, jalonsEnAttente }) {
   const p = projects || [];
   const d = devis || [];
   const devisEnAttente = d.filter(x=>x.statut==='envoye').length;
   const devisAcceptes = d.filter(x=>x.statut==='accepte').length;
   const v = visites || [];
   const visitesEnAttente = v.filter(x=>x.statut==='en_attente').length;
-  const visitesRapport = v.filter(x=>x.statut==='rapport_soumis').length;
+  const visitesRapport = v.filter(x=>x.statut===rapport_soumis).length;
+  const jea = jalonsEnAttente || [];
+  const nbJalons = jea.length;
 
   return (
     <div className="space-y-6">
@@ -503,4 +505,6 @@ function EntrepriseDashboard({ entreprise, missions, contrats, demandes }) {
     </div>
   );
 }
+
+
 
