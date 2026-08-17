@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useToast } from '../components/Toast';
 import api from '../utils/api';
 import { CATEGORIES, VILLES } from '../utils/helpers';
 
 export default function CreateProject() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [form, setForm] = useState({ titre:'', description:'', budget:'', localisation:'', categorie:'' });
   const [photos, setPhotos] = useState([]);
   const [previews, setPreviews] = useState([]);

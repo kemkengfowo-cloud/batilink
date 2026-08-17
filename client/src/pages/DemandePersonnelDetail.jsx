@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
 import Loader from '../components/Loader';
 import { formatBudget, formatDate } from '../utils/helpers';
 import { VILLES } from '../utils/helpers';
@@ -26,6 +27,7 @@ export default function DemandePersonnelDetail() {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
   const [demande, setDemande] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);

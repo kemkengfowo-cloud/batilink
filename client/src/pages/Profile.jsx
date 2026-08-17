@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { VILLES, CATEGORIES, getAvatarUrl, getImageUrl } from '../utils/helpers';
+import { useToast } from '../components/Toast';
 import { BadgeList } from '../components/Badge';
 
 export default function Profile() {
   const { user, setUser } = useAuth();
+  const toast = useToast();
   const [tab, setTab] = useState('info');
   const [userForm, setUserForm] = useState({ name:'', phone:'', city:'' });
   const [artisanForm, setArtisanForm] = useState({ metier:'', description:'', ville:'', whatsapp:'', experience:'', specialites:'', disponible:true });

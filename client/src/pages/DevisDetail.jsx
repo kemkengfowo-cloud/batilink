@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
 import Loader from '../components/Loader';
 import { formatBudget, formatDate, getAvatarUrl } from '../utils/helpers';
 import Avertissement from '../components/Avertissement';
@@ -22,6 +23,7 @@ const STATUT = {
 export default function DevisDetail() {
   const { id } = useParams();
   const { user } = useAuth();
+  const toast = useToast();
   const [devis, setDevis] = useState(null);
   const [loading, setLoading] = useState(true);
   const [action, setAction] = useState('');
@@ -44,7 +46,8 @@ export default function DevisDetail() {
       setDevis(res.data.devis || res.data);
       setMessage(res.data.message || 'Action effectuee !');
       setAction(''); setNote('');
-    } catch(err) { setMessage(err.response?.data?.message || 'Erreur'); }
+    } catch(err) { setMessage(err.response?.data?.message || 'Erreur');
+      toast.error(err.response?.data?.message || 'Une erreur est survenue'); }
     finally { setProcessing(false); }
   };
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useToast } from '../components/Toast';
 import api from '../utils/api';
 import { VILLES } from '../utils/helpers';
 
@@ -11,6 +12,7 @@ const TYPES_PERSONNEL = [
 
 export default function DemanderPersonnel() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [form, setForm] = useState({
     typePersonnel: [],
     nombrePersonnes: 1,
@@ -47,8 +49,10 @@ export default function DemanderPersonnel() {
         budgetPropose: parseInt(form.budgetPropose),
         nombrePersonnes: parseInt(form.nombrePersonnes)
       });
+      toast.success('Demande soumise ! L admin vous contactera bientot.');
       navigate('/demandes-personnel');
-    } catch(err) { setError(err.response?.data?.message || 'Erreur lors de la demande'); }
+    } catch(err) { toast.error(err.response?.data?.message || 'Erreur lors de la demande');
+    setError(err.response?.data?.message || 'Erreur lors de la demande'); }
     finally { setLoading(false); }
   };
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useToast } from '../components/Toast';
 import api from '../utils/api';
 import { VILLES } from '../utils/helpers';
 import Avertissement from '../components/Avertissement';
@@ -19,6 +20,7 @@ const TYPES_PROBLEMES = [
 
 export default function DemanderVisite() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [form, setForm] = useState({
     adresse: '',
     ville: '',
@@ -37,7 +39,8 @@ export default function DemanderVisite() {
     try {
       const res = await api.post('/visites', form);
       navigate(`/visites/${res.data._id}`);
-    } catch(err) { setError(err.response?.data?.message || 'Erreur lors de la demande'); }
+    } catch(err) { toast.error(err.response?.data?.message || 'Erreur lors de la demande');
+    setError(err.response?.data?.message || 'Erreur lors de la demande'); }
     finally { setLoading(false); }
   };
 
