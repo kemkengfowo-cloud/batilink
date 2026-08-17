@@ -685,52 +685,43 @@ export default function Admin() {
                     <p className="text-xl font-bold text-blue-600">{formatBudget(d.budgetFinal||d.budgetPropose)}</p>
                     {d.budgetFinal && <p className="text-xs text-green-600 font-semibold">Prix negocie</p>}
                     <p className="text-xs text-gray-400">{formatDate(d.createdAt)}</p>
-                <div className=flex gap-2 flex-wrap>
-                  <button onClick={()=>{ api.post(/messages, {destinataire: d.entreprise?._id, contenu: `Bonjour, concernant votre demande de ${d.typePersonnel?.join(, )} a ${d.ville}, nous avons identifie des techniciens disponibles. Budget propose: ${new Intl.NumberFormat(fr-FR).format(d.budgetPropose)} FCFA.`}); alert(Message envoye !); }} className=px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700>
-                    Message entreprise
-                  </button>
-                  {[en_attente,en_negociation].includes(d.statut) && (
-                    <button onClick={()=>setShowNegociation(showNegociation===d._id?null:d._id)} className=px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600>
-                      {showNegociation===d._id?Fermer:Proposer / Accepter prix}
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-wrap mt-3">
+                  <button onClick={()=>{ api.post("/messages", {destinataire: d.entreprise?._id, contenu: "Bonjour, votre demande de personnel a ete prise en compte. Nous vous recontactons bientot."}); alert("Message envoye !"); }} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700">Message entreprise</button>
+                  {["en_attente","en_negociation"].includes(d.statut) && (
+                    <button onClick={()=>setShowNegociation(showNegociation===d._id?null:d._id)} className="px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600">
+                      {showNegociation===d._id?"Fermer":"Proposer / Accepter prix"}
                     </button>
                   )}
-                  {d.statut===accord_trouve && (
-                    <Link to={`/contrats/creer?demandeId=${d._id}&entrepriseId=${d.entreprise?._id}`} className=px-4 py-2 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700>
-                      Generer contrat
-                    </Link>
+                  {d.statut==="accord_trouve" && (
+                    <Link to={"/contrats/creer?demandeId="+d._id+"&entrepriseId="+(d.entreprise&&d.entreprise._id)} className="px-4 py-2 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700">Generer contrat</Link>
                   )}
                 </div>
                 {showNegociation===d._id && (
-                  <div className=mt-4 p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3>
-                    <p className=text-sm font-bold text-gray-700>Budget entreprise: {new Intl.NumberFormat(fr-FR).format(d.budgetPropose)} FCFA</p>
-                    {d.propositions?.length > 0 && (
-                      <div className=space-y-2>
+                  <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
+                    <p className="text-sm font-bold text-gray-700">Budget entreprise: {new Intl.NumberFormat("fr-FR").format(d.budgetPropose)} FCFA</p>
+                    {d.propositions && d.propositions.length > 0 && (
+                      <div className="space-y-2">
                         {d.propositions.map((p,i) => (
-                          <div key={i} className={`p-2 rounded-lg text-sm ${p.role===admin ? bg-blue-50 text-blue-700 : bg-amber-50 text-amber-700}`}>
-                            <span className=font-bold capitalize>{p.role}</span>: {new Intl.NumberFormat(fr-FR).format(p.montant)} FCFA {p.message && `— ${p.message}`}
+                          <div key={i} className={"p-2 rounded-lg text-sm " + (p.role==="admin" ? "bg-blue-50 text-blue-700" : "bg-amber-50 text-amber-700")}>
+                            <span className="font-bold capitalize">{p.role}</span>: {new Intl.NumberFormat("fr-FR").format(p.montant)} FCFA
                           </div>
                         ))}
                       </div>
                     )}
-                    <div className=flex gap-2>
-                      <input type=number value={prixAdmin} onChange={e=>setPrixAdmin(e.target.value)} placeholder=Prix a proposer (FCFA) className=flex-1 px-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500/>
-                      <input type=text value={messageAdmin} onChange={e=>setMessageAdmin(e.target.value)} placeholder=Message (optionnel) className=flex-1 px-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500/>
+                    <div className="flex gap-2">
+                      <input type="number" value={prixAdmin} onChange={e=>setPrixAdmin(e.target.value)} placeholder="Prix a proposer (FCFA)" className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"/>
+                      <input type="text" value={messageAdmin} onChange={e=>setMessageAdmin(e.target.value)} placeholder="Message" className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"/>
                     </div>
-                    <div className=flex gap-2>
-                        Proposer ce prix a l entreprise
-                      </button>
-                      {d.propositions?.length > 0 && d.propositions[d.propositions.length-1]?.role === entreprise && (
-                        <button onClick={()=>{ const derniere = d.propositions[d.propositions.length-1]; api.put(`/demandes-personnel/${d._id}/accepter-accord`,{montant:derniere.montant}).then(()=>{loadAll();setShowNegociation(null);alert(Prix accepte ! Generez maintenant le contrat.);}).catch(()=>alert(Erreur)); }} className=flex-1 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700>
-                          Accepter prix entreprise ({d.propositions?.length > 0 ? new Intl.NumberFormat(fr-FR).format(d.propositions[d.propositions.length-1]?.montant) : --} FCFA)
-                        </button>
+                    <div className="flex gap-2">
+                      <button onClick={()=>{ if(!prixAdmin) return; api.put("/demandes-personnel/"+d._id+"/valider-accord",{budgetFinal:parseInt(prixAdmin),message:messageAdmin}).then(()=>{loadAll();setShowNegociation(null);setPrixAdmin("");setMessageAdmin("");alert("Prix propose a l entreprise !");}).catch(()=>alert("Erreur")); }} className="flex-1 py-2 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600">Proposer ce prix</button>
+                      {d.propositions && d.propositions.length > 0 && d.propositions[d.propositions.length-1].role === "entreprise" && (
+                        <button onClick={()=>{ var derniere = d.propositions[d.propositions.length-1]; api.put("/demandes-personnel/"+d._id+"/accepter-accord",{montant:derniere.montant}).then(()=>{loadAll();setShowNegociation(null);alert("Accord accepte !");}).catch(()=>alert("Erreur")); }} className="flex-1 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700">Accepter prix entreprise</button>
                       )}
                     </div>
                   </div>
                 )}
-                      Generer contrat
-                    </Link>
-                  )}
-                </div>
               </div>
             ))}
           </div>
