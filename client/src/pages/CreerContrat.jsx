@@ -25,6 +25,20 @@ export default function CreerContrat() {
   });
   const [technicien, setTechnicien] = useState(null);
   const [searchingTech, setSearchingTech] = useState(false);
+  useEffect(() => {
+    const demandeId = searchParams.get("demandeId");
+    if (demandeId) {
+      api.get(`/demandes-personnel/${demandeId}`).then(res => {
+        const d = res.data;
+        set("typePersonnel", d.typePersonnel?.[0] || "");
+        set("nombrePersonnes", d.nombrePersonnes || 1);
+        set("dateDebut", d.dateDebut?.split("T")[0] || "");
+        set("dateFin", d.dateFin?.split("T")[0] || "");
+        set("adresseChantier", d.adresseChantier || "");
+        set("remunerationTotal", d.budgetFinal || d.budgetPropose || "");
+      }).catch(() => {});
+    }
+  }, []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
