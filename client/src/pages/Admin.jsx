@@ -236,7 +236,6 @@ export default function Admin() {
                 </div>
               </div>
             </div>
-            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
                 <h3 className="font-display font-bold text-gray-900 mb-4">Activite plateforme</h3>
