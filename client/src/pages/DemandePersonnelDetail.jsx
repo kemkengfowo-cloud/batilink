@@ -87,7 +87,7 @@ export default function DemandePersonnelDetail() {
     try {
       await api.put(`/demandes-personnel/${id}/annuler`);
       navigate('/demandes-personnel');
-    } catch(err) { setMessage('Erreur'); }
+  };
   const handleAccepterPrix = async (montant) => {
     try {
       await api.put(`/demandes-personnel/${id}/accepter-accord`, { montant: montant, message: "Prix accepte par l entreprise" });
@@ -106,7 +106,6 @@ export default function DemandePersonnelDetail() {
       setMontantContreOffre("");
       setMessage("Contre-offre envoyee a l admin !");
     } catch(err) { setMessage("Erreur"); }
-  };
   };
 
   if (loading) return <Loader/>;
