@@ -78,12 +78,12 @@ router.get('/stats', auth, adminOnly, async (req, res) => {
       { $limit: 5 }
     ]);
 
-    const Devis = require("../models/Devis");
     const devisTermines = await Devis.find({ statut: "termine" });
     const commissionTotale = devisTermines.reduce((s,d)=>s+(d.montantCommission||0),0);
     const devisTerminesCeMois = devisTermines.filter(d=>new Date(d.updatedAt).getMonth()===now.getMonth());
     const commissionCeMois = devisTerminesCeMois.reduce((s,d)=>s+(d.montantCommission||0),0);
     const chiffreAffaires = devisTermines.reduce((s,d)=>s+(d.total||0),0);
+    const nbTransactions = devisTermines.length;
     const recentUsers = await User.find().sort({ createdAt: -1 }).limit(10);
 
     res.json({
