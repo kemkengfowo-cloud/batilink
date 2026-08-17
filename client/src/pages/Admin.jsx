@@ -662,9 +662,9 @@ export default function Admin() {
                     Message entreprise
                   </button>
                   {["en_attente","en_negociation"].includes(d.statut) && (
-                    <button onClick={()=>{ const prix = prompt("Prix final agree (FCFA):"); if(prix) { api.put(`/demandes-personnel/${d._id}/valider-accord`, {budgetFinal: parseInt(prix), message: "Accord valide par admin Batilink"}).then(()=>{ loadAll(); alert("Accord valide ! Generez maintenant le contrat."); }).catch(()=>alert("Erreur")); } }}
+                    <button onClick={()=>{ const prix = prompt("Prix final agree (FCFA):"); if(prix) { api.put(`/demandes-personnel/${d._id}/valider-accord`, {budgetFinal: parseInt(prix), message: "Accord valide par admin Batilink"}).then(()=>{ loadAll(); alert("Prix propose a l entreprise. En attente de sa reponse."); }).catch(()=>alert("Erreur")); } }}
                       className="px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600">
-                      Valider accord
+                      Proposer un prix
                     </button>
                   )}
                   {d.statut==="accord_trouve" && (

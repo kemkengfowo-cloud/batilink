@@ -149,24 +149,6 @@ router.put('/:id/contre-offre', auth, async (req, res) => {
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
 
-// PUT /api/demandes-personnel/:id/valider-accord — Admin valide l'accord final
-router.put('/:id/valider-accord', auth, adminOnly, async (req, res) => {
-  try {
-    const { budgetFinal, message } = req.body;
-    const demande = await DemandePersonnel.findById(req.params.id);
-    if (!demande) return res.status(404).json({ message: 'Demande non trouvee.' });
-
-    demande.budgetFinal = budgetFinal;
-    demande.statut = 'accord_trouve';
-    await demande.save();
-
-    // Notifier l'entreprise
-    await Message.create({
-      expediteur: req.user.id,
-      destinataire: demande.entreprise,
-      contenu: `🎉 Accord trouve pour votre demande de personnel !\n\nMontant final: ${new Intl.NumberFormat('fr-FR').format(budgetFinal)} FCFA\n${message ? 'Message: ' + message : ''}\n\nL'admin va maintenant generer le contrat officiel.`
-    });
-
     res.json(demande);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
@@ -209,5 +191,60 @@ router.put('/:id', auth, async (req, res) => {
 
     await demande.save();
     res.json(demande);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+// PUT /api/demandes-personnel/:id/valider-accord — Admin PROPOSE un prix (pas valide directement)
+router.put('/:id/valider-accord', auth, adminOnly, async (req, res) => {
+  try {
+    const { budgetFinal, message } = req.body;
+    const demande = await DemandePersonnel.findById(req.params.id);
+    if (!demande) return res.status(404).json({ message: 'Demande non trouvee.' });
+
+    // Admin ajoute sa proposition — pas encore accord_trouve
+    demande.propositions.push({
+      auteur: req.user.id,
+      role: 'admin',
+      montant: budgetFinal,
+      message: message || ''
+    });
+    demande.statut = 'en_negociation';
+    await demande.save();
+
+    // Notifier l'entreprise
+    await Message.create({
+      expediteur: req.user.id,
+      destinataire: demande.entreprise,
+      contenu: `💰 L'admin Batilink vous propose un prix pour votre demande de personnel !\n\nMontant propose: ${new Intl.NumberFormat('fr-FR').format(budgetFinal)} FCFA\n${message ? 'Message: ' + message : ''}\n\nConnectez-vous pour accepter ou faire une contre-offre : www.batilink.org/demandes-personnel/${demande._id}`
+    });
+
+    res.json({ demande, message: 'Proposition envoyee a l entreprise. En attente de sa reponse.' });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+// PUT /api/demandes-personnel/:id/accepter-accord — Entreprise accepte le prix propose
+router.put('/:id/accepter-accord', auth, async (req, res) => {
+  try {
+    const { montant } = req.body;
+    const demande = await DemandePersonnel.findById(req.params.id);
+    if (!demande) return res.status(404).json({ message: 'Demande non trouvee.' });
+    if (demande.entreprise.toString() !== req.user.id && req.user.role !== 'admin')
+      return res.status(403).json({ message: 'Acces refuse.' });
+
+    demande.budgetFinal = montant;
+    demande.statut = 'accord_trouve';
+    await demande.save();
+
+    // Notifier l'admin
+    const admin = await User.findOne({ role: 'admin' });
+    if (admin) {
+      await Message.create({
+        expediteur: req.user.id,
+        destinataire: admin._id,
+        contenu: `✅ L'entreprise a accepte votre prix pour la demande de personnel !\n\nMontant final: ${new Intl.NumberFormat('fr-FR').format(montant)} FCFA\n\nVous pouvez maintenant generer le contrat officiel.`
+      });
+    }
+
+    res.json({ demande, message: 'Accord confirme ! L admin va generer le contrat.' });
   } catch(err) { res.status(500).json({ message: err.message }); }
 });

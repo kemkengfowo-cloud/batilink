@@ -88,7 +88,7 @@ export default function DemandePersonnelDetail() {
     } catch(err) { setMessage('Erreur'); }
   const handleAccepterPrix = async (montant) => {
     try {
-      await api.put(`/demandes-personnel/${id}/valider-accord`, { budgetFinal: montant, message: "Prix accepte par l entreprise" });
+      await api.put(`/demandes-personnel/${id}/accepter-accord`, { budgetFinal: montant, message: "Prix accepte par l entreprise" });
       const res = await api.get(`/demandes-personnel/${id}`);
       setDemande(res.data);
       setMessage("Prix accepte ! L admin va generer le contrat.");
