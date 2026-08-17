@@ -135,6 +135,7 @@ export default function Admin() {
     { id:'litiges', label:'Litiges', icon:'⚖️', badge:litiesOuverts||null },
     { id:'visites', label:'Visites', icon:'🔍', badge:visitesEnAttente||null },
     { id:'messagerie', label:'Messagerie', icon:'📢', badge:null },
+    { id:'demandes', label:'Demandes Personnel', icon:'??', badge:demandesPersonnel.filter(d=>d.statut==='en_attente').length||null },
     { id:'historique', label:'Journal', icon:'📜', badge:null },
   ];
 
