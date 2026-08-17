@@ -427,6 +427,9 @@ export default function Admin() {
                       <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold capitalize">{s.type}</span>
                     </div>
                     <p className="font-bold text-gray-900">{s.motif}</p>
+                    {s.description && <p className="text-gray-500 text-sm mt-1">{s.description}</p>}
+                    {s.signaleur && <p className="text-xs text-gray-400 mt-2">Par: {s.rapporteur?.name} · {s.rapporteur?.email}</p>}
+                    {s.cible && <p className="text-xs text-gray-400">Contre: {s.cible?.name} · {s.cible?.email}</p>}
                   </div>
                   <span className="text-xs text-gray-400">{formatDate(s.createdAt)}</span>
                 </div>

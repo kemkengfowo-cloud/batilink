@@ -33,6 +33,7 @@ export default function MesContrats() {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 py-8">
+          <Link to="/dashboard" className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 text-sm font-medium mb-4 transition-colors">← Tableau de bord</Link>
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-3xl font-display font-bold text-gray-900">Mes contrats</h1>

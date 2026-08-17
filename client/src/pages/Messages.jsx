@@ -49,6 +49,7 @@ export default function Messages() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
+      <Link to="/dashboard" className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 text-sm font-medium mb-4 transition-colors">← Tableau de bord</Link>
       <h1 className="text-3xl font-display font-bold text-earth-900 mb-6">Messages</h1>
       <div className="bg-white rounded-2xl shadow-card overflow-hidden" style={{ height: '70vh' }}>
         <div className="flex h-full">
