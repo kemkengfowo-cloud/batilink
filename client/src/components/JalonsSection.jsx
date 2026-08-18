@@ -286,9 +286,6 @@ export default function JalonsSection({ devis }) {
           ))}
         </div>
     </div>
-  );
-}
-}
     </>
   );
 }
