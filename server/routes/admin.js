@@ -25,7 +25,7 @@ router.post('/create-first-admin', async (req, res) => {
     const exists = await User.findOne({ email });
     if (exists) return res.status(400).json({ message: 'Email déjà utilisé.' });
     const user = await new User({ name, email, password, role: 'admin', city: 'Yaoundé' }).save();
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || (() => { throw new Error('JWT_SECRET manquant'); })(), { expiresIn: '7d' });
     res.status(201).json({ message: 'Compte admin créé !', token, user });
   } catch(err) { res.status(500).json({ message: err.message }); }
 });

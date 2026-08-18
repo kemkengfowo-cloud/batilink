@@ -8,7 +8,7 @@ const { logAction } = require('../middleware/logger');
 
 const genToken = (user) => jwt.sign(
   { id: user._id, role: user.role },
-  process.env.JWT_SECRET || 'secret',
+  process.env.JWT_SECRET || (() => { throw new Error('JWT_SECRET manquant'); })(),
   { expiresIn: '7d' }
 );
 
