@@ -211,7 +211,7 @@ router.put('/:id/valider-accord', auth, adminOnly, async (req, res) => {
     await Message.create({
       expediteur: req.user.id,
       destinataire: demande.entreprise,
-      contenu: `💰 L'admin B.Y.H vous propose un prix pour votre demande de personnel !\n\nMontant propose: ${new Intl.NumberFormat('fr-FR').format(budgetFinal)} FCFA\n${message ? 'Message: ' + message : ''}\n\nConnectez-vous pour accepter ou faire une contre-offre : www.byh.org/demandes-personnel/${demande._id}`
+      contenu: `💰 L'admin B.Y.H vous propose un prix pour votre demande de personnel !\n\nMontant propose: ${new Intl.NumberFormat('fr-FR').format(budgetFinal)} FCFA\n${message ? 'Message: ' + message : ''}\n\nConnectez-vous pour accepter ou faire une contre-offre : www.batilink.org/demandes-personnel/${demande._id}`
     });
 
     res.json({ demande, message: 'Proposition envoyee a l entreprise. En attente de sa reponse.' });

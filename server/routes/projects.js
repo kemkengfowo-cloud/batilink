@@ -90,7 +90,7 @@ const notifierTousArtisans = async (projet) => {
     const messages = artisans.map(a => ({
       expediteur,
       destinataire: a.user._id,
-      contenu: `🔔 Nouveau projet disponible sur B.Y.H !\n\n📋 "${projet.titre}"\n🔨 Categorie : ${projet.categorie}\n📍 Localisation : ${projet.localisation}\n💰 Budget : ${projet.budget ? new Intl.NumberFormat('fr-FR').format(projet.budget) + ' FCFA' : 'A negocier'}\n\nVoir le projet : www.byh.org/projects/${projet._id}`,
+      contenu: `🔔 Nouveau projet disponible sur B.Y.H !\n\n📋 "${projet.titre}"\n🔨 Categorie : ${projet.categorie}\n📍 Localisation : ${projet.localisation}\n💰 Budget : ${projet.budget ? new Intl.NumberFormat('fr-FR').format(projet.budget) + ' FCFA' : 'A negocier'}\n\nVoir le projet : www.batilink.org/projects/${projet._id}`,
       lu: false
     }));
 
