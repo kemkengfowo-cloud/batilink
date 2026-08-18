@@ -11,7 +11,7 @@ api.interceptors.response.use(
   res => res,
   err => {
     if (err.response?.status === 401) {
-      localStorage.removeItem('batilink_token');
+      localStorage.removeItem('byhome_token');
       delete api.defaults.headers.common['Authorization'];
     }
     return Promise.reject(err);

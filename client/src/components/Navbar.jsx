@@ -46,7 +46,7 @@ export default function Navbar() {
     <>
       {/* Bandeau protection */}
       <div className="bg-blue-700 text-white py-1.5 px-4 text-center text-xs font-medium hidden md:block">
-        🔒 Batilink protege vos transactions — Utilisez toujours le systeme de devis officiel pour etre couvert en cas de litige
+        🔒 BYHOME protege vos transactions — Utilisez toujours le systeme de devis officiel pour etre couvert en cas de litige
       </div>
 
       <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
@@ -142,7 +142,7 @@ export default function Navbar() {
           {open && (
             <div className="lg:hidden py-3 pb-5 border-t border-gray-100 space-y-1">
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-3 text-xs text-blue-700 font-medium">
-                🔒 Utilisez toujours le devis officiel Batilink pour etre protege
+                🔒 Utilisez toujours le devis officiel BYHOME pour etre protege
               </div>
               {user ? (
                 <>

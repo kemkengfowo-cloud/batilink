@@ -186,7 +186,7 @@ export default function DevisDetail() {
               <div className="p-5 border-t border-gray-100">
                 <div className="max-w-xs ml-auto space-y-2">
                   <div className="flex justify-between text-sm text-gray-600"><span>Sous-total</span><span className="font-semibold">{formatBudget(devis.sousTotal)}</span></div>
-                  <div className="flex justify-between text-sm text-gray-500"><span>Commission Batilink (10%)</span><span>{formatBudget(devis.montantCommission)}</span></div>
+                  <div className="flex justify-between text-sm text-gray-500"><span>Commission BYHOME (10%)</span><span>{formatBudget(devis.montantCommission)}</span></div>
                   <div className="flex justify-between text-lg font-display font-black text-blue-600 pt-2 border-t border-gray-200">
                     <span>Total</span><span>{formatBudget(devis.total)}</span>
                   </div>
@@ -220,7 +220,7 @@ export default function DevisDetail() {
                     )}
                     {action === 'accepter' && (
                       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700">
-                        En acceptant, vous vous engagez a payer {formatBudget(devis.total)} via Batilink.
+                        En acceptant, vous vous engagez a payer {formatBudget(devis.total)} via BYHOME.
                       </div>
                     )}
                     <div className="flex gap-3">

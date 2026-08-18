@@ -37,7 +37,7 @@ export default function MesDemandesPersonnel() {
               <h1 className="text-3xl font-display font-bold text-gray-900">
                 {user?.role === 'admin' ? 'Toutes les demandes de personnel' : 'Mes demandes de personnel'}
               </h1>
-              <p className="text-gray-500 mt-1">Gestion du personnel BTP via Batilink</p>
+              <p className="text-gray-500 mt-1">Gestion du personnel BTP via BYHOME</p>
             </div>
             {user?.role === 'entreprise' && (
               <Link to="/demandes-personnel/new"

@@ -7,22 +7,22 @@ export default function Avertissement({ type = 'default' }) {
   const messages = {
     default: {
       titre: '⚠️ Important — Protégez-vous',
-      texte: 'Tout échange financier ou accord passé en dehors de la plateforme Batilink (WhatsApp, appel, espèces) ne bénéficie d\'aucune protection ni garantie de notre part. En cas de litige, Batilink ne pourra pas intervenir.',
+      texte: 'Tout échange financier ou accord passé en dehors de la plateforme BYHOME (WhatsApp, appel, espèces) ne bénéficie d\'aucune protection ni garantie de notre part. En cas de litige, BYHOME ne pourra pas intervenir.',
       couleur: 'bg-amber-50 border-amber-300 text-amber-800'
     },
     devis: {
-      titre: '🔒 Paiement sécurisé Batilink',
-      texte: 'Pour votre sécurité, effectuez votre paiement uniquement via Batilink. L\'argent est bloqué et libéré à l\'artisan uniquement après votre validation des travaux. Tout paiement direct à l\'artisan annule votre garantie.',
+      titre: '🔒 Paiement sécurisé BYHOME',
+      texte: 'Pour votre sécurité, effectuez votre paiement uniquement via BYHOME. L\'argent est bloqué et libéré à l\'artisan uniquement après votre validation des travaux. Tout paiement direct à l\'artisan annule votre garantie.',
       couleur: 'bg-blue-50 border-blue-300 text-blue-800'
     },
     message: {
       titre: '⚠️ Rappel important',
-      texte: 'Batilink vous recommande de passer par le système de devis officiel pour tout accord financier. Les transactions hors plateforme ne sont pas protégées.',
+      texte: 'BYHOME vous recommande de passer par le système de devis officiel pour tout accord financier. Les transactions hors plateforme ne sont pas protégées.',
       couleur: 'bg-amber-50 border-amber-300 text-amber-800'
     },
     profil: {
-      titre: '🛡️ Votre protection avec Batilink',
-      texte: 'Utilisez le bouton "Demander un devis" pour bénéficier de la protection Batilink. Tout accord passé directement par WhatsApp ou en dehors de l\'application n\'est pas couvert en cas de litige.',
+      titre: '🛡️ Votre protection avec BYHOME',
+      texte: 'Utilisez le bouton "Demander un devis" pour bénéficier de la protection BYHOME. Tout accord passé directement par WhatsApp ou en dehors de l\'application n\'est pas couvert en cas de litige.',
       couleur: 'bg-blue-50 border-blue-300 text-blue-800'
     }
   };
@@ -42,7 +42,7 @@ export default function Avertissement({ type = 'default' }) {
 export function BandeauProtection() {
   return (
     <div className="bg-blue-600 text-white py-2 px-4 text-center text-xs font-medium">
-      🔒 Batilink protège vos transactions — Utilisez toujours le système de devis officiel pour être couvert en cas de litige
+      🔒 BYHOME protège vos transactions — Utilisez toujours le système de devis officiel pour être couvert en cas de litige
     </div>
   );
 }

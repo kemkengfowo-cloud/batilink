@@ -31,7 +31,7 @@ export default function Login() {
         <div className="relative z-10 p-12">
           <Link to="/" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center font-bold text-xl">B</div>
-            <span className="font-display font-bold text-2xl text-white">Batilink</span>
+            <span className="font-display font-bold text-2xl text-white">BYHOME</span>
           </Link>
         </div>
         <div className="relative z-10 p-12">
@@ -53,12 +53,12 @@ export default function Login() {
         <div className="w-full max-w-md">
           <div className="lg:hidden flex items-center gap-2 mb-8">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">B</div>
-            <span className="font-display font-bold text-xl text-gray-900">Batilink</span>
+            <span className="font-display font-bold text-xl text-gray-900">BYHOME</span>
           </div>
 
           <div className="bg-white rounded-3xl shadow-xl p-8">
             <h2 className="text-2xl font-display font-bold text-gray-900 mb-2">Connexion</h2>
-            <p className="text-gray-500 text-sm mb-8">Acces a votre espace Batilink</p>
+            <p className="text-gray-500 text-sm mb-8">Acces a votre espace BYHOME</p>
 
             {error && (
               <div className="mb-5 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
@@ -89,7 +89,7 @@ export default function Login() {
             </form>
 
             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-700 text-center">
-              🔒 Vos donnees sont securisees et protegees par Batilink
+              🔒 Vos donnees sont securisees et protegees par BYHOME
             </div>
 
             <p className="mt-6 text-center text-sm text-gray-500">

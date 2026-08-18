@@ -88,7 +88,7 @@ function ClientDashboard({ projects, devis, user, visites, jalonsEnAttente }) {
       {/* Guide onboarding nouveau client */}
       {p.length === 0 && d.length === 0 && (
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
-          <h3 className="font-display font-bold text-xl mb-4">Bienvenue sur Batilink ! 👋</h3>
+          <h3 className="font-display font-bold text-xl mb-4">Bienvenue sur BYHOME ! 👋</h3>
           <div className="space-y-3">
             {[
               { num:"1", text:"Publiez votre projet de construction ou renovation", done: p.length > 0 },
@@ -291,7 +291,7 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
 
       {profilVide && (
         <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-6 text-white">
-          <h3 className="font-display font-bold text-xl mb-4">Bienvenue sur Batilink ! 👋</h3>
+          <h3 className="font-display font-bold text-xl mb-4">Bienvenue sur BYHOME ! 👋</h3>
           <p className="text-green-100 text-sm mb-4">Completez votre profil pour recevoir des demandes des clients</p>
           <div className="space-y-3">
             {[
@@ -377,7 +377,7 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
               <p className="text-xl font-bold">{devisTermines}</p>
             </div>
             <div>
-              <p className="text-blue-200 text-xs mb-1">Commission Batilink</p>
+              <p className="text-blue-200 text-xs mb-1">Commission BYHOME</p>
               <p className="text-xl font-bold">{formatBudget(Math.round(gainTotal * 0.111))}</p>
             </div>
           </div>

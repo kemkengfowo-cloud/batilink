@@ -6,7 +6,7 @@ import { BadgeList } from './Badge';
 export default function ArtisanCard({ artisan }) {
   const { user, metier, ville, description, note, nbAvis, whatsapp, disponible, badges } = artisan;
   const name = user?.name || 'Artisan';
-  const waMsg = `Bonjour ${name}, j'ai vu votre profil sur Batilink et je souhaite vous contacter.`;
+  const waMsg = `Bonjour ${name}, j'ai vu votre profil sur BYHOME et je souhaite vous contacter.`;
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-lg transition-all duration-200 overflow-hidden">

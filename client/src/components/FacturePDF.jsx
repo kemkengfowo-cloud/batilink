@@ -64,7 +64,7 @@ export default function FacturePDF({ devis }) {
           <div>
             <div className="logo">Bati<span>link</span></div>
             <div style={{color:'#666', fontSize:'11px', marginTop:'4px'}}>La plateforme BTP du Cameroun</div>
-            <div style={{color:'#666', fontSize:'11px'}}>contact@batilink.org • www.batilink.org</div>
+            <div style={{color:'#666', fontSize:'11px'}}>contact@byhome.org • www.byhome.org</div>
           </div>
           <div style={{textAlign:'right'}}>
             <div className="title">FACTURE</div>
@@ -128,7 +128,7 @@ export default function FacturePDF({ devis }) {
         <div className="totaux">
           <div className="totaux-box">
             <div className="total-ligne"><span>Sous-total</span><span>{formatBudget(devis.sousTotal)}</span></div>
-            <div className="total-ligne" style={{color:'#666'}}><span>Commission Batilink (10%)</span><span>{formatBudget(devis.montantCommission)}</span></div>
+            <div className="total-ligne" style={{color:'#666'}}><span>Commission BYHOME (10%)</span><span>{formatBudget(devis.montantCommission)}</span></div>
             <div className="total-ligne" style={{color:'#16a34a', fontWeight:'bold'}}><span>Artisan recoit (90%)</span><span>{formatBudget(devis.montantArtisan)}</span></div>
             <div className="total-final"><span>TOTAL CLIENT</span><span>{formatBudget(devis.total)}</span></div>
           </div>
@@ -136,13 +136,13 @@ export default function FacturePDF({ devis }) {
 
         <div className="info-box">
           <strong>Conditions de paiement :</strong> {devis.conditionsPaiement}<br/>
-          <strong>Protection :</strong> Tout paiement effectue en dehors de la plateforme Batilink annule toute garantie et protection.
+          <strong>Protection :</strong> Tout paiement effectue en dehors de la plateforme BYHOME annule toute garantie et protection.
         </div>
 
         <div className="footer">
-          <strong>Batilink</strong> — La plateforme BTP de reference au Cameroun<br/>
-          www.batilink.org • contact@batilink.org<br/>
-          Ce document est genere automatiquement par Batilink et constitue une facture officielle.
+          <strong>BYHOME</strong> — La plateforme BTP de reference au Cameroun<br/>
+          www.byhome.org • contact@byhome.org<br/>
+          Ce document est genere automatiquement par BYHOME et constitue une facture officielle.
         </div>
       </div>
     </div>

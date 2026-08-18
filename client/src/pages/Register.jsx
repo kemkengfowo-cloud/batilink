@@ -45,7 +45,7 @@ export default function Register() {
         <img src="https://images.pexels.com/photos/1474993/pexels-photo-1474993.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="Construction" className="absolute inset-0 w-full h-full object-cover"/>
         <div className="absolute inset-0" style={{background:'linear-gradient(135deg, rgba(10,22,40,0.85) 0%, rgba(13,32,68,0.75) 100%)'}}></div>
         <div className="relative z-10 p-12">
-          <Link to="/" className="flex items-center gap-3"><div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center font-bold text-xl">B</div><span className="font-display font-bold text-2xl text-white">Batilink</span></Link>
+          <Link to="/" className="flex items-center gap-3"><div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center font-bold text-xl">B</div><span className="font-display font-bold text-2xl text-white">BYHOME</span></Link>
         </div>
         <div className="relative z-10 p-12">
           <h1 className="text-4xl font-display font-black text-white leading-tight mb-4">Rejoignez le reseau BTP <span className="text-blue-400">#1 au Cameroun</span></h1>
@@ -58,7 +58,7 @@ export default function Register() {
           <div className="text-center mb-8">
             <Link to="/" className="lg:hidden flex items-center gap-2 justify-center mb-6">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">B</div>
-              <span className="font-display font-bold text-xl text-gray-900">Batilink</span>
+              <span className="font-display font-bold text-xl text-gray-900">BYHOME</span>
             </Link>
             <h2 className="text-2xl font-display font-bold text-gray-900">Creer un compte</h2>
             <p className="text-gray-500 mt-1 text-sm">Choisissez votre profil</p>
