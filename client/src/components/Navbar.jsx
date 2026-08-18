@@ -54,17 +54,16 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
               <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20">
-                <span className="text-white font-bold text-base">B</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3L21 10.5V21H15V15H9V21H3V10.5Z" fill="white"/></svg>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path d="M3 10.5L12 3L21 10.5V21H15V15H9V21H3V10.5Z" fill="white"/>
-                  </svg>
-                </div>
-                <span className="font-display font-bold text-xl text-gray-900">BY<span className="text-blue-600">HOME</span></span>
-              </div>
+              <span className="font-display font-bold text-xl text-gray-900">BY<span className="text-blue-600">HOME</span></span>
             </Link>
+
+
+
+
+
+
 
             <div className="hidden lg:flex items-center gap-1 flex-1 mx-6">
               {user ? links.map(l=>(
