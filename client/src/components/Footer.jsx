@@ -9,7 +9,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-9 h-9 bg-blue-500 rounded-xl flex items-center justify-center font-bold text-base">B</div>
-              <span className="font-display font-bold text-xl">BYHOME</span>
+              <span className="font-display font-bold text-xl">B.Y.H</span>
             </div>
             <p className="text-blue-200 text-sm leading-relaxed max-w-xs">La plateforme de reference pour trouver des artisans et entreprises BTP fiables au Cameroun.</p>
             <p className="text-blue-300 text-sm mt-4">🇨🇲 Fierement Made in Cameroun</p>
@@ -36,8 +36,8 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-blue-900 mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-blue-300">
-          <p>© {new Date().getFullYear()} BYHOME. Tous droits reserves.</p>
-          <p>contact@byhome.org</p>
+          <p>© {new Date().getFullYear()} B.Y.H. Tous droits reserves.</p>
+          <p>contact@byh.org</p>
         </div>
       </div>
     </footer>

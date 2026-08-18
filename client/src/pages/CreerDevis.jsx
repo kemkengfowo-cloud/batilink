@@ -11,7 +11,7 @@ export default function CreerDevis() {
     clientEmail: '', projetId: '',
     titre: '', description: '',
     delaiExecution: '', validiteJours: 15,
-    conditionsPaiement: 'Paiement via BYHOME — Libere apres validation des travaux',
+    conditionsPaiement: 'Paiement via B.Y.H — Libere apres validation des travaux',
     materielsInclus: false
   });
   const [lignes, setLignes] = useState([
@@ -182,7 +182,7 @@ export default function CreerDevis() {
               <div className="mt-4 p-5 bg-blue-50 border-2 border-blue-200 rounded-2xl">
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between"><span className="text-gray-600">Sous-total</span><span className="font-bold">{formatBudget(sousTotal)}</span></div>
-                  <div className="flex justify-between text-gray-500"><span>Commission BYHOME (10%)</span><span>{formatBudget(commission)}</span></div>
+                  <div className="flex justify-between text-gray-500"><span>Commission B.Y.H (10%)</span><span>{formatBudget(commission)}</span></div>
                   <div className="flex justify-between text-gray-500"><span>Vous recevrez (90%)</span><span className="text-green-600 font-bold">{formatBudget(montantArtisan)}</span></div>
                   <hr className="border-blue-200"/>
                   <div className="flex justify-between text-lg font-display font-black text-blue-700">

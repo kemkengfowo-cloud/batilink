@@ -40,7 +40,7 @@ export default function Home() {
               pres de chez vous.
             </h1>
             <p className="text-xl text-blue-100 leading-relaxed mb-12 max-w-2xl opacity-90">
-              BYHOME connecte clients, artisans et entreprises BTP au Cameroun. Devis securise, paiement garanti, suivi photos.
+              B.Y.H connecte clients, artisans et entreprises BTP au Cameroun. Devis securise, paiement garanti, suivi photos.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
@@ -152,13 +152,13 @@ export default function Home() {
       <section className="py-16" style={{background:'linear-gradient(135deg, #f8faff 0%, #eff4ff 100%)'}}>
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-10">
-            <h2 className="text-2xl font-display font-bold text-gray-900">🔒 Votre protection avec BYHOME</h2>
+            <h2 className="text-2xl font-display font-bold text-gray-900">🔒 Votre protection avec B.Y.H</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {icon:'💳', titre:'Paiement securise', desc:'L argent est bloque et libere uniquement apres votre validation des travaux.'},
               {icon:'⏰', titre:'Delai de contestation', desc:'48h apres validation pour contester si les travaux ne sont pas conformes.'},
-              {icon:'⚖️', titre:'Systeme de litige', desc:'En cas de probleme, l admin BYHOME arbitre et decide sous 72h maximum.'},
+              {icon:'⚖️', titre:'Systeme de litige', desc:'En cas de probleme, l admin B.Y.H arbitre et decide sous 72h maximum.'},
             ].map(p=>(
               <div key={p.titre} className="bg-white rounded-2xl border border-blue-100 p-6 text-center shadow-sm">
                 <div className="text-4xl mb-3">{p.icon}</div>
@@ -168,7 +168,7 @@ export default function Home() {
             ))}
           </div>
           <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800 text-center max-w-2xl mx-auto">
-            ⚠️ Tout echange financier hors de la plateforme BYHOME annule automatiquement toute protection.
+            ⚠️ Tout echange financier hors de la plateforme B.Y.H annule automatiquement toute protection.
           </div>
         </div>
       </section>
@@ -182,9 +182,9 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              {name:'Marie Nkomo', role:'Cliente, Yaounde', color:'bg-blue-600', text:'J ai trouve un excellent carreleur en moins de 24h. Travail impeccable et prix honnete. Je recommande vivement BYHOME !'},
-              {name:'Paul Fotso', role:'Macon, Douala', color:'bg-green-600', text:'BYHOME m a permis de tripler mon nombre de clients. La plateforme est simple et le paiement est toujours garanti.'},
-              {name:'SOBTP Sarl', role:'Entreprise BTP, Bafoussam', color:'bg-purple-600', text:'Nous utilisons BYHOME pour louer du personnel qualifie. Service excellent et contrats securises.'},
+              {name:'Marie Nkomo', role:'Cliente, Yaounde', color:'bg-blue-600', text:'J ai trouve un excellent carreleur en moins de 24h. Travail impeccable et prix honnete. Je recommande vivement B.Y.H !'},
+              {name:'Paul Fotso', role:'Macon, Douala', color:'bg-green-600', text:'B.Y.H m a permis de tripler mon nombre de clients. La plateforme est simple et le paiement est toujours garanti.'},
+              {name:'SOBTP Sarl', role:'Entreprise BTP, Bafoussam', color:'bg-purple-600', text:'Nous utilisons B.Y.H pour louer du personnel qualifie. Service excellent et contrats securises.'},
             ].map(t=>(
               <div key={t.name} className="p-8 rounded-2xl border border-gray-100 hover:shadow-xl transition-all">
                 <div className="text-amber-400 text-xl mb-4">★★★★★</div>

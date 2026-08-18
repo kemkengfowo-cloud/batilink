@@ -108,7 +108,7 @@ router.put('/:id/terminer', auth, async (req, res) => {
     await devis.save();
     res.json({
       devis,
-      message: `Travaux valides ! L artisan recevra ${new Intl.NumberFormat('fr-FR').format(devis.montantArtisan)} FCFA (90%). BYHOME percoit ${new Intl.NumberFormat('fr-FR').format(devis.montantCommission)} FCFA (10%).`
+      message: `Travaux valides ! L artisan recevra ${new Intl.NumberFormat('fr-FR').format(devis.montantArtisan)} FCFA (90%). B.Y.H percoit ${new Intl.NumberFormat('fr-FR').format(devis.montantCommission)} FCFA (10%).`
     });
   } catch(err) { res.status(500).json({ message: err.message }); }
 });

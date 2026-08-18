@@ -79,7 +79,7 @@ export default function CreateProject() {
             </button>
           </div>
           <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-700 text-center">
-            Ne payez jamais en dehors de BYHOME. Tous les paiements sont securises.
+            Ne payez jamais en dehors de B.Y.H. Tous les paiements sont securises.
           </div>
         </div>
       </div>

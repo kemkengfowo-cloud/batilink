@@ -276,7 +276,7 @@ router.get('/export/users', auth, adminOnly, async (req, res) => {
       ...users.map(u => `${u.name},${u.email},${u.role},${u.city||''},${new Date(u.createdAt).toLocaleDateString('fr-FR')}`)
     ].join('\n');
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename=byhome-users.csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=byh-users.csv');
     res.send(csv);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
@@ -291,7 +291,7 @@ router.get('/export/historique', auth, adminOnly, async (req, res) => {
       ...hist.map(h => `${h.matricule},${h.utilisateur?.nom||''},${h.utilisateur?.role||''},${h.action},${h.statut},${new Date(h.createdAt).toLocaleString('fr-FR')}`)
     ].join('\n');
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename=byhome-historique.csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=byh-historique.csv');
     res.send(csv);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });

@@ -80,7 +80,7 @@ router.post('/', auth, async (req, res) => {
       const messages = artisans.map(a => ({
         expediteur: admin?._id || req.user.id,
         destinataire: a.user._id,
-        contenu: `🔍 Nouvelle demande de visite d evaluation !\n\n📍 Adresse : ${adresse}, ${ville}\n📋 Probleme : ${description}\n💰 Frais de visite : ${new Intl.NumberFormat('fr-FR').format(fraisVisite || 5000)} FCFA\n\nConnectez-vous pour accepter cette visite : www.byhome.org/visites/${visite._id}`
+        contenu: `🔍 Nouvelle demande de visite d evaluation !\n\n📍 Adresse : ${adresse}, ${ville}\n📋 Probleme : ${description}\n💰 Frais de visite : ${new Intl.NumberFormat('fr-FR').format(fraisVisite || 5000)} FCFA\n\nConnectez-vous pour accepter cette visite : www.byh.org/visites/${visite._id}`
       }));
       await Message.insertMany(messages);
     }
@@ -146,7 +146,7 @@ router.post('/:id/rapport', auth, upload.array('photos', 10), async (req, res) =
     await Message.create({
       expediteur: req.user.id,
       destinataire: visite.client,
-      contenu: `📋 Le rapport de visite de votre chantier est disponible !\n\n🔍 Problemes identifies : ${req.body.problemesIdentifies}\n🔨 Travaux recommandes : ${req.body.travauxRecommandes}\n💰 Estimation : ${new Intl.NumberFormat('fr-FR').format(req.body.estimationCout)} FCFA\n⏱️ Duree estimee : ${req.body.estimationDuree}\n\nConsultez le rapport complet : www.byhome.org/visites/${visite._id}`
+      contenu: `📋 Le rapport de visite de votre chantier est disponible !\n\n🔍 Problemes identifies : ${req.body.problemesIdentifies}\n🔨 Travaux recommandes : ${req.body.travauxRecommandes}\n💰 Estimation : ${new Intl.NumberFormat('fr-FR').format(req.body.estimationCout)} FCFA\n⏱️ Duree estimee : ${req.body.estimationDuree}\n\nConsultez le rapport complet : www.byh.org/visites/${visite._id}`
     });
 
     res.json(visite);

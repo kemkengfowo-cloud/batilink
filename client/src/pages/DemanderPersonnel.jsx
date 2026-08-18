@@ -67,7 +67,7 @@ export default function DemanderPersonnel() {
             ← Retour
           </Link>
           <h1 className="text-3xl font-display font-black text-white mb-2">Demander du personnel</h1>
-          <p className="text-blue-200">L'admin BYHOME selectionne les meilleurs techniciens pour votre chantier</p>
+          <p className="text-blue-200">L'admin B.Y.H selectionne les meilleurs techniciens pour votre chantier</p>
         </div>
       </div>
 
@@ -81,7 +81,7 @@ export default function DemanderPersonnel() {
               <h3 className="font-display font-bold text-gray-900 mb-2">Comment ca fonctionne ?</h3>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-center gap-2"><span className="text-blue-500 font-bold">1.</span> Vous decrivez votre besoin et proposez un budget</li>
-                <li className="flex items-center gap-2"><span className="text-blue-500 font-bold">2.</span> L'admin BYHOME selectionne les techniciens disponibles</li>
+                <li className="flex items-center gap-2"><span className="text-blue-500 font-bold">2.</span> L'admin B.Y.H selectionne les techniciens disponibles</li>
                 <li className="flex items-center gap-2"><span className="text-blue-500 font-bold">3.</span> Negociation du prix si necessaire</li>
                 <li className="flex items-center gap-2"><span className="text-blue-500 font-bold">4.</span> Accord trouve → contrat officiel genere et signe</li>
                 <li className="flex items-center gap-2"><span className="text-blue-500 font-bold">5.</span> Les techniciens arrivent sur votre chantier</li>
@@ -166,7 +166,7 @@ export default function DemanderPersonnel() {
                 className={inputCls} placeholder="Ex: 50000"/>
               <p className="text-amber-700 text-xs mt-2">
                 💡 Ce montant est une proposition. L'admin et les techniciens peuvent negocier.
-                BYHOME prend une commission de 10% sur le montant final.
+                B.Y.H prend une commission de 10% sur le montant final.
               </p>
             </div>
 

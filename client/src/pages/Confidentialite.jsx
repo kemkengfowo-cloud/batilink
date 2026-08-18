@@ -15,9 +15,9 @@ export default function Confidentialite() {
             { titre:'Donnees collectees', contenu:'Nous collectons : nom, email, telephone, ville, photos de profil et photos de realisations. Ces donnees sont necessaires au fonctionnement de la plateforme.' },
             { titre:'Utilisation des donnees', contenu:'Vos donnees sont utilisees pour : creer et gerer votre compte, faciliter la mise en relation, envoyer des notifications importantes, ameliorer la plateforme.' },
             { titre:'Conservation des donnees', contenu:'Vos donnees sont conservees tant que votre compte est actif. Apres suppression du compte, les donnees sont effacees sous 30 jours.' },
-            { titre:'Vos droits', contenu:'Vous avez le droit d\'acceder, modifier et supprimer vos donnees a tout moment depuis votre profil ou en contactant contact@byhome.org.' },
+            { titre:'Vos droits', contenu:'Vous avez le droit d\'acceder, modifier et supprimer vos donnees a tout moment depuis votre profil ou en contactant contact@byh.org.' },
             { titre:'Securite', contenu:'Vos mots de passe sont cryptes. Nous utilisons HTTPS pour securiser toutes les communications. Les paiements sont securises via notre systeme d\'escrow.' },
-            { titre:'Contact', contenu:'Pour toute question sur vos donnees personnelles, contactez contact@byhome.org' },
+            { titre:'Contact', contenu:'Pour toute question sur vos donnees personnelles, contactez contact@byh.org' },
           ].map(s=>(
             <div key={s.titre}>
               <h2 className="text-xl font-display font-bold text-gray-900 mb-3">{s.titre}</h2>

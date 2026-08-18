@@ -98,7 +98,7 @@ router.put('/:id/proposer-artisans', auth, adminOnly, async (req, res) => {
     await Message.create({
       expediteur: req.user.id,
       destinataire: demande.entreprise,
-      contenu: `✅ L'admin BYHOME a trouve des techniciens pour votre demande !\n\n${artisansIds.length} technicien(s) disponible(s) propose(s).\nPrix propose: ${new Intl.NumberFormat('fr-FR').format(prixParArtisan)} FCFA\n${message ? '\nMessage: ' + message : ''}\n\nConnectez-vous pour voir les profils et accepter ou negocier.`
+      contenu: `✅ L'admin B.Y.H a trouve des techniciens pour votre demande !\n\n${artisansIds.length} technicien(s) disponible(s) propose(s).\nPrix propose: ${new Intl.NumberFormat('fr-FR').format(prixParArtisan)} FCFA\n${message ? '\nMessage: ' + message : ''}\n\nConnectez-vous pour voir les profils et accepter ou negocier.`
     });
 
     // Notifier chaque artisan proposé
@@ -108,7 +108,7 @@ router.put('/:id/proposer-artisans', auth, adminOnly, async (req, res) => {
         await Message.create({
           expediteur: req.user.id,
           destinataire: artisanId,
-          contenu: `🔔 BYHOME vous propose une mission de location !\n\nType: ${demande.typePersonnel.join(', ')}\nVille: ${demande.ville}\nPeriode: du ${new Date(demande.dateDebut).toLocaleDateString('fr-FR')} au ${new Date(demande.dateFin).toLocaleDateString('fr-FR')}\nRemuneration proposee: ${new Intl.NumberFormat('fr-FR').format(prixParArtisan)} FCFA\n\nContactez l'admin pour negocier ou accepter.`
+          contenu: `🔔 B.Y.H vous propose une mission de location !\n\nType: ${demande.typePersonnel.join(', ')}\nVille: ${demande.ville}\nPeriode: du ${new Date(demande.dateDebut).toLocaleDateString('fr-FR')} au ${new Date(demande.dateFin).toLocaleDateString('fr-FR')}\nRemuneration proposee: ${new Intl.NumberFormat('fr-FR').format(prixParArtisan)} FCFA\n\nContactez l'admin pour negocier ou accepter.`
         });
       }
     }
@@ -211,7 +211,7 @@ router.put('/:id/valider-accord', auth, adminOnly, async (req, res) => {
     await Message.create({
       expediteur: req.user.id,
       destinataire: demande.entreprise,
-      contenu: `💰 L'admin BYHOME vous propose un prix pour votre demande de personnel !\n\nMontant propose: ${new Intl.NumberFormat('fr-FR').format(budgetFinal)} FCFA\n${message ? 'Message: ' + message : ''}\n\nConnectez-vous pour accepter ou faire une contre-offre : www.byhome.org/demandes-personnel/${demande._id}`
+      contenu: `💰 L'admin B.Y.H vous propose un prix pour votre demande de personnel !\n\nMontant propose: ${new Intl.NumberFormat('fr-FR').format(budgetFinal)} FCFA\n${message ? 'Message: ' + message : ''}\n\nConnectez-vous pour accepter ou faire une contre-offre : www.byh.org/demandes-personnel/${demande._id}`
     });
 
     res.json({ demande, message: 'Proposition envoyee a l entreprise. En attente de sa reponse.' });

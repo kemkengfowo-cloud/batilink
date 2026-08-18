@@ -6,7 +6,7 @@ export default function CommentCaMarche() {
     <div className="min-h-screen bg-gray-50">
       <div style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 100%)'}} className="py-16">
         <div className="max-w-4xl mx-auto px-4 text-center text-white">
-          <h1 className="text-4xl md:text-5xl font-display font-black mb-4">Comment fonctionne BYHOME ?</h1>
+          <h1 className="text-4xl md:text-5xl font-display font-black mb-4">Comment fonctionne B.Y.H ?</h1>
           <p className="text-blue-200 text-xl">La plateforme la plus simple et securisee pour vos projets BTP au Cameroun</p>
         </div>
       </div>
@@ -69,7 +69,7 @@ export default function CommentCaMarche() {
               {num:'01',titre:'Inscrivez votre entreprise',desc:'Ajoutez vos lots de travaux, votre RCCM et vos photos.',icon:'📝'},
               {num:'02',titre:'Trouvez du personnel',desc:'Publiez vos besoins en main d oeuvre — Coffreur, Ferrailleur, Macon...',icon:'👷'},
               {num:'03',titre:'Signez un contrat',desc:'Generez un contrat de mission signe electroniquement par les deux parties.',icon:'✍️'},
-              {num:'04',titre:'Gerez vos chantiers',desc:'Suivez vos missions et payez via BYHOME en toute securite.',icon:'🏗️'},
+              {num:'04',titre:'Gerez vos chantiers',desc:'Suivez vos missions et payez via B.Y.H en toute securite.',icon:'🏗️'},
             ].map(s=>(
               <div key={s.num} className="bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-all">
                 <div className="flex items-center gap-3 mb-4">
@@ -84,7 +84,7 @@ export default function CommentCaMarche() {
         </section>
 
         <section className="bg-white rounded-2xl border border-gray-100 p-8">
-          <h2 className="text-2xl font-display font-bold text-gray-900 mb-6 text-center">🔒 Votre protection avec BYHOME</h2>
+          <h2 className="text-2xl font-display font-bold text-gray-900 mb-6 text-center">🔒 Votre protection avec B.Y.H</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {icon:'💳',titre:'Paiement securise',desc:'L argent est bloque et libere uniquement apres validation des travaux.'},
@@ -107,10 +107,10 @@ export default function CommentCaMarche() {
           <h2 className="text-2xl font-display font-bold text-gray-900 mb-6">Questions frequentes</h2>
           <div className="space-y-4">
             {[
-              {q:'Combien coute BYHOME ?',r:'L inscription est 100% gratuite. BYHOME prend 10% de commission sur les transactions.'},
-              {q:'Comment sont verifies les artisans ?',r:'L equipe BYHOME verifie manuellement les profils. Les artisans verifies recoivent un badge bleu.'},
-              {q:'Je suis en France, puis-je utiliser BYHOME ?',r:'Oui ! Cochez la case "Je suis hors du Cameroun" lors de votre inscription.'},
-              {q:'Que se passe-t-il si je ne suis pas satisfait ?',r:'Vous avez 48h apres validation pour contester. L admin BYHOME arbitre sous 72h.'},
+              {q:'Combien coute B.Y.H ?',r:'L inscription est 100% gratuite. B.Y.H prend 10% de commission sur les transactions.'},
+              {q:'Comment sont verifies les artisans ?',r:'L equipe B.Y.H verifie manuellement les profils. Les artisans verifies recoivent un badge bleu.'},
+              {q:'Je suis en France, puis-je utiliser B.Y.H ?',r:'Oui ! Cochez la case "Je suis hors du Cameroun" lors de votre inscription.'},
+              {q:'Que se passe-t-il si je ne suis pas satisfait ?',r:'Vous avez 48h apres validation pour contester. L admin B.Y.H arbitre sous 72h.'},
               {q:'Comment recevoir mon paiement ?',r:'Apres validation, vous recevez 90% sur votre Orange Money ou MTN MoMo dans les 24-48h.'},
             ].map((faq,i)=>(
               <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5">
@@ -123,7 +123,7 @@ export default function CommentCaMarche() {
 
         <div style={{background:'linear-gradient(135deg, #0a1628 0%, #1a4a8a 100%)'}} className="rounded-2xl p-10 text-center text-white">
           <h2 className="text-3xl font-display font-black mb-4">Pret a commencer ?</h2>
-          <p className="text-blue-200 mb-8">Rejoignez des centaines de clients et artisans qui font confiance a BYHOME</p>
+          <p className="text-blue-200 mb-8">Rejoignez des centaines de clients et artisans qui font confiance a B.Y.H</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register?role=client" className="px-8 py-3.5 bg-blue-500 hover:bg-blue-400 text-white font-bold rounded-xl">Je suis client</Link>
             <Link to="/register?role=artisan" className="px-8 py-3.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl border border-white/20">Je suis technicien</Link>

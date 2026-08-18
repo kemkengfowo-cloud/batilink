@@ -31,7 +31,7 @@ export default function Login() {
         <div className="relative z-10 p-12">
           <Link to="/" className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3L21 10.5V21H15V15H9V21H3V10.5Z" fill="white"/></svg></div>
-            <span className="font-display font-bold text-2xl text-white">BYHOME</span>
+            <span className="font-display font-bold text-2xl text-white">B.Y.H</span>
           </Link>
         </div>
         <div className="relative z-10 p-12">
@@ -53,12 +53,12 @@ export default function Login() {
         <div className="w-full max-w-md">
           <div className="lg:hidden flex items-center gap-2 mb-8">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">B</div>
-            <span className="font-display font-bold text-xl text-gray-900">BYHOME</span>
+            <span className="font-display font-bold text-xl text-gray-900">B.Y.H</span>
           </div>
 
           <div className="bg-white rounded-3xl shadow-xl p-8">
             <h2 className="text-2xl font-display font-bold text-gray-900 mb-2">Connexion</h2>
-            <p className="text-gray-500 text-sm mb-8">Acces a votre espace BYHOME</p>
+            <p className="text-gray-500 text-sm mb-8">Acces a votre espace B.Y.H</p>
 
             {error && (
               <div className="mb-5 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
@@ -89,7 +89,7 @@ export default function Login() {
             </form>
 
             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-700 text-center">
-              🔒 Vos donnees sont securisees et protegees par BYHOME
+              🔒 Vos donnees sont securisees et protegees par B.Y.H
             </div>
 
             <p className="mt-6 text-center text-sm text-gray-500">

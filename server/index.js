@@ -10,7 +10,7 @@ require("dotenv").config();
 const app = express();
 
 const corsOptions = {
-  origin: ["https://www.byhome.org", "https://byhome-woad.vercel.app", "http://localhost:3000"],
+  origin: ["https://www.byh.org", "https://byh-woad.vercel.app", "http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: false
@@ -49,9 +49,9 @@ app.use("/api/historique", require("./routes/historique"));
 app.use("/api/demandes-personnel", require("./routes/demandes-personnel"));
 app.use("/api/admin", require("./routes/admin"));
 
-app.get("/api/health", (req, res) => res.json({ status: "OK", message: "BYHOME API running" }));
+app.get("/api/health", (req, res) => res.json({ status: "OK", message: "B.Y.H API running" }));
 
-mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/byhome")
+mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/byh")
   .then(() => console.log("MongoDB connecte"))
   .catch(err => console.error("Erreur MongoDB:", err));
 
@@ -62,4 +62,4 @@ setTimeout(() => {
 }, 10000);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log("Serveur BYHOME sur port " + PORT));
+app.listen(PORT, () => console.log("Serveur B.Y.H sur port " + PORT));

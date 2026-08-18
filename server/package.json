@@ -1,5 +1,5 @@
 {
-  "name": "byhome-server",
+  "name": "byh-server",
   "version": "1.0.1",
   "main": "index.js",
   "scripts": {

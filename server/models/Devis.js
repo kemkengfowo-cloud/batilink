@@ -21,7 +21,7 @@ const devisSchema = new mongoose.Schema({
   total: { type: Number, required: true },
   delaiExecution: { type: String, required: true },
   validiteJours: { type: Number, default: 15 },
-  conditionsPaiement: { type: String, default: 'Paiement via BYHOME - Libere apres validation des travaux' },
+  conditionsPaiement: { type: String, default: 'Paiement via B.Y.H - Libere apres validation des travaux' },
   materielsInclus: { type: Boolean, default: false },
   statut: { type: String, enum: ['envoye','accepte','refuse','expire','termine'], default: 'envoye' },
   dateAcceptation: { type: Date },

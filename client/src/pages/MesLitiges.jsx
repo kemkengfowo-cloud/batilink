@@ -87,7 +87,7 @@ export default function MesLitiges() {
 
                 {l.statut === 'ouvert' && (
                   <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700">
-                    ⏳ Votre litige est en cours d examen. L admin BYHOME vous contactera sous 72h.
+                    ⏳ Votre litige est en cours d examen. L admin B.Y.H vous contactera sous 72h.
                   </div>
                 )}
               </div>

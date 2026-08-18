@@ -7,7 +7,7 @@ const BADGES = {
     bg: 'bg-blue-500',
     text: 'text-white',
     border: 'border-blue-600',
-    title: 'Compte vérifié par BYHOME'
+    title: 'Compte vérifié par B.Y.H'
   },
   complet: {
     label: 'Profil complet',
@@ -31,7 +31,7 @@ const BADGES = {
     bg: 'bg-purple-600',
     text: 'text-white',
     border: 'border-purple-700',
-    title: 'Partenaire premium BYHOME'
+    title: 'Partenaire premium B.Y.H'
   }
 };
 

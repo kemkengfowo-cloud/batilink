@@ -41,7 +41,7 @@ export default function LitigeModal({ devisId, contratId, accuseId, onClose, onS
           <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-2xl">⚠️</div>
           <div>
             <h3 className="font-display font-bold text-gray-900">Ouvrir un litige</h3>
-            <p className="text-gray-400 text-xs">L admin BYHOME examinera votre reclamation</p>
+            <p className="text-gray-400 text-xs">L admin B.Y.H examinera votre reclamation</p>
           </div>
         </div>
 
@@ -70,7 +70,7 @@ export default function LitigeModal({ devisId, contratId, accuseId, onClose, onS
             </label>
           </div>
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700">
-            ⚠️ Une fois le litige ouvert, l admin BYHOME examinera les preuves des deux parties et rendra une decision sous 72h maximum.
+            ⚠️ Une fois le litige ouvert, l admin B.Y.H examinera les preuves des deux parties et rendra une decision sous 72h maximum.
           </div>
           <div className="flex gap-3">
             <button type="submit" disabled={loading}

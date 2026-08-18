@@ -38,7 +38,7 @@ export default function ArtisanProfile() {
   if (!artisan) return <div className="text-center py-20 text-gray-500">Artisan non trouve.</div>;
 
   const { user: u, metier, ville, description, note, nbAvis, whatsapp, experience, specialites, photos, disponible, badges } = artisan;
-  const waMsg = `Bonjour ${u?.name}, j ai vu votre profil sur BYHOME et je souhaite vous contacter.`;
+  const waMsg = `Bonjour ${u?.name}, j ai vu votre profil sur B.Y.H et je souhaite vous contacter.`;
   const isOwner = user?._id === u?._id || user?.id === u?._id;
   const isClient = user?.role === 'client';
 

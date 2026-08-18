@@ -12,7 +12,7 @@ export const envoyerNotification = (titre, corps, options = {}) => {
   const notif = new Notification(titre, {
     body: corps,
     icon: '/favicon.ico',
-    tag: options.tag || 'byhome',
+    tag: options.tag || 'byh',
     requireInteraction: options.important || false,
   });
   notif.onclick = () => {

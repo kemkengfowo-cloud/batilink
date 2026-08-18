@@ -115,7 +115,7 @@ export default function CreateMission() {
             {/* Tarif estimé */}
             {form.remuneration > 0 && (
               <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5">
-                <p className="text-sm text-blue-600 font-semibold mb-1">Tarif BYHOME pour ce profil</p>
+                <p className="text-sm text-blue-600 font-semibold mb-1">Tarif B.Y.H pour ce profil</p>
                 <p className="text-3xl font-display font-black text-blue-700">{new Intl.NumberFormat('fr-FR').format(form.remuneration)} FCFA <span className="text-lg font-normal text-blue-400">/ semaine</span></p>
                 {form.typeBesoin === 'equipe' && form.nombrePersonnes > 1 && (
                   <p className="text-sm text-blue-500 mt-1">Total estimé pour {form.nombrePersonnes} personnes : <strong>{new Intl.NumberFormat('fr-FR').format(totalEstime)} FCFA</strong></p>

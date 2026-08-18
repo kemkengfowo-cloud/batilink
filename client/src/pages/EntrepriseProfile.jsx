@@ -39,7 +39,7 @@ export default function EntrepriseProfile() {
 
   const { user: u, nomEntreprise, nomResponsable, description, note, nbAvis, whatsapp,
           lotsTravauxPropose, typePersonnel, photos, disponible, verifie, badges, rccm } = entreprise;
-  const waMsg = `Bonjour ${nomEntreprise}, j'ai vu votre profil sur BYHOME et je souhaite vous contacter.`;
+  const waMsg = `Bonjour ${nomEntreprise}, j'ai vu votre profil sur B.Y.H et je souhaite vous contacter.`;
 
   return (
     <div className="min-h-screen bg-gray-50">

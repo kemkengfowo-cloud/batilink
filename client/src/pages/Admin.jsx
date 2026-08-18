@@ -6,7 +6,7 @@ import api from '../utils/api';
 import { formatDate, formatBudget, getAvatarUrl } from '../utils/helpers';
 
 const BADGE_CONFIG = {
-  verifie:  { label:'Verifie', icon:'✓', color:'bg-blue-500 text-white', desc:'Identite verifiee par BYHOME' },
+  verifie:  { label:'Verifie', icon:'✓', color:'bg-blue-500 text-white', desc:'Identite verifiee par B.Y.H' },
   complet:  { label:'Complet', icon:'★', color:'bg-green-500 text-white', desc:'Profil 100% complete' },
   topRated: { label:'Top', icon:'⭐', color:'bg-amber-500 text-white', desc:'Note > 4.5 avec 5+ avis' },
   premium:  { label:'Premium', icon:'👑', color:'bg-purple-600 text-white', desc:'Partenaire premium' },
@@ -162,12 +162,12 @@ export default function Admin() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-display font-bold text-white">Panel Administration</h1>
-              <p className="text-blue-300 text-sm mt-1">BYHOME — Gestion de la plateforme</p>
+              <p className="text-blue-300 text-sm mt-1">B.Y.H — Gestion de la plateforme</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">A</div>
               <div>
-                <p className="text-white text-sm font-semibold">Admin BYHOME</p>
+                <p className="text-white text-sm font-semibold">Admin B.Y.H</p>
                 <p className="text-blue-300 text-xs">Super administrateur</p>
               </div>
             </div>
@@ -217,9 +217,9 @@ export default function Admin() {
                 </div>
               ))}
             </div>
-            {/* Tableau financier BYHOME */}
+            {/* Tableau financier B.Y.H */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-6 text-white">
-              <h3 className="font-bold text-white/80 mb-4 text-sm uppercase tracking-wider">💰 Finances BYHOME</h3>
+              <h3 className="font-bold text-white/80 mb-4 text-sm uppercase tracking-wider">💰 Finances B.Y.H</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div>
                   <p className="text-blue-200 text-xs mb-1">Commissions ce mois</p>

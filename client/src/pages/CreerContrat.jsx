@@ -189,7 +189,7 @@ export default function CreerContrat() {
                 <p className="text-sm font-bold text-blue-700 mb-3">Recap financier</p>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between"><span className="text-gray-600">Remuneration totale</span><span className="font-bold">{formatBudget(+form.remunerationTotal)}</span></div>
-                  <div className="flex justify-between text-gray-500"><span>Commission BYHOME (10%)</span><span>{formatBudget(commission)}</span></div>
+                  <div className="flex justify-between text-gray-500"><span>Commission B.Y.H (10%)</span><span>{formatBudget(commission)}</span></div>
                   <div className="flex justify-between text-green-600 font-bold"><span>Technicien recevra (90%)</span><span>{formatBudget(montantTechnicien)}</span></div>
                 </div>
               </div>
@@ -197,8 +197,8 @@ export default function CreerContrat() {
 
             {/* Clause protection */}
             <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 text-sm text-amber-800">
-              <p className="font-bold mb-2">⚠️ Clause de protection BYHOME</p>
-              <p>Tout accord ou paiement effectue en dehors de la plateforme BYHOME annule automatiquement toute protection et garantie. BYHOME ne pourra pas intervenir en cas de litige pour des transactions hors plateforme.</p>
+              <p className="font-bold mb-2">⚠️ Clause de protection B.Y.H</p>
+              <p>Tout accord ou paiement effectue en dehors de la plateforme B.Y.H annule automatiquement toute protection et garantie. B.Y.H ne pourra pas intervenir en cas de litige pour des transactions hors plateforme.</p>
             </div>
 
             <button type="submit" disabled={loading||!technicien||!form.typePersonnel}

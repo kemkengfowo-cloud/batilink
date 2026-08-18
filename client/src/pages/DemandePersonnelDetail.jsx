@@ -282,7 +282,7 @@ export default function DemandePersonnelDetail() {
 
         {isEntreprise && demande.statut === 'en_negociation' && dernierePropositionAdmin && (
           <div className="bg-white rounded-2xl border-2 border-blue-200 p-6">
-            <h3 className="font-display font-bold text-gray-900 mb-2">Proposition de l admin BYHOME</h3>
+            <h3 className="font-display font-bold text-gray-900 mb-2">Proposition de l admin B.Y.H</h3>
             <p className="text-3xl font-black text-blue-600 mb-2">{formatBudget(dernierePropositionAdmin.montant)}</p>
             {dernierePropositionAdmin.message && (
               <p className="text-gray-500 text-sm mb-4">{dernierePropositionAdmin.message}</p>
