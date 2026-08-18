@@ -56,7 +56,10 @@ export default function Navbar() {
               <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3L21 10.5V21H15V15H9V21H3V10.5Z" fill="white"/></svg>
               </div>
-              <span className="font-display font-bold text-xl text-gray-900">B.<span className="text-blue-600">Y.</span>H</span>
+              <div className="flex flex-col leading-tight">
+                <span className="font-display font-bold text-xl text-gray-900">B.<span className="text-blue-600">Y.</span>H</span>
+                <span className="text-xs text-gray-400 font-medium tracking-wide">Build Your Home</span>
+              </div>
             </Link>
 
 
