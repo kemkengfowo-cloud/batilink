@@ -1,4 +1,4 @@
-# 🏗️ Batilink — Plateforme Artisans Cameroun
+# 🏗️ BYHOME — Plateforme Artisans Cameroun
 
 Mise en relation entre clients et artisans du bâtiment au Cameroun.
 
@@ -30,8 +30,8 @@ npm install
 
 ```env
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/batilink
-JWT_SECRET=batilink_secret_super_securise_changez_moi
+MONGO_URI=mongodb://localhost:27017/byhome
+JWT_SECRET=byhome_secret_super_securise_changez_moi
 CLIENT_URL=http://localhost:3000
 ```
 
@@ -54,7 +54,7 @@ Ouvrir : **http://localhost:3000**
 ## 📁 Structure du projet
 
 ```
-batilink/
+byhome/
 ├── server/
 │   ├── index.js              # Point d'entrée Express
 │   ├── .env.example
@@ -201,4 +201,4 @@ vercel
 
 ## 📞 Support
 
-Projet Batilink — Cameroun 🇨🇲
+Projet BYHOME — Cameroun 🇨🇲

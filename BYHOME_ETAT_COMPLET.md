@@ -1,19 +1,19 @@
-# BATILINK — État Complet du Projet
+# BYHOME — État Complet du Projet
 Date mise à jour: 17 Août 2026
 
 ## URLS DE PRODUCTION
-- Frontend: https://www.batilink.org
-- Backend: https://batilink-production.up.railway.app
-- GitHub: https://github.com/kemkengfowo-cloud/batilink
+- Frontend: https://www.byhome.org
+- Backend: https://byhome-production.up.railway.app
+- GitHub: https://github.com/kemkengfowo-cloud/byhome
 
 ## COMPTES
-- Admin: admin@batilink.cm / Admin2024Batilink → /admin
+- Admin: admin@byhome.cm / Admin2024BYHOME → /admin
 - Client test: kemkengfowo@gmail.com
 - Artisan test: artisan@test.cm / test123456
 - Entreprise test: entreprise@test.cm / test123456
 
 ## MONGODB
-- URI: mongodb+srv://kemkengfowo_db_user:v8c1fkGZ0np4jEWK@cluster0.qt226kf.mongodb.net/batilink
+- URI: mongodb+srv://kemkengfowo_db_user:v8c1fkGZ0np4jEWK@cluster0.qt226kf.mongodb.net/byhome
 
 ## DERNIER COMMIT: 47f4360
 
