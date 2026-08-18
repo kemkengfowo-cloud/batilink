@@ -62,7 +62,7 @@ export default function FacturePDF({ devis }) {
       <div id="facture-content" style={{display:'none'}}>
         <div className="header">
           <div>
-            <div className="logo">Bati<span>link</span></div>
+            <div className="logo">BY<span>HOME</span></div>
             <div style={{color:'#666', fontSize:'11px', marginTop:'4px'}}>La plateforme BTP du Cameroun</div>
             <div style={{color:'#666', fontSize:'11px'}}>contact@byhome.org • www.byhome.org</div>
           </div>
