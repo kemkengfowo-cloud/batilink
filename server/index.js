@@ -10,7 +10,7 @@ require("dotenv").config();
 const app = express();
 
 const corsOptions = {
-  origin: ["https://www.byh.org", "https://byh-woad.vercel.app", "http://localhost:3000"],
+  origin: ["https://www.batilink.org", "https://batilink-woad.vercel.app", "http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: false
