@@ -51,7 +51,7 @@ app.use("/api/admin", require("./routes/admin"));
 
 app.get("/api/health", (req, res) => res.json({ status: "OK", message: "B.Y.H API running" }));
 
-mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/byh")
+mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/batilink")
   .then(() => console.log("MongoDB connecte"))
   .catch(err => console.error("Erreur MongoDB:", err));
 
