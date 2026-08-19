@@ -5,3 +5,5 @@ uploads/*
 build/
 .DS_Store
 *.log
+.env.backup
+*.env*
