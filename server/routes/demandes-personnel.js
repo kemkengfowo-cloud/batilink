@@ -45,9 +45,10 @@ router.post('/', auth, async (req, res) => {
       return res.status(403).json({ message: 'Seules les entreprises peuvent soumettre une demande.' });
 
     const { typePersonnel, nombrePersonnes, ville, adresseChantier, dateDebut, dateFin, description, budgetPropose } = req.body;
-
-    if (!typePersonnel?.length || !ville || !dateDebut || !dateFin || !budgetPropose)
-      return res.status(400).json({ message: 'Champs requis manquants.' });
+    if (!typePersonnel || !typePersonnel.length || !ville || !dateDebut || !dateFin || !budgetPropose)
+      return res.status(400).json({ message: "Champs requis manquants." });
+    if (new Date(dateFin) <= new Date(dateDebut))
+      return res.status(400).json({ message: "La date de fin doit etre apres la date de debut." });
 
     const demande = await DemandePersonnel.create({
       entreprise: req.user.id,

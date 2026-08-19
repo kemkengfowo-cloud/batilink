@@ -56,10 +56,9 @@ mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/batilink")
   .catch(err => console.error("Erreur MongoDB:", err));
 
 const { lancerTousLesRappels } = require("./utils/rappels");
-setTimeout(() => {
-  lancerTousLesRappels();
-  setInterval(lancerTousLesRappels, 6 * 60 * 60 * 1000);
-}, 10000);
-
-const PORT = process.env.PORT || 5000;
+// Rappels toutes les 6h - uniquement si heure ronde (evite doublons au redemarrage)
+setInterval(() => {
+  const h = new Date().getHours();
+  if (h === 6 || h === 12 || h === 18 || h === 0) lancerTousLesRappels();
+}, 60 * 60 * 1000);
 app.listen(PORT, () => console.log("Serveur B.Y.H sur port " + PORT));
