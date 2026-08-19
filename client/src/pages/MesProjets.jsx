@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import Loader from '../components/Loader';
 import { formatBudget, formatDate } from '../utils/helpers';
+import { useToast } from '../components/Toast';
 
 export default function MesProjets() {
   const [projects, setProjects] = useState([]);
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

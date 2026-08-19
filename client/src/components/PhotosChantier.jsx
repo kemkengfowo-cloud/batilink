@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
+import { useToast } from './Toast';
 import { getAvatarUrl, getImageUrl, formatDate } from '../utils/helpers';
 import { useAuth } from '../context/AuthContext';
 

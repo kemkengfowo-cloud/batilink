@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
+import { useToast } from '../components/Toast';
 import { formatDate, formatBudget, getAvatarUrl } from '../utils/helpers';
 
 const BADGE_CONFIG = {
@@ -27,6 +28,7 @@ function BadgeToggle({ badges={}, onToggle, type }) {
 export default function Admin() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
   const [tab, setTab] = useState('stats');
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
@@ -688,7 +690,7 @@ export default function Admin() {
                   </div>
                 </div>
                 <div className="flex gap-2 flex-wrap mt-3">
-                  <button onClick={()=>{ api.post("/messages", {destinataire: d.entreprise?._id, contenu: "Bonjour, votre demande de personnel a ete prise en compte. Nous vous recontactons bientot."}); alert("Message envoye !"); }} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700">Message entreprise</button>
+                  <button onClick={()=>{ api.post("/messages", {destinataire: d.entreprise?._id, contenu: "Bonjour, votre demande de personnel a ete prise en compte. Nous vous recontactons bientot."}); toast.info("Message envoye !"); }} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700">Message entreprise</button>
                   {["en_attente","en_negociation"].includes(d.statut) && (
                     <button onClick={()=>setShowNegociation(showNegociation===d._id?null:d._id)} className="px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600">
                       {showNegociation===d._id?"Fermer":"Proposer / Accepter prix"}
@@ -715,9 +717,9 @@ export default function Admin() {
                       <input type="text" value={messageAdmin} onChange={e=>setMessageAdmin(e.target.value)} placeholder="Message" className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"/>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={()=>{ if(!prixAdmin) return; api.put("/demandes-personnel/"+d._id+"/valider-accord",{budgetFinal:parseInt(prixAdmin),message:messageAdmin}).then(()=>{loadAll();setShowNegociation(null);setPrixAdmin("");setMessageAdmin("");alert("Prix propose a l entreprise !");}).catch(()=>alert("Erreur")); }} className="flex-1 py-2 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600">Proposer ce prix</button>
+                      <button onClick={()=>{ if(!prixAdmin) return; api.put("/demandes-personnel/"+d._id+"/valider-accord",{budgetFinal:parseInt(prixAdmin),message:messageAdmin}).then(()=>{loadAll();setShowNegociation(null);setPrixAdmin("");setMessageAdmin("");toast.success("Prix propose a l entreprise !");}).catch(()=>toast.error("Erreur")); }} className="flex-1 py-2 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600">Proposer ce prix</button>
                       {d.propositions && d.propositions.length > 0 && d.propositions[d.propositions.length-1].role === "entreprise" && (
-                        <button onClick={()=>{ var derniere = d.propositions[d.propositions.length-1]; api.put("/demandes-personnel/"+d._id+"/accepter-accord",{montant:derniere.montant}).then(()=>{loadAll();setShowNegociation(null);alert("Accord accepte !");}).catch(()=>alert("Erreur")); }} className="flex-1 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700">Accepter prix entreprise</button>
+                        <button onClick={()=>{ var derniere = d.propositions[d.propositions.length-1]; api.put("/demandes-personnel/"+d._id+"/accepter-accord",{montant:derniere.montant}).then(()=>{loadAll();setShowNegociation(null);toast.success("Accord accepte ! Generez maintenant le contrat.");}).catch(()=>toast.error("Erreur")); }} className="flex-1 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700">Accepter prix entreprise</button>
                       )}
                     </div>
                   </div>

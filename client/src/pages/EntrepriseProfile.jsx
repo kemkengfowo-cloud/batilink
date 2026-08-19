@@ -6,10 +6,12 @@ import { getAvatarUrl, getWhatsAppLink, getImageUrl, formatDate, renderStars } f
 import { BadgeList } from '../components/Badge';
 import AvisSection from '../components/AvisSection';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
 
 export default function EntrepriseProfile() {
   const { id } = useParams();
   const { user } = useAuth();
+  const toast = useToast();
   const [entreprise, setEntreprise] = useState(null);
   const [loading, setLoading] = useState(true);
   const [msgModal, setMsgModal] = useState(false);

@@ -266,7 +266,7 @@ export default function DevisDetail() {
                 <p className="text-blue-700 font-semibold">En attente de la reponse du client</p>
                 <p className="text-blue-600 text-sm mt-1">Le client a {devis.validiteJours} jours pour repondre.</p>
                 <Link to={`/devis/creer?edit=${devis._id}`} className="inline-flex items-center gap-2 mt-3 px-4 py-2 border-2 border-blue-300 text-blue-600 rounded-xl font-semibold text-sm hover:bg-blue-100">✏️ Modifier ce devis</Link>
-              <button onClick={async()=>{ if(window.confirm("Annuler ce devis ?")) { try { await api.put("/devis/"+devis._id+"/annuler"); window.location.reload(); } catch(e) { alert("Erreur"); } }}} className="inline-flex items-center gap-2 mt-2 px-4 py-2 border-2 border-red-200 text-red-500 rounded-xl font-semibold text-sm hover:bg-red-50">❌ Annuler ce devis</button>
+              <button onClick={async()=>{ if(window.confirm("Annuler ce devis ?")) { try { await api.put("/devis/"+devis._id+"/annuler"); window.location.reload(); } catch(e) { toast.error("Erreur lors de l annulation"); } }}} className="inline-flex items-center gap-2 mt-2 px-4 py-2 border-2 border-red-200 text-red-500 rounded-xl font-semibold text-sm hover:bg-red-50">❌ Annuler ce devis</button>
               </div>
             )}
 

@@ -45,3 +45,6 @@ devisSchema.pre('save', function(next) {
 });
 
 module.exports = mongoose.model('Devis', devisSchema);
+// Index pour performance
+// devisSchema.index({ client: 1, statut: 1 });
+// devisSchema.index({ artisan: 1, statut: 1 });

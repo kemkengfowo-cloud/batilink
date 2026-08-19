@@ -4,10 +4,12 @@ import api from '../utils/api';
 import Loader from '../components/Loader';
 import { formatBudget, formatDate, getAvatarUrl, getImageUrl } from '../utils/helpers';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
 
 export default function ProjectDetail() {
   const { id } = useParams();
   const { user } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
