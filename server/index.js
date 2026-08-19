@@ -61,4 +61,5 @@ setInterval(() => {
   const h = new Date().getHours();
   if (h === 6 || h === 12 || h === 18 || h === 0) lancerTousLesRappels();
 }, 60 * 60 * 1000);
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log("Serveur B.Y.H sur port " + PORT));
