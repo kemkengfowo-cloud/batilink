@@ -108,3 +108,12 @@ router.post('/login', async (req, res) => {
 });
 
 module.exports = router;
+
+// GET /api/auth/me — Récupérer l'utilisateur connecté
+router.get('/me', require('../middleware/auth'), async (req, res) => {
+  try {
+    const user = await require('../models/User').findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'Utilisateur non trouve.' });
+    res.json(user);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
