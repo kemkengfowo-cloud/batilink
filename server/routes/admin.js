@@ -22,6 +22,8 @@ router.post('/create-first-admin', async (req, res) => {
     const { name, email, password, secretKey } = req.body;
     if (secretKey !== process.env.ADMIN_SECRET_KEY)
       return res.status(403).json({ message: 'Clé secrète invalide.' });
+    const adminCount = await User.countDocuments({ role: "admin" });
+    if (adminCount >= 2) return res.status(403).json({ message: "Nombre maximum d admins atteint. Maximum 2 comptes admin autorises." });
     const exists = await User.findOne({ email });
     if (exists) return res.status(400).json({ message: 'Email déjà utilisé.' });
     const user = await new User({ name, email, password, role: 'admin', city: 'Yaoundé' }).save();

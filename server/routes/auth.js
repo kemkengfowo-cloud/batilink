@@ -23,7 +23,10 @@ router.post('/register', async (req, res) => {
     if (exists) return res.status(400).json({ message: 'Email deja utilise.' });
 
     const userName = role === 'entreprise' ? (nomResponsable || name) : name;
-    const user = await new User({ name: userName, email, password, role, phone, city, estDiaspora, pays: paysDiaspora }).save();
+    const count = await User.countDocuments({ role });
+    const prefix = role === "client" ? "CLI" : role === "artisan" ? "ART" : role === "entreprise" ? "ENT" : "ADM";
+    const matricule = `BYH-${prefix}-${String(count + 1).padStart(4, "0")}`;
+    const user = await new User({ name: userName, email, password, role, phone, city, estDiaspora, pays: paysDiaspora, matricule }).save();
 
     // Creer profil artisan
     if (role === 'artisan') {
