@@ -8,9 +8,18 @@ const { logAction } = require('../middleware/logger');
 
 const genToken = (user) => jwt.sign(
   { id: user._id, role: user.role },
-  process.env.JWT_SECRET || (() => { throw new Error('JWT_SECRET manquant'); })(),
-  { expiresIn: '7d' }
+  process.env.JWT_SECRET || "byh_secret_2024",
+  { expiresIn: "7d" }
 );
+
+const generateRefreshToken = async (userId) => {
+  const crypto = require("crypto");
+  const RefreshToken = require("../models/RefreshToken");
+  const token = crypto.randomBytes(64).toString("hex");
+  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  await RefreshToken.create({ userId, token, expires });
+  return token;
+};
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
@@ -103,7 +112,8 @@ router.post('/login', async (req, res) => {
     });
 
     const token = genToken(user);
-    res.json({ token, user });
+    const refreshToken = await generateRefreshToken(user._id);
+    res.json({ token, refreshToken, user });
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
 
@@ -166,3 +176,42 @@ router.post('/verify-otp', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+const RefreshToken = require('../models/RefreshToken');
+const crypto = require('crypto');
+
+// POST /api/auth/refresh — Rafraichir le token
+router.post('/refresh', async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) return res.status(401).json({ message: 'Refresh token manquant.' });
+
+    const stored = await RefreshToken.findOne({ token: refreshToken });
+    if (!stored) return res.status(401).json({ message: 'Refresh token invalide.' });
+    if (stored.expires < new Date()) {
+      await RefreshToken.findByIdAndDelete(stored._id);
+      return res.status(401).json({ message: 'Refresh token expire. Reconnectez-vous.' });
+    }
+
+    const user = await User.findById(stored.userId);
+    if (!user) return res.status(401).json({ message: 'Utilisateur introuvable.' });
+
+    const newToken = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || 'byh_secret_2024',
+      { expiresIn: '15m' }
+    );
+
+    res.json({ token: newToken, user });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+// POST /api/auth/logout — Déconnexion et suppression refresh token
+router.post('/logout', async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    if (refreshToken) await RefreshToken.findOneAndDelete({ token: refreshToken });
+    res.json({ message: 'Deconnexion reussie.' });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+

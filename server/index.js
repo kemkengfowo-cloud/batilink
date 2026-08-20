@@ -10,7 +10,7 @@ require("dotenv").config();
 const app = express();
 
 const corsOptions = {
-  origin: true,
+  origin: ["https://www.byh-cm.com", "https://byh-cm.com", "https://batilink-woad.vercel.app", "https://www.batilink.org", "http://localhost:3000", "http://localhost:8081"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: false
@@ -67,5 +67,6 @@ const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 initSocket(server);
 server.listen(PORT, () => console.log("Serveur B.Y.H sur port " + PORT));
+
 
 
