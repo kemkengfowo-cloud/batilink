@@ -19,10 +19,11 @@ export default function ArtisanProfile() {
   const [msg, setMsg] = useState('');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [portfolioState, setPortfolioState] = useState([]);
 
   useEffect(() => {
     api.get(`/artisans/${id}`)
-      .then(res => setArtisan(res.data))
+      .then(res => { setArtisan(res.data); setPortfolioState(res.data.portfolio || []); })
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -39,9 +40,7 @@ export default function ArtisanProfile() {
 
   if (loading) return <Loader/>;
   if (!artisan) return <div className="text-center py-20 text-gray-500">Artisan non trouve.</div>;
-
   const { user: u, metier, ville, description, note, nbAvis, whatsapp, experience, specialites, photos, disponible, badges, portfolio = [] } = artisan;
-  const [portfolioState, setPortfolioState] = React.useState(portfolio);
   const waMsg = `Bonjour ${u?.name}, j ai vu votre profil sur B.Y.H et je souhaite vous contacter.`;
   const isOwner = user?._id === u?._id || user?.id === u?._id;
   const isClient = user?.role === 'client';
@@ -220,3 +219,4 @@ export default function ArtisanProfile() {
     </div>
   );
 }
+
