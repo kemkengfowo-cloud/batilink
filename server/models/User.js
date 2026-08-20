@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema({
   matricule:   { type: String, unique: true, sparse: true },
   blocked:     { type: Boolean, default: false },
   estDiaspora: { type: Boolean, default: false },
-  pays:        { type: String }
+  pays:        { type: String },
+  emailVerified: { type: Boolean, default: false }
 }, { timestamps: true });
 
 userSchema.index({ email: 1 });

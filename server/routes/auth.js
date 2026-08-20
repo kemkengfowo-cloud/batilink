@@ -117,3 +117,52 @@ router.get('/me', require('../middleware/auth'), async (req, res) => {
     res.json(user);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
+
+const OTPCode = require('../models/OTPCode');
+const { generateOTP, sendEmailOTP, sendSMSOTP } = require('../utils/otp');
+
+// POST /api/auth/send-otp — Envoyer code OTP
+router.post('/send-otp', async (req, res) => {
+  try {
+    const { contact, type } = req.body;
+    if (!contact || !type) return res.status(400).json({ message: 'Contact et type requis.' });
+    if (!['email', 'sms'].includes(type)) return res.status(400).json({ message: 'Type invalide.' });
+
+    const code = generateOTP();
+    const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await OTPCode.findOneAndDelete({ contact, type });
+    await OTPCode.create({ contact, code, type, expires });
+
+    if (type === 'email') {
+      await sendEmailOTP(contact, code);
+    } else {
+      await sendSMSOTP(contact, code);
+    }
+
+    res.json({ message: `Code envoye par ${type === 'email' ? 'email' : 'SMS'} !` });
+  } catch(err) {
+    console.error('OTP error:', err.message);
+    res.status(500).json({ message: 'Erreur envoi code: ' + err.message });
+  }
+});
+
+// POST /api/auth/verify-otp — Vérifier code OTP
+router.post('/verify-otp', async (req, res) => {
+  try {
+    const { contact, type, code } = req.body;
+    if (!contact || !type || !code) return res.status(400).json({ message: 'Champs requis manquants.' });
+
+    const otp = await OTPCode.findOne({ contact, type, verified: false });
+    if (!otp) return res.status(400).json({ message: 'Code invalide ou expire.' });
+    if (otp.expires < new Date()) return res.status(400).json({ message: 'Code expire. Demandez un nouveau code.' });
+    if (otp.code !== code) return res.status(400).json({ message: 'Code incorrect.' });
+
+    await OTPCode.findByIdAndUpdate(otp._id, { verified: true });
+    await User.findOneAndUpdate({ $or: [{ email: contact }, { phone: contact }] }, { emailVerified: true });
+
+    res.json({ message: 'Verification reussie !' });
+  } catch(err) {
+    res.status(500).json({ message: err.message });
+  }
+});
