@@ -102,12 +102,6 @@ export default function Register() {
               </div>
             )}
 
-            {role === 'entreprise' && (
-              <div>
-                <label className={labelCls}>Nom du compte</label>
-                <input type="text" value={form.name} onChange={e=>set('name',e.target.value)} className={inputCls} placeholder="Nom du responsable"/>
-              </div>
-            )}
 
             <div className="grid grid-cols-2 gap-4">
               <div>
