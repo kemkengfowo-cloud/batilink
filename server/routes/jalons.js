@@ -105,6 +105,6 @@ router.get('/en-attente', auth, async (req, res) => {
     const devisIds = devisClient.map(d => d._id);
     const jalons = await Jalon.find({ devis: { $in: devisIds }, statut: 'soumis' })
       .populate('devis', 'titre numeroDevis');
-    res.json(jalons);
+    res.json(Array.isArray(jalons) ? jalons : []);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
