@@ -120,6 +120,14 @@ function ClientDashboard({ projects, devis, user, visites, jalonsEnAttente }) {
             <p className="text-blue-200 text-sm">Trouvez un artisan rapidement</p>
           </div>
         </Link>
+        <Link to="/entreprises"
+          className="flex items-center gap-4 p-5 bg-white rounded-2xl border-2 border-purple-200 hover:border-purple-400 hover:shadow-md transition-all">
+          <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🏢</div>
+          <div>
+            <p className="font-bold text-lg text-gray-900">Entreprises BTP</p>
+            <p className="text-gray-400 text-sm">Grands projets et travaux d envergure</p>
+          </div>
+        </Link>
         <Link to="/visites/demander"
           className="flex items-center gap-4 p-5 bg-white rounded-2xl border-2 border-blue-200 hover:border-blue-400 hover:shadow-md transition-all">
           <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🔍</div>
