@@ -3,40 +3,17 @@ const sgMail = require('@sendgrid/mail');
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 const sendEmailOTP = async (email, code) => {
-  const apiKey = process.env.SENDGRID_API_KEY;
-  const fromEmail = process.env.EMAIL_USER;
+  const key = process.env.SENDGRID_API_KEY;
+  const from = process.env.EMAIL_USER;
   
-  console.log('SendGrid debug - API Key exists:', !!apiKey);
-  console.log('SendGrid debug - From email:', fromEmail);
+  if (!key || !from) throw new Error('Variables SENDGRID_API_KEY ou EMAIL_USER manquantes');
   
-  if (!apiKey) throw new Error('SENDGRID_API_KEY manquant');
-  if (!fromEmail) throw new Error('EMAIL_USER manquant');
-
-  sgMail.setApiKey(apiKey);
-  
+  sgMail.setApiKey(key);
   await sgMail.send({
     to: email,
-    from: fromEmail,
+    from: from,
     subject: 'Votre code de verification B.Y.H',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #0F172A; padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
-          <h1 style="color: #fff; font-size: 28px; margin: 0;">B.Y.H</h1>
-          <p style="color: #94A3B8; margin: 8px 0 0;">Build Your Home</p>
-        </div>
-        <div style="background: #F8FAFC; padding: 40px; border-radius: 0 0 12px 12px;">
-          <h2 style="color: #0F172A;">Votre code de verification</h2>
-          <p style="color: #64748B;">Utilisez ce code pour confirmer votre inscription :</p>
-          <div style="background: #2563EB; color: #fff; font-size: 36px; font-weight: 900; text-align: center; padding: 20px; border-radius: 12px; letter-spacing: 8px; margin: 24px 0;">
-            ${code}
-          </div>
-          <p style="color: #94A3B8; font-size: 13px;">Ce code expire dans 10 minutes.</p>
-          <div style="border-top: 1px solid #E2E8F0; margin-top: 24px; padding-top: 16px;">
-            <p style="color: #CBD5E1; font-size: 12px; text-align: center;">B.Y.H - www.byh-cm.com</p>
-          </div>
-        </div>
-      </div>
-    `
+    html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:#0F172A;padding:30px;text-align:center;border-radius:12px 12px 0 0"><h1 style="color:#fff;font-size:28px;margin:0">B.Y.H</h1><p style="color:#94A3B8;margin:8px 0 0">Build Your Home</p></div><div style="background:#F8FAFC;padding:40px;border-radius:0 0 12px 12px"><h2 style="color:#0F172A">Votre code de verification</h2><div style="background:#2563EB;color:#fff;font-size:36px;font-weight:900;text-align:center;padding:20px;border-radius:12px;letter-spacing:8px;margin:24px 0">${code}</div><p style="color:#94A3B8;font-size:13px">Ce code expire dans 10 minutes.</p></div></div>`
   });
 };
 
