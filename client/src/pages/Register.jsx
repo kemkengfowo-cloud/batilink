@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { VILLES, CATEGORIES } from '../utils/helpers';
 
-const LOTS = ['Gros oeuvre','Finition','Renovation','Architecture'];
+const LOTS = ['Gros oeuvre','Finition','Geotechnique','Architecture'];
 const TYPE_PERSONNEL = ['Coffreur','Manoeuvre','Ferrailleur','Dalleur','Macon','Electricien','Plombier','Peintre','Carreleur','Menuisier','Soudeur','Autres'];
 const PAYS_MONDE = ['France','Belgique','Suisse','Canada','Etats-Unis','Allemagne','Italie','Espagne','Royaume-Uni','Portugal','Gabon','Congo','Cote d Ivoire','Senegal','Autre'];
 

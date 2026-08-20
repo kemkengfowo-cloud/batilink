@@ -4,7 +4,7 @@ import api from '../utils/api';
 import Loader from '../components/Loader';
 import { getAvatarUrl, renderStars, VILLES } from '../utils/helpers';
 
-const LOTS = ['Gros œuvre','Finition','Rénovation','Architecture'];
+const LOTS = ['Gros œuvre','Finition','Géotechnique','Architecture'];
 
 export default function EntrepriseList() {
   const [entreprises, setEntreprises] = useState([]);
