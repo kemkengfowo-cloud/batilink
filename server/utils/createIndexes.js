@@ -4,80 +4,46 @@ const createIndexes = async () => {
   try {
     const db = mongoose.connection.db;
 
-    // Index Users
-    await db.collection('users').createIndexes([
-      { key: { email: 1 }, unique: true, name: 'email_unique' },
-      { key: { role: 1 }, name: 'role_idx' },
-      { key: { city: 1 }, name: 'city_idx' },
-      { key: { matricule: 1 }, sparse: true, name: 'matricule_idx' },
-    ]);
-
-    // Index Artisans
+    // Index Artisans - les plus importants pour la recherche
     await db.collection('artisans').createIndexes([
-      { key: { ville: 1 }, name: 'ville_idx' },
-      { key: { metier: 1 }, name: 'metier_idx' },
-      { key: { note: -1 }, name: 'note_idx' },
-      { key: { disponible: 1 }, name: 'disponible_idx' },
-      { key: { verifie: 1 }, name: 'verifie_idx' },
-      { key: { ville: 1, metier: 1 }, name: 'ville_metier_compound' },
-      { key: { user: 1 }, unique: true, name: 'user_unique' },
+      { key: { ville: 1, metier: 1 }, name: 'byh_ville_metier', background: true },
+      { key: { note: -1 }, name: 'byh_note', background: true },
+      { key: { disponible: 1 }, name: 'byh_disponible', background: true },
+      { key: { verifie: 1 }, name: 'byh_verifie', background: true },
     ]);
 
     // Index Projects
     await db.collection('projects').createIndexes([
-      { key: { statut: 1 }, name: 'statut_idx' },
-      { key: { client: 1 }, name: 'client_idx' },
-      { key: { localisation: 1 }, name: 'localisation_idx' },
-      { key: { categorie: 1 }, name: 'categorie_idx' },
-      { key: { createdAt: -1 }, name: 'createdAt_idx' },
-      { key: { statut: 1, localisation: 1 }, name: 'statut_location_compound' },
+      { key: { statut: 1, localisation: 1 }, name: 'byh_statut_loc', background: true },
+      { key: { client: 1 }, name: 'byh_client', background: true },
+      { key: { createdAt: -1 }, name: 'byh_created', background: true },
     ]);
 
     // Index Devis
     await db.collection('devis').createIndexes([
-      { key: { client: 1, statut: 1 }, name: 'client_statut_idx' },
-      { key: { artisan: 1, statut: 1 }, name: 'artisan_statut_idx' },
-      { key: { projet: 1 }, name: 'projet_idx' },
-      { key: { createdAt: -1 }, name: 'createdAt_idx' },
+      { key: { client: 1, statut: 1 }, name: 'byh_client_statut', background: true },
+      { key: { artisan: 1, statut: 1 }, name: 'byh_artisan_statut', background: true },
     ]);
 
     // Index Messages
     await db.collection('messages').createIndexes([
-      { key: { expediteur: 1, destinataire: 1 }, name: 'conv_idx' },
-      { key: { destinataire: 1 }, name: 'destinataire_idx' },
-      { key: { createdAt: -1 }, name: 'createdAt_idx' },
-    ]);
-
-    // Index Contrats
-    await db.collection('contrats').createIndexes([
-      { key: { client: 1 }, name: 'client_idx' },
-      { key: { artisan: 1 }, name: 'artisan_idx' },
-      { key: { statut: 1 }, name: 'statut_idx' },
+      { key: { expediteur: 1, destinataire: 1 }, name: 'byh_conv', background: true },
+      { key: { createdAt: -1 }, name: 'byh_created', background: true },
     ]);
 
     // Index Entreprises
     await db.collection('entreprises').createIndexes([
-      { key: { ville: 1 }, name: 'ville_idx' },
-      { key: { lotsTravauxPropose: 1 }, name: 'lots_idx' },
-      { key: { verifie: 1 }, name: 'verifie_idx' },
-      { key: { note: -1 }, name: 'note_idx' },
+      { key: { ville: 1 }, name: 'byh_ville', background: true },
+      { key: { note: -1 }, name: 'byh_note', background: true },
     ]);
 
-    // Index Litiges
-    await db.collection('litiges').createIndexes([
-      { key: { statut: 1 }, name: 'statut_idx' },
-      { key: { createdAt: -1 }, name: 'createdAt_idx' },
-    ]);
-
-    // Index Notifications OTP
-    await db.collection('otpcodes').createIndexes([
-      { key: { contact: 1, type: 1 }, name: 'contact_type_idx' },
-      { key: { expires: 1 }, expireAfterSeconds: 0, name: 'ttl_idx' },
-    ]);
-
-    console.log('✅ Tous les index MongoDB créés avec succès');
+    console.log('✅ Index MongoDB B.Y.H créés avec succès');
   } catch(err) {
-    console.error('❌ Erreur création index:', err.message);
+    if (err.code === 85 || err.code === 86) {
+      console.log('ℹ️ Index déjà existants — OK');
+    } else {
+      console.error('❌ Erreur index:', err.message);
+    }
   }
 };
 
