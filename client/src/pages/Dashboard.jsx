@@ -145,8 +145,8 @@ function ClientDashboard({ projects, devis, user, visites, jalonsEnAttente }) {
           { label:'Devis recus', value:d.length, icon:'📄', color:'text-green-600' },
           { label:'En attente', value:devisEnAttente, icon:'⏳', color:'text-amber-600' },
         ].map(s=>(
-          <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-4 text-center">
-            <p className={`text-3xl font-display font-black ${s.color}`}>{s.value}</p>
+          <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-5 text-center hover:shadow-md transition-shadow relative overflow-hidden">
+            <p className="text-2xl mb-1">{s.icon}</p><p className={`text-3xl font-display font-black ${s.color}`}>{s.value}</p>
             <p className="text-gray-500 text-xs mt-1">{s.label}</p>
           </div>
         ))}
@@ -361,7 +361,7 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
             { label:'Termines', value:devisTermines, icon:'✅', color:'text-purple-600' },
             { label:'Gains totaux', value:gainTotal>0?formatBudget(gainTotal):'--', icon:'💰', color:'text-amber-600' },
           ].map(s=>(
-            <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+            <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-5 text-center hover:shadow-md transition-shadow relative overflow-hidden">
               <p className={`text-2xl font-display font-black ${s.color}`}>{s.value}</p>
               <p className="text-gray-500 text-xs mt-1">{s.label}</p>
             </div>
@@ -507,8 +507,8 @@ function EntrepriseDashboard({ entreprise, missions, contrats, demandes }) {
             { label:'Contrats en cours', value:contratsEnCours, icon:'✍️', color:'text-green-600' },
             { label:'En attente signature', value:contratsEnAttente, icon:'⏳', color:'text-amber-600' },
           ].map(s=>(
-            <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-4 text-center">
-              <p className={`text-3xl font-display font-black ${s.color}`}>{s.value}</p>
+            <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-5 text-center hover:shadow-md transition-shadow relative overflow-hidden">
+              <p className="text-2xl mb-1">{s.icon}</p><p className={`text-3xl font-display font-black ${s.color}`}>{s.value}</p>
               <p className="text-gray-500 text-xs mt-1">{s.label}</p>
             </div>
           ))}
