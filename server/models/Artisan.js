@@ -9,6 +9,14 @@ const artisanSchema = new mongoose.Schema({
   experience:  { type: Number, default: 0 },
   specialites: [{ type: String }],
   photos:      [{ type: String }],
+  portfolio:   [{
+    titre:       { type: String, required: true },
+    description: { type: String },
+    avant:       { type: String },
+    apres:       { type: String },
+    categorie:   { type: String },
+    createdAt:   { type: Date, default: Date.now }
+  }],
   note:        { type: Number, default: 4.0, min: 0, max: 5 },
   nbAvis:      { type: Number, default: 0 },
   disponible:  { type: Boolean, default: true },

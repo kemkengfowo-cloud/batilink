@@ -58,4 +58,30 @@ router.post('/photos', auth, upload.array('photos', 6), async (req, res) => {
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
+// POST /api/artisans/portfolio — Ajouter une realisation au portfolio
+router.post("/portfolio", auth, upload.fields([{ name: "avant", maxCount: 1 }, { name: "apres", maxCount: 1 }]), async (req, res) => {
+  try {
+    const { titre, description, categorie } = req.body;
+    if (!titre) return res.status(400).json({ message: "Titre requis." });
+    const artisan = await require("../models/Artisan").findOne({ user: req.user.id });
+    if (!artisan) return res.status(404).json({ message: "Profil artisan introuvable." });
+    const avant = req.files?.avant?.[0]?.path || req.files?.avant?.[0]?.filename;
+    const apres = req.files?.apres?.[0]?.path || req.files?.apres?.[0]?.filename;
+    artisan.portfolio.push({ titre, description, categorie, avant, apres });
+    await artisan.save();
+    res.status(201).json({ message: "Realisation ajoutee !", portfolio: artisan.portfolio });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+// DELETE /api/artisans/portfolio/:id — Supprimer une realisation
+router.delete("/portfolio/:id", auth, async (req, res) => {
+  try {
+    const artisan = await require("../models/Artisan").findOne({ user: req.user.id });
+    if (!artisan) return res.status(404).json({ message: "Profil artisan introuvable." });
+    artisan.portfolio = artisan.portfolio.filter(p => p._id.toString() !== req.params.id);
+    await artisan.save();
+    res.json({ message: "Realisation supprimee !", portfolio: artisan.portfolio });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
 module.exports = router;

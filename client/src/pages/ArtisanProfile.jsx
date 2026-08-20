@@ -7,6 +7,7 @@ import { BadgeList } from '../components/Badge';
 import AvisSection from '../components/AvisSection';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
+import PortfolioSection from '../components/PortfolioSection';
 
 export default function ArtisanProfile() {
   const { id } = useParams();
@@ -39,7 +40,8 @@ export default function ArtisanProfile() {
   if (loading) return <Loader/>;
   if (!artisan) return <div className="text-center py-20 text-gray-500">Artisan non trouve.</div>;
 
-  const { user: u, metier, ville, description, note, nbAvis, whatsapp, experience, specialites, photos, disponible, badges } = artisan;
+  const { user: u, metier, ville, description, note, nbAvis, whatsapp, experience, specialites, photos, disponible, badges, portfolio = [] } = artisan;
+  const [portfolioState, setPortfolioState] = React.useState(portfolio);
   const waMsg = `Bonjour ${u?.name}, j ai vu votre profil sur B.Y.H et je souhaite vous contacter.`;
   const isOwner = user?._id === u?._id || user?.id === u?._id;
   const isClient = user?.role === 'client';
@@ -135,6 +137,7 @@ export default function ArtisanProfile() {
                 </div>
               </div>
             )}
+            <PortfolioSection portfolio={portfolioState} isOwner={user?._id === u?._id} onUpdate={setPortfolioState}/>
             <AvisSection cibleUserId={u?._id} cibleType="artisan" cibleRefId={artisan._id} nomCible={u?.name}/>
           </div>
 
