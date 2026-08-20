@@ -3,14 +3,20 @@ const sgMail = require('@sendgrid/mail');
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 const sendEmailOTP = async (email, code) => {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  const apiKey = process.env.SENDGRID_API_KEY;
+  const fromEmail = process.env.EMAIL_USER;
+  
+  console.log('SendGrid debug - API Key exists:', !!apiKey);
+  console.log('SendGrid debug - From email:', fromEmail);
+  
+  if (!apiKey) throw new Error('SENDGRID_API_KEY manquant');
+  if (!fromEmail) throw new Error('EMAIL_USER manquant');
+
+  sgMail.setApiKey(apiKey);
   
   await sgMail.send({
     to: email,
-    from: {
-      email: process.env.EMAIL_USER,
-      name: 'B.Y.H - Build Your Home'
-    },
+    from: fromEmail,
     subject: 'Votre code de verification B.Y.H',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -25,7 +31,6 @@ const sendEmailOTP = async (email, code) => {
             ${code}
           </div>
           <p style="color: #94A3B8; font-size: 13px;">Ce code expire dans 10 minutes.</p>
-          <p style="color: #94A3B8; font-size: 13px;">Si vous n avez pas demande ce code, ignorez cet email.</p>
           <div style="border-top: 1px solid #E2E8F0; margin-top: 24px; padding-top: 16px;">
             <p style="color: #CBD5E1; font-size: 12px; text-align: center;">B.Y.H - www.byh-cm.com</p>
           </div>
