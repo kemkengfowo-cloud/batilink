@@ -194,51 +194,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== FOOTER ===== */}
-      <footer className="bg-gray-900 text-gray-400 py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M3 10.5L12 3L21 10.5V21H15V15H9V21H3V10.5Z" fill="white"/>
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-white font-black text-xl">B.<span className="text-blue-400">Y.</span>H</p>
-                  <p className="text-xs text-gray-500">Build Your Home</p>
-                </div>
-              </div>
-              <p className="text-sm leading-relaxed mb-4">
-                La plateforme BTP de référence au Cameroun. Connectons artisans qualifiés et propriétaires pour des projets réussis.
-              </p>
-              <p className="text-xs text-gray-600">🔒 L'excellence à votre service</p>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-4">Plateforme</h4>
-              <div className="space-y-2 text-sm">
-                <Link to="/artisans" className="block hover:text-blue-400 transition-colors">Artisans</Link>
-                <Link to="/entreprises" className="block hover:text-blue-400 transition-colors">Entreprises BTP</Link>
-                <Link to="/projects" className="block hover:text-blue-400 transition-colors">Projets</Link>
-                <Link to="/comment-ca-marche" className="block hover:text-blue-400 transition-colors">Comment ça marche</Link>
-              </div>
-            </div>
-            <div>
-              <h4 className="text-white font-bold mb-4">Légal</h4>
-              <div className="space-y-2 text-sm">
-                <Link to="/cgu" className="block hover:text-blue-400 transition-colors">CGU</Link>
-                <Link to="/confidentialite" className="block hover:text-blue-400 transition-colors">Confidentialité</Link>
-                <a href="mailto:contact@byh-cm.com" className="block hover:text-blue-400 transition-colors">Contact</a>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm">© 2026 B.Y.H — Build Your Home. Tous droits réservés.</p>
-            <p className="text-sm">Fait avec ❤️ au Cameroun 🇨🇲</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
