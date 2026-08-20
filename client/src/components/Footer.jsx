@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-9 h-9 bg-blue-500 rounded-xl flex items-center justify-center font-bold text-base">B</div>
+              <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3L21 10.5V21H15V15H9V21H3V10.5Z" fill="white"/></svg></div>
               <span className="font-display font-bold text-xl">B.Y.H</span>
             </div>
             <p className="text-blue-200 text-sm leading-relaxed max-w-xs">La plateforme de reference pour trouver des artisans et entreprises BTP fiables au Cameroun.</p>
@@ -37,9 +37,10 @@ export default function Footer() {
         </div>
         <div className="border-t border-blue-900 mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-blue-300">
           <p>© {new Date().getFullYear()} B.Y.H. Tous droits reserves.</p>
-          <p>contact@byh.org</p>
+          <p>contact@byh-cm.com</p>
         </div>
       </div>
     </footer>
   );
 }
+
