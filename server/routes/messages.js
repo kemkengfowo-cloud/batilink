@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Message = require('../models/Message');
 const auth = require('../middleware/auth');
+const { notifyUser } = require('../socket');
 
 router.get('/conversations', auth, async (req, res) => {
   try {
@@ -41,6 +42,7 @@ router.post('/', auth, async (req, res) => {
     const { destinataire, contenu, projet } = req.body;
     if (!destinataire || !contenu) return res.status(400).json({ message: 'Champs requis manquants.' });
     const msg = await Message.create({ expediteur: req.user.id, destinataire, contenu, projet });
+    notifyUser(destinataire, "nouveau_message", { expediteur: req.user.id, contenu, messageId: msg._id });
     res.status(201).json(await Message.findById(msg._id).populate('expediteur', 'name avatar').populate('destinataire', 'name avatar'));
   } catch (err) { res.status(500).json({ message: err.message }); }
 });

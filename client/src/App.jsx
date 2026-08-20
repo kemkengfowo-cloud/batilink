@@ -1,5 +1,6 @@
 import React from 'react';
 import { ToastProvider } from './components/Toast';
+import NotificationToast from './components/NotificationToast';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -120,6 +121,7 @@ export default function App() {
     <AuthProvider>
       <ToastProvider>
     <BrowserRouter>
+      <NotificationToast/>
         <AppRoutes/>
       </BrowserRouter>
     </ToastProvider>

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Devis = require('../models/Devis');
 const auth = require('../middleware/auth');
+const { notifyUser } = require('../socket');
 const { logAction } = require('../middleware/logger');
 
 router.get('/mes-devis', auth, async (req, res) => {
@@ -51,6 +52,7 @@ router.post('/', auth, async (req, res) => {
       .populate('client', 'name avatar')
       .populate('projet', 'titre');
     logAction({ userId: req.user.id, nom:'', email:'', role: req.user.role, action: 'DEVIS_ENVOYE', details: { titre: populated.titre, total: populated.total, clientId } });
+    notifyUser(clientId, "nouveau_devis", { artisanId: req.user.id, devisId: devis._id, titre, total: sousTotal });
     res.status(201).json(populated);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
