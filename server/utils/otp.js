@@ -5,18 +5,23 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 const sendEmailOTP = async (email, code) => {
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    family: 4,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   });
 
   await transporter.sendMail({
-    from: `"B.Y.H - Build Your Home" <${process.env.EMAIL_USER}>`,
+    from: `"B.Y.H" <${process.env.EMAIL_USER}>`,
     to: email,
-    subject: 'Votre code de verification B.Y.H',
+    subject: 'Code de verification B.Y.H',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #0F172A; padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
@@ -30,7 +35,6 @@ const sendEmailOTP = async (email, code) => {
             ${code}
           </div>
           <p style="color: #94A3B8; font-size: 13px;">Ce code expire dans 10 minutes.</p>
-          <p style="color: #94A3B8; font-size: 13px;">Si vous n avez pas demande ce code, ignorez cet email.</p>
           <div style="border-top: 1px solid #E2E8F0; margin-top: 24px; padding-top: 16px;">
             <p style="color: #CBD5E1; font-size: 12px; text-align: center;">B.Y.H - www.byh-cm.com</p>
           </div>
@@ -44,7 +48,7 @@ const sendSMSOTP = async (phone, code) => {
   const twilio = require('twilio');
   const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
   await client.messages.create({
-    body: `Votre code de verification B.Y.H est : ${code}\nValide 10 minutes.`,
+    body: `Votre code B.Y.H: ${code}\nValide 10 minutes.`,
     from: process.env.TWILIO_PHONE,
     to: phone
   });
