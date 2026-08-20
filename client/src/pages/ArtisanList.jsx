@@ -36,9 +36,12 @@ export default function ArtisanList() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <div style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 100%)'}} className="py-12">
+      <div className="py-20 relative overflow-hidden" style={{background:"linear-gradient(135deg, #0a1628 0%, #0d2044 100%)"}}>
         <div className="max-w-6xl mx-auto px-4 text-center text-white">
-          <h1 className="text-4xl font-display font-black mb-3">Artisans du Cameroun</h1>
+        <div className="absolute inset-0 opacity-5" style={{backgroundImage:"radial-gradient(circle, white 1px, transparent 1px)", backgroundSize:"30px 30px"}}/>
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 text-blue-300 px-4 py-2 rounded-full text-sm font-semibold mb-6 backdrop-blur-sm"><span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"/>500+ artisans verifies</div>
+          <h1 className="text-5xl font-display font-black mb-3">🔨 Artisans du Cameroun</h1>
           <p className="text-blue-200 text-lg mb-8">Trouvez le technicien ideal pour vos travaux</p>
 
           {/* Barre de recherche */}
@@ -134,3 +137,5 @@ export default function ArtisanList() {
     </div>
   );
 }
+
+
