@@ -183,17 +183,6 @@ export default function Register() {
                   ))}
                 </div>
               </div>
-              <div>
-                <label className={labelCls}>Personnel disponible a la location</label>
-                <div className="flex flex-wrap gap-2">
-                  {TYPE_PERSONNEL.map(t=>(
-                    <button key={t} type="button" onClick={()=>toggleArr('typePersonnel',t)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border-2 transition-all ${form.typePersonnel.includes(t)?'border-blue-500 bg-blue-500 text-white':'border-gray-200 text-gray-600 hover:border-blue-300'}`}>
-                      {t}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </>)}
 
             <div>
