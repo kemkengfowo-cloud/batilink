@@ -15,6 +15,11 @@ export default function Register() {
   const [role, setRole] = useState(defaultRole);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(1);
+  const [otpMethod, setOtpMethod] = useState("email");
+  const [otpCode, setOtpCode] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
   const [form, setForm] = useState({
     name:'', email:'', password:'', phone:'', city:'',
     estDiaspora: false, paysDiaspora:'',
@@ -206,6 +211,31 @@ export default function Register() {
               className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50 text-lg shadow-lg shadow-blue-600/20">
               {loading?'Creation...': `Creer mon compte ${role==='client'?'client':role==='artisan'?'technicien':'entreprise'}`}
             </button>
+          {/* ETAPE 2 - Choix methode OTP */}
+          {step === 2 && (
+            <div className="mt-6 p-6 bg-blue-50 border border-blue-200 rounded-2xl">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Verifiez votre identite</h3>
+              <p className="text-sm text-gray-600 mb-4">Choisissez comment recevoir votre code de verification :</p>
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <button type="button" onClick={()=>setOtpMethod("email")} className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${otpMethod==="email"?"border-blue-500 bg-blue-600 text-white":"border-gray-200 text-gray-600 hover:border-blue-300"}`}>📧 Par Email</button>
+                <button type="button" onClick={()=>setOtpMethod("sms")} className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${otpMethod==="sms"?"border-blue-500 bg-blue-600 text-white":"border-gray-200 text-gray-600 hover:border-blue-300"}`}>📱 Par SMS</button>
+              </div>
+              <p className="text-xs text-gray-500 mb-4">Code envoye a : {otpMethod==="email"?form.email:form.phone}</p>
+              <button type="button" onClick={sendOTP} disabled={otpLoading} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50">{otpLoading?"Envoi...":"Envoyer le code"}</button>
+              <button type="button" onClick={()=>setStep(1)} className="w-full py-2 mt-2 text-gray-500 text-sm hover:text-gray-700">Retour</button>
+            </div>
+          )}
+          {/* ETAPE 3 - Saisie code OTP */}
+          {step === 3 && (
+            <div className="mt-6 p-6 bg-green-50 border border-green-200 rounded-2xl">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Entrez votre code</h3>
+              <p className="text-sm text-gray-600 mb-4">Code envoye par {otpMethod==="email"?"email":"SMS"} a {otpMethod==="email"?form.email:form.phone}</p>
+              <input type="text" maxLength={6} value={otpCode} onChange={e=>setOtpCode(e.target.value)} placeholder="000000" className="w-full text-center text-3xl font-bold tracking-widest px-4 py-4 border-2 border-green-300 rounded-xl focus:outline-none focus:border-blue-500 mb-4" />
+              <button type="button" onClick={verifyOTP} disabled={loading||otpCode.length!==6} className="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50">{loading?"Verification...":"Verifier et creer mon compte"}</button>
+              <button type="button" onClick={()=>setStep(2)} className="w-full py-2 mt-2 text-gray-500 text-sm hover:text-gray-700">Changer de methode</button>
+              <button type="button" onClick={sendOTP} disabled={otpLoading} className="w-full py-2 text-blue-600 text-sm hover:text-blue-700">{otpLoading?"Envoi...":"Renvoyer le code"}</button>
+            </div>
+          )}
           </form>
 
           <p className="mt-5 text-center text-sm text-gray-500">
@@ -217,3 +247,4 @@ export default function Register() {
     </div>
   );
 }
+
