@@ -53,7 +53,7 @@ app.use("/api/admin", require("./routes/admin"));
 app.get("/api/health", (req, res) => res.json({ status: "OK", message: "B.Y.H API running" }));
 
 mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/batilink")
-  .then(() => console.log("MongoDB connecte"))
+  .then(async () => { console.log("MongoDB connecte"); const { createIndexes } = require("./utils/createIndexes"); await createIndexes(); })
   .catch(err => console.error("Erreur MongoDB:", err));
 
 const { lancerTousLesRappels } = require("./utils/rappels");
@@ -68,6 +68,7 @@ const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 initSocket(server);
 server.listen(PORT, () => console.log("Serveur B.Y.H sur port " + PORT));
+
 
 
 
