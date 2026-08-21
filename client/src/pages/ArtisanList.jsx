@@ -135,6 +135,8 @@ export default function ArtisanList() {
         )}
       </div>
     </div>
+    </div>
+    </div>
   );
 }
 
