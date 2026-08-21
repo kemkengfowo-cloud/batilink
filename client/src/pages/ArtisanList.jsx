@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import ArtisanCard from '../components/ArtisanCard';
 import Loader from '../components/Loader';
@@ -9,19 +10,18 @@ export default function ArtisanList() {
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState({ ville:'', metier:'', nom:'' });
-  const [search, setSearch] = useState({ ville:'', metier:'', nom:'' });
+  const [filters, setFilters] = useState({ nom:'', ville:'', metier:'' });
+  const [search, setSearch] = useState({});
+
+  const hasFilter = search.nom || search.ville || search.metier;
 
   const fetchArtisans = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ page, limit:12 });
-      if (search.ville) params.append('ville', search.ville);
-      if (search.metier) params.append('metier', search.metier);
-      if (search.nom) params.append('nom', search.nom);
+      const params = new URLSearchParams({ page, limit: 12, ...Object.fromEntries(Object.entries(search).filter(([,v]) => v)) });
       const res = await api.get(`/artisans?${params}`);
-      setArtisans(res.data.artisans || []);
-      setTotal(res.data.total || 0);
+      setArtisans(res.data.artisans || res.data);
+      setTotal(res.data.total || res.data.length);
     } catch { setArtisans([]); }
     finally { setLoading(false); }
   }, [page, search]);
@@ -29,22 +29,21 @@ export default function ArtisanList() {
   useEffect(() => { fetchArtisans(); }, [fetchArtisans]);
 
   const handleSearch = (e) => { e.preventDefault(); setSearch({...filters}); setPage(1); };
-  const handleReset = () => { setFilters({ville:'',metier:'',nom:''}); setSearch({ville:'',metier:'',nom:''}); setPage(1); };
-
-  const hasFilter = search.ville || search.metier || search.nom;
+  const handleReset = () => { setFilters({nom:'',ville:'',metier:''}); setSearch({}); setPage(1); };
 
   return (
     <div className="min-h-screen bg-gray-50">
+
       {/* Hero */}
       <div className="py-20 relative overflow-hidden" style={{background:"linear-gradient(135deg, #0a1628 0%, #0d2044 100%)"}}>
-        <div className="max-w-6xl mx-auto px-4 text-center text-white">
         <div className="absolute inset-0 opacity-5" style={{backgroundImage:"radial-gradient(circle, white 1px, transparent 1px)", backgroundSize:"30px 30px"}}/>
-        <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 text-blue-300 px-4 py-2 rounded-full text-sm font-semibold mb-6 backdrop-blur-sm"><span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"/>500+ artisans verifies</div>
+        <div className="relative z-10 max-w-6xl mx-auto px-4 text-center text-white">
+          <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 text-blue-300 px-4 py-2 rounded-full text-sm font-semibold mb-6 backdrop-blur-sm">
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"/>
+            500+ artisans verifies
+          </div>
           <h1 className="text-5xl font-display font-black mb-3">🔨 Artisans du Cameroun</h1>
           <p className="text-blue-200 text-lg mb-8">Trouvez le technicien ideal pour vos travaux</p>
-
-          {/* Barre de recherche */}
           <form onSubmit={handleSearch} className="bg-white rounded-2xl p-4 max-w-3xl mx-auto shadow-xl">
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
               <input type="text" placeholder="Rechercher par nom..."
@@ -60,18 +59,17 @@ export default function ArtisanList() {
                 <option value="">Tous les metiers</option>
                 {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
               </select>
-              <button type="submit"
-                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors text-sm">
+              <button type="submit" className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors text-sm">
                 Rechercher
               </button>
             </div>
           </form>
         </div>
-        </div>
-      </div>
       </div>
 
+      {/* Contenu */}
       <div className="max-w-6xl mx-auto px-4 py-10">
+
         {/* Stats + Reset */}
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div>
@@ -85,8 +83,7 @@ export default function ArtisanList() {
             )}
           </div>
           {hasFilter && (
-            <button onClick={handleReset}
-              className="px-4 py-2 border-2 border-gray-200 text-gray-600 rounded-xl text-sm font-semibold hover:border-red-300 hover:text-red-500 transition-colors">
+            <button onClick={handleReset} className="px-4 py-2 border-2 border-gray-200 text-gray-600 rounded-xl text-sm font-semibold hover:border-red-300 hover:text-red-500 transition-colors">
               Effacer les filtres ×
             </button>
           )}
@@ -117,7 +114,6 @@ export default function ArtisanList() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {artisans.map(a=><ArtisanCard key={a._id} artisan={a}/>)}
             </div>
-            {/* Pagination */}
             {total > 12 && (
               <div className="flex justify-center gap-2 mt-10">
                 <button onClick={()=>setPage(p=>Math.max(1,p-1))} disabled={page===1}
@@ -139,5 +135,3 @@ export default function ArtisanList() {
     </div>
   );
 }
-
-
