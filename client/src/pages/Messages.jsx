@@ -64,15 +64,15 @@ export default function Messages() {
         <Link to="/dashboard" className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 text-sm font-medium mb-6 transition-colors">
           ← Tableau de bord
         </Link>
-        <h1 className="text-3xl font-display font-bold text-gray-900 mb-6">Messages</h1>
+        <h1 className="text-3xl font-display font-bold text-gray-900 mb-6">💬 Messages</h1>
 
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm" style={{height:'75vh'}}>
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg" style={{height:"75vh"}}>
           <div className="flex h-full">
 
             {/* Liste conversations */}
             <div className={`${selected?'hidden md:flex':'flex'} flex-col w-full md:w-80 border-r border-gray-100 flex-shrink-0`}>
               <div className="p-4 border-b border-gray-100">
-                <h2 className="font-display font-semibold text-gray-900">Conversations</h2>
+                <h2 className="font-display font-bold text-gray-900">💬 Conversations</h2>
               </div>
               <div className="flex-1 overflow-y-auto">
                 {loading ? (
