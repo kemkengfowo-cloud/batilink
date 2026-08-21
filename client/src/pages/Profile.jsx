@@ -125,12 +125,11 @@ export default function Profile() {
 
   const inputCls = "w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors";
   const labelCls = "block text-sm font-semibold text-gray-700 mb-1.5";
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-3xl mx-auto px-4 py-8">
-          <h1 className="text-3xl font-display font-bold text-gray-900 mb-6">Mon profil</h1>
+          <h1 className="text-3xl font-display font-bold text-gray-900 mb-6">👤 Mon profil</h1>
 
           {/* Avatar */}
           <div className="flex items-center gap-5 mb-6">
@@ -334,3 +333,4 @@ export default function Profile() {
     </div>
   );
 }
+
