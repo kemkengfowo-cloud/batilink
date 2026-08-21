@@ -391,7 +391,6 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
           </div>
         </div>
       )}
-      )}
       {visitesDisponibles && visitesDisponibles.length > 0 && (
         <div className="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-5">
           <div className="flex items-center justify-between">
