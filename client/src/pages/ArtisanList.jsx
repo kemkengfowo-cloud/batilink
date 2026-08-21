@@ -67,6 +67,8 @@ export default function ArtisanList() {
             </div>
           </form>
         </div>
+        </div>
+      </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-10">
@@ -134,8 +136,6 @@ export default function ArtisanList() {
           </>
         )}
       </div>
-    </div>
-    </div>
     </div>
   );
 }
