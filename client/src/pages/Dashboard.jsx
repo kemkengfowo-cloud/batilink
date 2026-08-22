@@ -220,6 +220,7 @@ function ClientDashboard({ projects, devis, user, visites, jalonsEnAttente }) {
             { to:'/entreprises', icon:'🏢', label:'Entreprises BTP' },
             { to:'/devis', icon:'📄', label:'Mes devis' },
             { to:'/contrats', icon:'✍️', label:'Mes contrats' },
+            { to:'/paiements', icon:'💳', label:'Mes paiements' },
           ].map(l=>(
             <Link key={l.to} to={l.to}
               className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all">
@@ -448,6 +449,7 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
           {[
             { to:'/devis', icon:'📄', label:'Mes devis' },
             { to:'/contrats', icon:'✍️', label:'Mes contrats' },
+            { to:'/paiements', icon:'💳', label:'Mes paiements' },
             { to:'/messages', icon:'💬', label:'Messages' },
             { to:'/profile', icon:'👤', label:'Mon profil' },
           ].map(l=>(
@@ -571,6 +573,7 @@ function EntrepriseDashboard({ entreprise, missions, contrats, demandes }) {
           {[
             { to:'/artisans', icon:'🔨', label:'Trouver un artisan' },
             { to:'/contrats', icon:'✍️', label:'Mes contrats' },
+            { to:'/paiements', icon:'💳', label:'Mes paiements' },
             { to:'/messages', icon:'💬', label:'Messages' },
             { to:'/profile', icon:'👤', label:'Mon profil' },
           ].map(l=>(

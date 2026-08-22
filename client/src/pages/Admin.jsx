@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import PaiementsAdmin from '../components/PaiementsAdmin';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -145,6 +146,7 @@ export default function Admin() {
     { id:'visites', label:'Visites', icon:'🔍', badge:visitesEnAttente||null },
     { id:'messagerie', label:'Messagerie', icon:'📢', badge:null },
     { id:'demandes', label:'Demandes Personnel', icon:'??', badge:demandesPersonnel.filter(d=>d.statut==='en_attente').length||null },
+    { id:"paiements", label:"Paiements", icon:"💳", badge:null },
     { id:'historique', label:'Journal', icon:'📜', badge:null },
   ];
 
@@ -636,6 +638,10 @@ export default function Admin() {
           </div>
         )}
 
+        {/* PAIEMENTS */}
+        {tab==="paiements" && (
+          <PaiementsAdmin />
+        )}
         {/* HISTORIQUE */}
         {tab==="historique" && (
           <div className="space-y-4">
@@ -765,3 +771,4 @@ export default function Admin() {
     </div>
   );
 }
+
