@@ -5,6 +5,7 @@ const path = require("path");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 const app = express();
@@ -28,6 +29,7 @@ app.use("/api/", limiter);
 app.use("/api/auth/", authLimiter);
 
 app.use(express.json({ limit: "10mb" }));
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 

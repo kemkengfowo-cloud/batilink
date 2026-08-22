@@ -18,6 +18,23 @@ const generateRefreshToken = async (userId) => {
   const RefreshToken = require("../models/RefreshToken");
   const token = crypto.randomBytes(64).toString("hex");
   const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+const setCookies = (res, token, refreshToken) => {
+  const isProd = process.env.NODE_ENV === "production";
+  res.cookie("byh_token", token, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+  if (refreshToken) {
+    res.cookie("byh_refresh", refreshToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+  }
+};
   await RefreshToken.create({ userId, token, expires });
   return token;
 };
@@ -76,6 +93,7 @@ router.post('/register', async (req, res) => {
     });
 
     const token = genToken(user);
+    setCookies(res, token, null);
     res.status(201).json({ token, user });
     sendBienvenue(user).catch(e => console.error("Email bienvenue:", e.message));
   } catch(err) { res.status(500).json({ message: err.message }); }
@@ -115,6 +133,7 @@ router.post('/login', async (req, res) => {
 
     const token = genToken(user);
     const refreshToken = await generateRefreshToken(user._id);
+    setCookies(res, token, refreshToken);
     res.json({ token, refreshToken, user });
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
