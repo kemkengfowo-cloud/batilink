@@ -1,150 +1,250 @@
 import React from 'react';
-import { formatBudget, formatDate } from '../utils/helpers';
+import { formatDate } from '../utils/helpers';
 
 export default function FacturePDF({ devis }) {
   const handlePrint = () => {
     const content = document.getElementById('facture-content').innerHTML;
     const win = window.open('', '_blank');
-    win.document.write(`
-      <!DOCTYPE html>
-      <html lang="fr">
-      <head>
-        <meta charset="UTF-8">
-        <title>Facture ${devis.numeroDevis}</title>
-        <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: Arial, sans-serif; color: #111; padding: 40px; font-size: 13px; }
-          .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid #2563EB; }
-          .logo { font-size: 28px; font-weight: 900; color: #2563EB; }
-          .logo span { color: #111; }
-          .badge { background: #2563EB; color: white; padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: bold; }
-          .title { font-size: 22px; font-weight: bold; margin-bottom: 5px; }
-          .numero { color: #666; font-size: 12px; font-family: monospace; }
-          .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-          .partie { background: #f8faff; border: 1px solid #dbeafe; border-radius: 10px; padding: 16px; }
-          .partie-label { font-size: 10px; font-weight: bold; color: #2563EB; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-          .partie-nom { font-size: 16px; font-weight: bold; margin-bottom: 3px; }
-          .partie-info { color: #666; font-size: 12px; }
-          table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-          th { background: #1e3a5f; color: white; padding: 10px 12px; text-align: left; font-size: 11px; text-transform: uppercase; }
-          th:last-child, td:last-child { text-align: right; }
-          td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
-          tr:nth-child(even) { background: #f8faff; }
-          .totaux { display: flex; justify-content: flex-end; margin-bottom: 30px; }
-          .totaux-box { width: 280px; }
-          .total-ligne { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
-          .total-final { display: flex; justify-content: space-between; padding: 10px 0; font-size: 16px; font-weight: 900; color: #2563EB; border-top: 2px solid #2563EB; margin-top: 5px; }
-          .info-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 16px; margin-bottom: 20px; font-size: 12px; }
-          .footer { text-align: center; color: #999; font-size: 11px; border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px; }
-          .statut { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
-          .statut-termine { background: #dcfce7; color: #166534; }
-          @media print { body { padding: 20px; } }
-        </style>
-      </head>
-      <body>${content}</body>
-      </html>
-    `);
+    win.document.write(`<!DOCTYPE html><html><head>
+      <meta charset="UTF-8"/>
+      <title>Facture B.Y.H - ${devis.numeroDevis}</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; font-size: 13px; color: #1E293B; background: #fff; }
+        .page { max-width: 800px; margin: 0 auto; padding: 40px; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 3px solid #2563EB; }
+        .logo-section { display: flex; align-items: center; gap: 16px; }
+        .logo-box { width: 60px; height: 60px; background: #2563EB; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+        .logo-box svg { width: 30px; height: 30px; }
+        .logo-text h1 { font-size: 28px; font-weight: 900; color: #0F172A; letter-spacing: 2px; }
+        .logo-text h1 span { color: #2563EB; }
+        .logo-text p { font-size: 11px; color: #64748B; margin-top: 2px; letter-spacing: 1px; }
+        .doc-info { text-align: right; }
+        .doc-info .doc-type { font-size: 22px; font-weight: 900; color: #2563EB; text-transform: uppercase; letter-spacing: 2px; }
+        .doc-info .doc-num { font-size: 14px; color: #64748B; margin-top: 4px; }
+        .doc-info .doc-date { font-size: 12px; color: #94A3B8; margin-top: 2px; }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-top: 6px; }
+        .status-accepte { background: #F0FDF4; color: #16A34A; border: 1px solid #86EFAC; }
+        .status-termine { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
+        .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+        .partie-card { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; }
+        .partie-label { font-size: 10px; font-weight: 700; color: #2563EB; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .partie-name { font-size: 16px; font-weight: 800; color: #0F172A; }
+        .partie-info { font-size: 12px; color: #64748B; margin-top: 4px; line-height: 1.6; }
+        .projet-section { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 12px; padding: 16px; margin-bottom: 32px; }
+        .projet-label { font-size: 10px; font-weight: 700; color: #2563EB; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .projet-titre { font-size: 16px; font-weight: 800; color: #0F172A; }
+        .projet-details { display: flex; gap: 24px; margin-top: 8px; font-size: 12px; color: #64748B; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+        thead tr { background: #0F172A; }
+        thead th { padding: 12px 16px; color: #fff; font-size: 11px; font-weight: 700; text-align: left; text-transform: uppercase; letter-spacing: 0.5px; }
+        thead th:last-child { text-align: right; }
+        tbody tr { border-bottom: 1px solid #F1F5F9; }
+        tbody tr:nth-child(even) { background: #F8FAFC; }
+        tbody td { padding: 12px 16px; font-size: 13px; color: #374151; }
+        tbody td:last-child { text-align: right; font-weight: 600; }
+        .totaux { display: flex; justify-content: flex-end; margin-bottom: 32px; }
+        .totaux-card { width: 300px; }
+        .totaux-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F1F5F9; font-size: 13px; color: #64748B; }
+        .totaux-row.total { padding: 12px 0; border-top: 2px solid #2563EB; border-bottom: none; margin-top: 4px; }
+        .totaux-row.total span:first-child { font-size: 15px; font-weight: 800; color: #0F172A; }
+        .totaux-row.total span:last-child { font-size: 20px; font-weight: 900; color: #2563EB; }
+        .conditions { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; margin-bottom: 32px; }
+        .conditions h4 { font-size: 12px; font-weight: 700; color: #374151; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .conditions p { font-size: 12px; color: #64748B; line-height: 1.6; }
+        .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .signature-box { border: 1px dashed #CBD5E1; border-radius: 12px; padding: 20px; text-align: center; }
+        .signature-label { font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 40px; }
+        .signature-name { font-size: 12px; color: #374151; border-top: 1px solid #CBD5E1; padding-top: 8px; }
+        .footer { text-align: center; padding-top: 24px; border-top: 2px solid #E2E8F0; }
+        .footer-logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px; }
+        .footer-logo-box { width: 28px; height: 28px; background: #2563EB; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .footer-text { font-size: 11px; color: #94A3B8; line-height: 1.6; }
+        .footer-text strong { color: #64748B; }
+        .watermark { color: #10B981; font-size: 11px; font-weight: 700; margin-top: 8px; }
+        @media print {
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .page { padding: 20px; }
+        }
+      </style>
+    </head><body><div class="page">${content}</div></body></html>`);
     win.document.close();
-    setTimeout(() => { win.print(); win.close(); }, 500);
+    setTimeout(() => { win.print(); }, 500);
   };
 
-  return (
-    <div>
-      <button onClick={handlePrint}
-        className="flex items-center gap-2 px-5 py-2.5 bg-gray-800 text-white rounded-xl font-semibold text-sm hover:bg-gray-900 transition-colors">
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-        </svg>
-        Telecharger la facture PDF
-      </button>
+  const montantHT = devis.sousTotal || devis.total;
+  const tva = 0;
+  const total = devis.total || devis.montantTotal;
+  const commission = Math.round(total * 0.10);
+  const montantArtisan = total - commission;
 
-      {/* Contenu caché utilisé pour l'impression */}
-      <div id="facture-content" style={{display:'none'}}>
-        <div className="header">
-          <div>
-            <div className="logo">BY<span>HOME</span></div>
-            <div style={{color:'#666', fontSize:'11px', marginTop:'4px'}}>La plateforme BTP du Cameroun</div>
-            <div style={{color:'#666', fontSize:'11px'}}>contact@byh.org • www.byh.org</div>
+  const factureHTML = (
+    <>
+      {/* Header */}
+      <div className="header">
+        <div className="logo-section">
+          <div className="logo-box">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M3 10.5L12 3L21 10.5V21H15V15H9V21H3V10.5Z" fill="white"/>
+            </svg>
           </div>
-          <div style={{textAlign:'right'}}>
-            <div className="title">FACTURE</div>
-            <div className="numero">{devis.numeroDevis}</div>
-            <div style={{marginTop:'8px'}}><span className={`statut ${devis.statut==='termine'?'statut-termine':''}`}>{devis.statut==='termine'?'PAYEE':'EN COURS'}</span></div>
-            <div style={{color:'#666', fontSize:'11px', marginTop:'8px'}}>Date : {formatDate(devis.createdAt)}</div>
-            {devis.dateAcceptation && <div style={{color:'#666', fontSize:'11px'}}>Acceptee le : {formatDate(devis.dateAcceptation)}</div>}
+          <div className="logo-text">
+            <h1>B.<span>Y.</span>H</h1>
+            <p>BUILD YOUR HOME</p>
+            <p style={{marginTop:'4px', color:'#94A3B8'}}>contact@byh-cm.com — www.byh-cm.com</p>
           </div>
         </div>
-
-        <div className="parties">
-          <div className="partie">
-            <div className="partie-label">Prestataire</div>
-            <div className="partie-nom">{devis.artisan?.name}</div>
-            <div className="partie-info">{devis.artisan?.city}</div>
-            <div className="partie-info">{devis.artisan?.phone}</div>
-            <div className="partie-info">{devis.artisan?.email}</div>
-          </div>
-          <div className="partie">
-            <div className="partie-label">Client</div>
-            <div className="partie-nom">{devis.client?.name}</div>
-            <div className="partie-info">{devis.client?.city}</div>
-            <div className="partie-info">{devis.client?.phone}</div>
-            <div className="partie-info">{devis.client?.email}</div>
+        <div className="doc-info">
+          <div className="doc-type">{devis.statut === 'termine' ? 'Facture' : 'Devis'}</div>
+          <div className="doc-num">N° {devis.numeroDevis}</div>
+          <div className="doc-date">Émis le {formatDate(devis.createdAt)}</div>
+          {devis.dateAcceptation && <div className="doc-date">Accepté le {formatDate(devis.dateAcceptation)}</div>}
+          <div className={`status-badge ${devis.statut === 'termine' ? 'status-termine' : 'status-accepte'}`}>
+            {devis.statut === 'termine' ? '✓ Travaux terminés' : devis.statut === 'accepte' ? '✓ Accepté' : devis.statut}
           </div>
         </div>
+      </div>
 
-        <div style={{marginBottom:'20px'}}>
-          <div style={{fontSize:'16px', fontWeight:'bold', marginBottom:'5px'}}>{devis.titre}</div>
-          <div style={{color:'#666', fontSize:'12px'}}>{devis.description}</div>
-          <div style={{display:'flex', gap:'20px', marginTop:'10px', fontSize:'12px', color:'#666'}}>
-            <span>Delai : {devis.delaiExecution}</span>
-            <span>Materiels : {devis.materielsInclus?'Inclus':'Non inclus'}</span>
-            <span>Conditions : {devis.conditionsPaiement}</span>
+      {/* Parties */}
+      <div className="parties">
+        <div className="partie-card">
+          <div className="partie-label">Client</div>
+          <div className="partie-name">{devis.client?.name}</div>
+          <div className="partie-info">
+            {devis.client?.email && <div>📧 {devis.client.email}</div>}
+            {devis.client?.phone && <div>📱 {devis.client.phone}</div>}
+            {devis.client?.city && <div>📍 {devis.client.city}, Cameroun</div>}
+            {devis.client?.matricule && <div style={{marginTop:'6px', color:'#2563EB', fontWeight:'700'}}>#{devis.client.matricule}</div>}
           </div>
         </div>
+        <div className="partie-card">
+          <div className="partie-label">Prestataire</div>
+          <div className="partie-name">{devis.artisan?.name}</div>
+          <div className="partie-info">
+            {devis.artisan?.email && <div>📧 {devis.artisan.email}</div>}
+            {devis.artisan?.phone && <div>📱 {devis.artisan.phone}</div>}
+            {devis.artisan?.city && <div>📍 {devis.artisan.city}, Cameroun</div>}
+            {devis.artisan?.matricule && <div style={{marginTop:'6px', color:'#2563EB', fontWeight:'700'}}>#{devis.artisan.matricule}</div>}
+          </div>
+        </div>
+      </div>
 
+      {/* Projet */}
+      <div className="projet-section">
+        <div className="projet-label">Projet concerné</div>
+        <div className="projet-titre">{devis.titre || devis.projet?.titre}</div>
+        <div className="projet-details">
+          {devis.projet?.localisation && <span>📍 {devis.projet.localisation}</span>}
+          {devis.delaiExecution && <span>⏱️ Délai : {devis.delaiExecution} jours</span>}
+          {devis.validiteJours && devis.statut === 'envoye' && <span>📅 Validité : {devis.validiteJours} jours</span>}
+        </div>
+        {devis.description && <div style={{marginTop:'8px', fontSize:'12px', color:'#64748B'}}>{devis.description}</div>}
+      </div>
+
+      {/* Lignes */}
+      {devis.lignes?.length > 0 && (
         <table>
           <thead>
             <tr>
-              <th>Designation</th>
-              <th style={{textAlign:'center'}}>Quantite</th>
-              <th style={{textAlign:'center'}}>Unite</th>
-              <th style={{textAlign:'right'}}>Prix unitaire</th>
+              <th>Description</th>
+              <th>Unité</th>
+              <th>Qté</th>
+              <th>Prix unitaire</th>
               <th>Total</th>
             </tr>
           </thead>
           <tbody>
-            {devis.lignes?.map((l,i)=>(
+            {devis.lignes.map((l, i) => (
               <tr key={i}>
-                <td>{l.designation}</td>
-                <td style={{textAlign:'center'}}>{l.quantite}</td>
-                <td style={{textAlign:'center'}}>{l.unite}</td>
-                <td style={{textAlign:'right'}}>{formatBudget(l.prixUnitaire)}</td>
-                <td>{formatBudget(l.total)}</td>
+                <td>{l.description}</td>
+                <td>{l.unite || '-'}</td>
+                <td>{l.quantite}</td>
+                <td>{new Intl.NumberFormat('fr-FR').format(l.prixUnitaire)} FCFA</td>
+                <td>{new Intl.NumberFormat('fr-FR').format(l.total)} FCFA</td>
               </tr>
             ))}
           </tbody>
         </table>
+      )}
 
-        <div className="totaux">
-          <div className="totaux-box">
-            <div className="total-ligne"><span>Sous-total</span><span>{formatBudget(devis.sousTotal)}</span></div>
-            <div className="total-ligne" style={{color:'#666'}}><span>Commission B.Y.H (10%)</span><span>{formatBudget(devis.montantCommission)}</span></div>
-            <div className="total-ligne" style={{color:'#16a34a', fontWeight:'bold'}}><span>Artisan recoit (90%)</span><span>{formatBudget(devis.montantArtisan)}</span></div>
-            <div className="total-final"><span>TOTAL CLIENT</span><span>{formatBudget(devis.total)}</span></div>
+      {/* Totaux */}
+      <div className="totaux">
+        <div className="totaux-card">
+          <div className="totaux-row">
+            <span>Sous-total HT</span>
+            <span>{new Intl.NumberFormat('fr-FR').format(montantHT)} FCFA</span>
+          </div>
+          <div className="totaux-row">
+            <span>TVA (0%)</span>
+            <span>0 FCFA</span>
+          </div>
+          <div className="totaux-row">
+            <span>Commission B.Y.H (10%)</span>
+            <span>{new Intl.NumberFormat('fr-FR').format(commission)} FCFA</span>
+          </div>
+          <div className="totaux-row total">
+            <span>TOTAL TTC</span>
+            <span>{new Intl.NumberFormat('fr-FR').format(total)} FCFA</span>
+          </div>
+          <div style={{textAlign:'right', fontSize:'11px', color:'#16A34A', marginTop:'4px'}}>
+            Prestataire recevra : {new Intl.NumberFormat('fr-FR').format(montantArtisan)} FCFA
           </div>
         </div>
+      </div>
 
-        <div className="info-box">
-          <strong>Conditions de paiement :</strong> {devis.conditionsPaiement}<br/>
-          <strong>Protection :</strong> Tout paiement effectue en dehors de la plateforme B.Y.H annule toute garantie et protection.
+      {/* Conditions */}
+      <div className="conditions">
+        <h4>Conditions de paiement</h4>
+        <p>{devis.conditionsPaiement || 'Paiement sécurisé via la plateforme B.Y.H (Orange Money / MTN MoMo). Les fonds sont bloqués en séquestre jusqu\'à validation des travaux par le client.'}</p>
+        {devis.materielsInclus && <p style={{marginTop:'8px'}}><strong>Matériaux inclus :</strong> {devis.materielsInclus}</p>}
+      </div>
+
+      {/* Signatures */}
+      <div className="signatures">
+        <div className="signature-box">
+          <div className="signature-label">Signature du client</div>
+          <div className="signature-name">{devis.client?.name}</div>
         </div>
-
-        <div className="footer">
-          <strong>B.Y.H</strong> — La plateforme BTP de reference au Cameroun<br/>
-          www.byh.org • contact@byh.org<br/>
-          Ce document est genere automatiquement par B.Y.H et constitue une facture officielle.
+        <div className="signature-box">
+          <div className="signature-label">Signature du prestataire</div>
+          <div className="signature-name">{devis.artisan?.name}</div>
         </div>
       </div>
-    </div>
+
+      {/* Footer */}
+      <div className="footer">
+        <div className="footer-logo">
+          <div className="footer-logo-box">
+            <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+              <path d="M3 10.5L12 3L21 10.5V21H15V15H9V21H3V10.5Z" fill="white"/>
+            </svg>
+          </div>
+          <span style={{fontWeight:'900', fontSize:'16px', color:'#0F172A'}}>B.<span style={{color:'#2563EB'}}>Y.</span>H</span>
+        </div>
+        <div className="footer-text">
+          <strong>B.Y.H — Build Your Home</strong> | Plateforme BTP Cameroun<br/>
+          contact@byh-cm.com | www.byh-cm.com | Yaoundé, Cameroun
+        </div>
+        <div className="watermark">
+          ✓ Document généré automatiquement par B.Y.H — {new Date().toLocaleDateString('fr-FR')}
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      <button onClick={handlePrint}
+        className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-sm shadow-lg shadow-blue-600/20">
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        {devis.statut === 'termine' ? 'Télécharger la facture PDF' : 'Télécharger le devis PDF'}
+      </button>
+
+      <div id="facture-content" style={{display:'none'}}>
+        {factureHTML}
+      </div>
+    </>
   );
 }
