@@ -9,6 +9,7 @@ import Avertissement from '../components/Avertissement';
 
 import JalonsSection from '../components/JalonsSection';
 import LitigeModal from '../components/LitigeModal';
+import PaiementModal from '../components/PaiementModal';
 import FacturePDF from '../components/FacturePDF';
 import AvisSection from '../components/AvisSection';
 
@@ -32,6 +33,7 @@ export default function DevisDetail() {
   const [message, setMessage] = useState('');
   const [showLitige, setShowLitige] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
+  const [showPaiement, setShowPaiement] = useState(false);
 
   useEffect(() => {
     api.get(`/devis/${id}`)
@@ -235,6 +237,20 @@ export default function DevisDetail() {
               </div>
             )}
 
+            {isClient && devis.statut === "accepte" && (
+              <div className="bg-white rounded-2xl border-2 border-blue-200 p-6">
+                <h3 className="font-display font-bold text-gray-900 mb-2">💳 Payer par Mobile Money</h3>
+                <p className="text-gray-500 text-sm mb-4">Payez en toute securite via Orange Money ou MTN MoMo. B.Y.H distribue le paiement a l artisan apres confirmation.</p>
+                <div className="flex gap-3">
+                  <button onClick={()=>setShowPaiement("total")} className="flex-1 py-3.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 text-base shadow-lg shadow-blue-600/20">
+                    🟠 Payer via Orange Money
+                  </button>
+                  <button onClick={()=>setShowPaiement("total")} className="flex-1 py-3.5 bg-yellow-500 text-white rounded-xl font-bold hover:bg-yellow-600 text-base shadow-lg shadow-yellow-500/20">
+                    🟡 Payer via MTN MoMo
+                  </button>
+                </div>
+              </div>
+            )}
             {isClient && devis.statut === 'accepte' && (
               <div className="bg-white rounded-2xl border-2 border-green-200 p-6">
                 <h3 className="font-display font-bold text-gray-900 mb-2">Valider les travaux</h3>
@@ -319,6 +335,14 @@ export default function DevisDetail() {
           accuseId={isClient ? devis.artisan?._id : devis.client?._id}
           onClose={()=>setShowLitige(false)}
           onSuccess={()=>setMessage('Litige ouvert ! L admin va examiner votre reclamation.')}
+        />
+      )}
+      {showPaiement && (
+        <PaiementModal
+          devis={devis}
+          jalon={null}
+          onClose={()=>setShowPaiement(false)}
+          onSuccess={()=>{ setShowPaiement(false); setMessage("Paiement initie ! Suivez les instructions pour finaliser."); }}
         />
       )}
     </div>
