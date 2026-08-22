@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Artisan = require('../models/Artisan');
 const Entreprise = require('../models/Entreprise');
+const { sendBienvenue } = require("../utils/emails");
 const { logAction } = require('../middleware/logger');
 
 const genToken = (user) => jwt.sign(
@@ -76,6 +77,7 @@ router.post('/register', async (req, res) => {
 
     const token = genToken(user);
     res.status(201).json({ token, user });
+    sendBienvenue(user).catch(e => console.error("Email bienvenue:", e.message));
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const Devis = require('../models/Devis');
 const auth = require('../middleware/auth');
 const { notifyUser } = require('../socket');
+const { sendNouveauDevis, sendDevisAccepte } = require("../utils/emails");
 const { logAction } = require('../middleware/logger');
 
 router.get('/mes-devis', auth, async (req, res) => {
@@ -54,6 +55,7 @@ router.post('/', auth, async (req, res) => {
     logAction({ userId: req.user.id, nom:'', email:'', role: req.user.role, action: 'DEVIS_ENVOYE', details: { titre: populated.titre, total: populated.total, clientId } });
     notifyUser(clientId, "nouveau_devis", { artisanId: req.user.id, devisId: devis._id, titre, total: sousTotal });
     res.status(201).json(populated);
+    sendNouveauDevis({ clientEmail: populated.client?.email, clientName: populated.client?.name, artisanName: populated.artisan?.name, projetTitre: populated.projet?.titre, montant: sousTotal, devisId: devis._id }).catch(e => console.error("Email devis:", e.message));
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
 
@@ -69,6 +71,7 @@ router.put('/:id/accepter', auth, async (req, res) => {
     devis.noteClient = req.body.note || '';
     await devis.save();
     res.json(devis);
+    const populated2 = await Devis.findById(devis._id).populate("artisan", "name email").populate("projet", "titre"); sendDevisAccepte({ artisanEmail: populated2.artisan?.email, artisanName: populated2.artisan?.name, clientName: req.user.name, projetTitre: populated2.projet?.titre, montant: devis.total }).catch(e => console.error("Email devis accepte:", e.message));
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
 

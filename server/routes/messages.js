@@ -44,6 +44,7 @@ router.post('/', auth, async (req, res) => {
     const msg = await Message.create({ expediteur: req.user.id, destinataire, contenu, projet });
     notifyUser(destinataire, "nouveau_message", { expediteur: req.user.id, contenu, messageId: msg._id });
     res.status(201).json(await Message.findById(msg._id).populate('expediteur', 'name avatar').populate('destinataire', 'name avatar'));
+    const destinataireUser = await require("../models/User").findById(destinataire); if(destinataireUser) sendNouveauMessage({ destinataireEmail: destinataireUser.email, destinataireName: destinataireUser.name, expediteurName: req.user.name || "Un utilisateur", extrait: contenu.substring(0,100) }).catch(e => console.error("Email message:", e.message));
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 

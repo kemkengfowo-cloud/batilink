@@ -4,6 +4,7 @@ const Jalon = require('../models/Jalon');
 const Devis = require('../models/Devis');
 const auth = require('../middleware/auth');
 const { logAction } = require('../middleware/logger');
+const { sendJalonValide } = require("../utils/emails");
 const upload = require('../middleware/upload');
 // GET /api/jalons/en-attente
 router.get("/en-attente", auth, async (req, res) => {
@@ -84,6 +85,7 @@ router.put('/:id/valider', auth, async (req, res) => {
     await jalon.save();
 
     res.json({ jalon, message: `Jalon valide ! Vous avez 48h pour contester. L artisan recevra ${new Intl.NumberFormat('fr-FR').format(jalon.montant)} FCFA apres ce delai.` });
+    const artisan = await require("../models/User").findById(jalon.devis.artisan); if(artisan) sendJalonValide({ artisanEmail: artisan.email, artisanName: artisan.name, jalonTitre: jalon.titre, montantJalon: jalon.montant }).catch(e => console.error("Email jalon:", e.message));
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
 
