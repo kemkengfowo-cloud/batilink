@@ -5,6 +5,17 @@ const Devis = require('../models/Devis');
 const auth = require('../middleware/auth');
 const { logAction } = require('../middleware/logger');
 const upload = require('../middleware/upload');
+// GET /api/jalons/en-attente
+router.get("/en-attente", auth, async (req, res) => {
+  try {
+    const devisClient = await Devis.find({ client: req.user.id, statut: "accepte" });
+    const devisIds = devisClient.map(d => d._id);
+    const jalons = await Jalon.find({ devis: { $in: devisIds }, statut: "soumis" })
+      .populate("devis", "titre numeroDevis");
+    res.json(Array.isArray(jalons) ? jalons : []);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
 
 // GET /api/jalons/:devisId
 router.get('/:devisId', auth, async (req, res) => {
@@ -98,13 +109,3 @@ router.put('/:id/contester', auth, async (req, res) => {
 module.exports = router;
 
 
-// GET /api/jalons/en-attente
-router.get('/en-attente', auth, async (req, res) => {
-  try {
-    const devisClient = await Devis.find({ client: req.user.id, statut: 'accepte' });
-    const devisIds = devisClient.map(d => d._id);
-    const jalons = await Jalon.find({ devis: { $in: devisIds }, statut: 'soumis' })
-      .populate('devis', 'titre numeroDevis');
-    res.json(Array.isArray(jalons) ? jalons : []);
-  } catch(err) { res.status(500).json({ message: err.message }); }
-});
