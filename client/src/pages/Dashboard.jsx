@@ -23,11 +23,11 @@ export default function Dashboard() {
         }))
         .finally(() => setLoading(false));
     } else if (user.role === 'artisan') {
-      Promise.allSettled([api.get('/artisans/me'), api.get('/devis/mes-devis'), api.get('/visites/disponibles'), api.get('/jalons?role=artisan&statut=valide')])
-        .then(([a, d, vd, jv]) => setData({
+      Promise.allSettled([api.get('/artisans/me'), api.get('/devis/mes-devis'), api.get('/visites/disponibles'), api.get('/jalons?role=artisan&statut=valide'), api.get('/missions/my')])
+        .then(([a, d, vd, jv, ms]) => setData({
           artisan: a.status==='fulfilled' ? a.value.data : null,
           devis: d.status==='fulfilled' ? (d.value.data||[]) : [],
-          projects:[], missions:[], entreprise:null, contrats:[], visitesDisponibles: vd.status==='fulfilled' ? (vd.value.data||[]) : [], jalonsValides: jv.status==='fulfilled' ? (jv.value.data||[]) : []
+          projects:[], missions: ms.status==='fulfilled' ? (ms.value.data?.missions||ms.value.data||[]) : [], entreprise:null, contrats:[], visitesDisponibles: vd.status==='fulfilled' ? (vd.value.data||[]) : [], jalonsValides: jv.status==='fulfilled' ? (jv.value.data||[]) : []
         }))
         .finally(() => setLoading(false));
     } else if (user.role === 'entreprise') {
@@ -71,7 +71,7 @@ export default function Dashboard() {
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {user.role === 'client' && <ClientDashboard projects={data.projects} devis={data.devis} user={user} visites={data.visites||[]} jalonsEnAttente={data.jalonsEnAttente||[]}/> }
-        {user.role === 'artisan' && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user} visitesDisponibles={data.visitesDisponibles||[]}/>}
+        {user.role === 'artisan' && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user} visitesDisponibles={data.visitesDisponibles||[]} missions={data.missions||[]}/>}
         {user.role === 'entreprise' && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} demandes={data.missions} contrats={data.contrats}/>}
         {user.role === "conducteur" && <ConducteurDashboard chantiers={data.chantiers||[]} user={user}/>}
       </div>
@@ -289,7 +289,7 @@ function ProfilProgression({ artisan, user }) {
   );
 }
 
-function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
+function ArtisanDashboard({ artisan, devis, user, visitesDisponibles, missions }) {
   const d = devis || [];
   const devisEnvoyes = d.filter(x=>x.statut==='envoye').length;
   const devisAcceptes = d.filter(x=>x.statut==='accepte').length;
@@ -445,6 +445,23 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles }) {
               </div>
             </div>
             <Link to="/devis" className="px-4 py-2 bg-green-500 text-white rounded-xl font-semibold text-sm hover:bg-green-600">Voir →</Link>
+          </div>
+        </div>
+      )}
+      {/* Missions assignées */}
+      {missions && missions.length > 0 && (
+        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <h2 className="font-display font-bold text-gray-900 mb-4">🎯 Mes missions assignées</h2>
+          <div className="space-y-3">
+            {missions.map(m => (
+              <div key={m._id} className="flex items-center justify-between p-3 bg-green-50 rounded-xl border border-green-100">
+                <div>
+                  <p className="font-semibold text-gray-900">{m.titre}</p>
+                  <p className="text-gray-500 text-xs">📍 {m.localisation} · {m.duree} jours</p>
+                </div>
+                <span className="px-2 py-1 bg-green-600 text-white rounded-lg text-xs font-bold">{new Intl.NumberFormat("fr-FR").format(m.remuneration)} FCFA</span>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -678,3 +695,4 @@ function ConducteurDashboard({ chantiers, user }) {
     </div>
   );
 }
+

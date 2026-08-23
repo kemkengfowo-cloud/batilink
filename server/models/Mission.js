@@ -11,6 +11,7 @@ const missionSchema = new mongoose.Schema({
   localisation: { type: String, required: true },
   dateDebut: { type: Date },
   statut: { type: String, enum: ['ouverte','en_cours','terminee','annulee'], default: 'ouverte' },
-  candidatures: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+  candidatures: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  artisansAssignes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 }, { timestamps: true });
 module.exports = mongoose.model('Mission', missionSchema);
