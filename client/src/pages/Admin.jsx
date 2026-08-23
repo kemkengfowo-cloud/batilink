@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import PaiementsAdmin from '../components/PaiementsAdmin';
 import React, { useState, useEffect } from 'react';
+import ConducteurTravauxAdmin from '../components/ConducteurTravauxAdmin';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
@@ -145,7 +146,8 @@ export default function Admin() {
     { id:'litiges', label:'Litiges', icon:'⚖️', badge:litiesOuverts||null },
     { id:'visites', label:'Visites', icon:'🔍', badge:visitesEnAttente||null },
     { id:'messagerie', label:'Messagerie', icon:'📢', badge:null },
-    { id:'demandes', label:'Demandes Personnel', icon:'??', badge:demandesPersonnel.filter(d=>d.statut==='en_attente').length||null },
+    { id:'demandes', label:'Demandes Personnel', icon:'👷', badge:demandesPersonnel.filter(d=>d.statut==='en_attente').length||null },
+    { id:"conducteur-travaux", label:"Conducteur Travaux", icon:"🏗️", badge:null },
     { id:"paiements", label:"Paiements", icon:"💳", badge:null },
     { id:'historique', label:'Journal', icon:'📜', badge:null },
   ];
@@ -637,6 +639,10 @@ export default function Admin() {
             )}
           </div>
         )}
+        {/* CONDUCTEUR TRAVAUX */}
+        {tab==="conducteur-travaux" && (
+          <ConducteurTravauxAdmin />
+        )}
 
         {/* PAIEMENTS */}
         {tab==="paiements" && (
@@ -771,4 +777,5 @@ export default function Admin() {
     </div>
   );
 }
+
 
