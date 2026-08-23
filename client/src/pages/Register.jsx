@@ -71,7 +71,7 @@ export default function Register() {
 
           {/* Role */}
           <div className="grid grid-cols-3 gap-2 mb-8">
-            {[{r:'client',icon:'🏠',label:'Client'},{r:'artisan',icon:'🔨',label:'Technicien'},{r:'entreprise',icon:'🏢',label:'Entreprise'}].map(({r,icon,label})=>(
+            {[{r:"client",icon:"🏠",label:"Client"},{r:"artisan",icon:"🔨",label:"Technicien"},{r:"entreprise",icon:"🏢",label:"Entreprise"},{r:"conducteur",icon:"CT",label:"Conducteur"}].map(({r,icon,label})=>(
               <button key={r} type="button" onClick={()=>setRole(r)}
                 className={`py-4 rounded-xl border-2 font-semibold transition-all text-center ${role===r?'border-blue-500 bg-blue-50 text-blue-700':'border-gray-200 text-gray-500 hover:border-gray-300'}`}>
                 <div className="text-2xl mb-1">{icon}</div>
@@ -230,4 +230,5 @@ export default function Register() {
     </div>
   );
 }
+
 
