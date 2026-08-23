@@ -93,24 +93,27 @@ router.get('/admin/demandes', auth, async (req, res) => {
     res.json(demandes);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
-
-router.post('/admin/demandes/:id/envoyer-offres', auth, async (req, res) => {
+router.post("/admin/demandes/:id/envoyer-offres", auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.status(403).json({ message: 'Admin requis.' });
+    if (req.user.role !== "admin") return res.status(403).json({ message: "Admin requis." });
     const { conducteurs } = req.body;
-    const demande = await DemandeConducteur.findById(req.params.id).populate('client','name');
+    if (!conducteurs || !conducteurs.length) return res.status(400).json({ message: "Aucun conducteur selectionne." });
+    const demande = await DemandeConducteur.findById(req.params.id).populate("client","name");
+    if (!demande) return res.status(404).json({ message: "Demande non trouvee." });
     for (const c of conducteurs) {
       const dejaOffert = demande.offres.find(o => o.conducteur.toString() === c.conducteurId);
-        demande.offres.push({ conducteur: c.conducteurId, tarifjour: c.tarifjour, message: c.message || '', statut: 'envoyee' });
-        notifyUser(c.conducteurId, 'nouvelle_offre_chantier', { demandeId: demande._id, titreChantier: demande.titreChantier, tarifjour: c.tarifjour });
+      if (!dejaOffert) {
+        demande.offres.push({ conducteur: c.conducteurId, tarifjour: c.tarifjour, message: c.message || "", statut: "envoyee" });
+        notifyUser(c.conducteurId, "nouvelle_offre_chantier", { demandeId: demande._id, titreChantier: demande.titreChantier, tarifjour: c.tarifjour });
         const conducteur = await User.findById(c.conducteurId);
-        if (conducteur) sendEmail({ to: conducteur.email, subject: 'BYH - Nouvelle offre mission - ' + demande.titreChantier, html: '<p>Bonjour ' + conducteur.name + ', une mission vous est proposee: ' + demande.titreChantier + ' a ' + demande.ville + '. Tarif: ' + new Intl.NumberFormat('fr-FR').format(c.tarifjour) + ' FCFA/jour. Connectez-vous pour repondre.</p>' }).catch(e => console.error(e.message));
+        if (conducteur) sendEmail({ to: conducteur.email, subject: "BYH - Nouvelle offre mission - " + demande.titreChantier, html: "<p>Nouvelle mission proposee: " + demande.titreChantier + ". Tarif: " + c.tarifjour + " FCFA/jour. Connectez-vous pour repondre.</p>" }).catch(e => console.error(e.message));
       }
     }
-    demande.statut = 'offres_envoyees';
+    demande.statut = "offres_envoyees";
     await demande.save();
-    res.json({ message: 'Offres envoyees a ' + conducteurs.length + ' conducteur(s) !', demande });
+    res.json({ message: "Offres envoyees !", demande });
   } catch(err) { res.status(500).json({ message: err.message }); }
+});
 });
 
 router.put('/admin/demandes/:id/envoyer-contrat-conducteur', auth, async (req, res) => {
