@@ -39,6 +39,10 @@ export default function Dashboard() {
           projects:[], artisan:null, devis:[]
         }))
         .finally(() => setLoading(false));
+    } else if (user.role === "conducteur") {
+      api.get("/conducteur-travaux/mes-chantiers")
+        .then(res => setData({ chantiers: res.data||[], projects:[], artisan:null, devis:[], missions:[], contrats:[] }))
+        .finally(() => setLoading(false));
     }
   }, [user]);
 
@@ -69,6 +73,7 @@ export default function Dashboard() {
         {user.role === 'client' && <ClientDashboard projects={data.projects} devis={data.devis} user={user} visites={data.visites||[]} jalonsEnAttente={data.jalonsEnAttente||[]}/> }
         {user.role === 'artisan' && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user} visitesDisponibles={data.visitesDisponibles||[]}/>}
         {user.role === 'entreprise' && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} demandes={data.missions} contrats={data.contrats}/>}
+        {user.role === "conducteur" && <ConducteurDashboard chantiers={data.chantiers||[]} user={user}/>}
       </div>
     </div>
   );
@@ -593,3 +598,83 @@ function EntrepriseDashboard({ entreprise, missions, contrats, demandes }) {
 
 
 
+
+function ConducteurDashboard({ chantiers, user }) {
+  return (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-6 text-white">
+        <h2 className="text-2xl font-display font-black mb-1">Bonjour, {user.name} 👷</h2>
+        <p className="text-green-200">Conducteur de Travaux · {user.city}</p>
+        <p className="text-green-300 text-sm mt-1 font-mono">#{user.matricule}</p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { label:'Chantiers', value: chantiers.length, icon:'🏗️', color:'text-blue-600' },
+          { label:'En cours', value: chantiers.filter(c=>c.statut==='en_cours').length, icon:'⚙️', color:'text-green-600' },
+          { label:'Rapports', value: chantiers.reduce((s,c)=>s+(c.nombreRapports||0),0), icon:'📋', color:'text-amber-600' },
+        ].map(s=>(
+          <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-5 text-center hover:shadow-md transition-shadow">
+            <p className="text-2xl mb-1">{s.icon}</p>
+            <p className={`text-3xl font-display font-black ${s.color}`}>{s.value}</p>
+            <p className="text-gray-500 text-xs mt-1">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {chantiers.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
+          <div className="text-5xl mb-3">🏗️</div>
+          <h3 className="text-lg font-bold text-gray-700 mb-2">Aucun chantier assigné</h3>
+          <p className="text-gray-400 text-sm">L'équipe B.Y.H va vous assigner un chantier prochainement</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <h3 className="font-display font-bold text-gray-900">Mes chantiers</h3>
+          {chantiers.map(c => (
+            <div key={c._id} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h4 className="font-bold text-gray-900">{c.titreChantier}</h4>
+                  <p className="text-gray-500 text-sm">📍 {c.localisation} — {c.ville}</p>
+                  <p className="text-gray-400 text-sm">👤 Client : {c.client?.name}</p>
+                </div>
+                <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-bold">🏗️ En cours</span>
+              </div>
+              <div className="mb-3">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-gray-500">Avancement</span>
+                  <span className="font-bold text-green-600">{c.avancementGlobal || 0}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-green-600 rounded-full h-2" style={{width:`${c.avancementGlobal||0}%`}}/>
+                </div>
+              </div>
+              <Link to={`/conducteur-travaux/chantier/${c._id}`}
+                className="block w-full py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm text-center hover:bg-green-700">
+                📝 Voir et soumettre des rapports →
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <h3 className="font-bold text-gray-900 mb-3">Accès rapide</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { to:'/conducteur-travaux/chantier', icon:'🏗️', label:'Mes chantiers' },
+            { to:'/messages', icon:'💬', label:'Messages' },
+            { to:'/profile', icon:'👤', label:'Mon profil' },
+          ].map(l=>(
+            <Link key={l.to} to={l.to}
+              className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-green-200 hover:bg-green-50 transition-all">
+              <span className="text-xl">{l.icon}</span>
+              <span className="text-sm font-semibold text-gray-700">{l.label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
