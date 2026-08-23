@@ -137,7 +137,7 @@ router.put('/offres/:demandeId/repondre', auth, async (req, res) => {
       });
       sendEmail({
         to: 'kemkengpowo@byh-cm.com',
-        subject: `[OK] Conducteur accepte — ${demande.titreChantier}`,
+        subject: `OK - Conducteur accepte - ${demande.titreChantier}`,
         html: `<div style="font-family:Arial;max-width:600px;margin:0 auto"><div style="background:#0F172A;padding:24px;text-align:center"><h1 style="color:#fff">B.Y.H Admin</h1></div><div style="padding:32px"><h2 style="color:#16A34A">✅ Un conducteur a accepté !</h2><p><strong>Chantier :</strong> ${demande.titreChantier}</p><p><strong>Conducteur :</strong> ${conducteur?.name}</p><p><strong>Tarif/jour :</strong> ${new Intl.NumberFormat('fr-FR').format(demande.tarifjourFinal)} FCFA</p>${messageReponse ? `<p><strong>Message :</strong> ${messageReponse}</p>` : ''}<p>Envoyez maintenant le contrat au conducteur puis proposez-le au client.</p><a href="https://www.byh-cm.com/admin" style="display:inline-block;background:#2563EB;color:#fff;padding:12px 24px;border-radius:10px;font-weight:bold;text-decoration:none;margin-top:16px">Gérer →</a></div></div>`
       }).catch(e => console.error('Email admin:', e.message));
     }
@@ -265,7 +265,7 @@ router.put('/admin/demandes/:id/proposer-client', auth, async (req, res) => {
     });
     sendEmail({
       to: demande.client.email,
-      subject: `[OK] Conducteur trouvé — ${demande.titreChantier}`,
+      subject: `OK - Conducteur trouve - ${demande.titreChantier}`,
       html: `<div style="font-family:Arial;max-width:600px;margin:0 auto"><div style="background:#0F172A;padding:24px;text-align:center"><h1 style="color:#fff">B.Y.H</h1></div><div style="padding:32px"><h2 style="color:#16A34A">✅ Conducteur trouvé !</h2><p>Bonjour ${demande.client.name},</p><p>L'équipe B.Y.H a trouvé un conducteur pour votre chantier <strong>${demande.titreChantier}</strong>.</p><div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:10px;padding:16px;margin:16px 0"><p><strong>Conducteur :</strong> ${demande.conducteurRetenu.name}</p><p><strong>Tarif/jour :</strong> ${new Intl.NumberFormat('fr-FR').format(demande.tarifjourFinal)} FCFA</p></div><a href="https://www.byh-cm.com/conducteur-travaux" style="display:inline-block;background:#2563EB;color:#fff;padding:12px 24px;border-radius:10px;font-weight:bold;text-decoration:none;margin-top:16px">Voir et valider →</a></div></div>`
     }).catch(e => console.error('Email client:', e.message));
     res.json({ message: 'Conducteur proposé au client !', demande });
@@ -481,7 +481,7 @@ router.put('/offres/:demandeId/repondre', auth, async (req, res) => {
       });
       sendEmail({
         to: 'kemkengpowo@byh-cm.com',
-        subject: `[OK] Conducteur accepte — ${demande.titreChantier}`,
+        subject: `OK - Conducteur accepte - ${demande.titreChantier}`,
         html: `<div style="font-family:Arial;max-width:600px;margin:0 auto"><div style="background:#0F172A;padding:24px;text-align:center"><h1 style="color:#fff">B.Y.H Admin</h1></div><div style="padding:32px"><h2 style="color:#16A34A">✅ Un conducteur a accepté !</h2><p><strong>Chantier :</strong> ${demande.titreChantier}</p><p><strong>Conducteur :</strong> ${conducteur?.name}</p><p><strong>Tarif/jour :</strong> ${new Intl.NumberFormat('fr-FR').format(demande.tarifjourFinal)} FCFA</p>${messageReponse ? `<p><strong>Message :</strong> ${messageReponse}</p>` : ''}<p>Envoyez maintenant le contrat au conducteur puis proposez-le au client.</p><a href="https://www.byh-cm.com/admin" style="display:inline-block;background:#2563EB;color:#fff;padding:12px 24px;border-radius:10px;font-weight:bold;text-decoration:none;margin-top:16px">Gérer →</a></div></div>`
       }).catch(e => console.error('Email admin:', e.message));
     }
