@@ -40,8 +40,8 @@ export default function Dashboard() {
         }))
         .finally(() => setLoading(false));
     } else if (user.role === "conducteur") {
-      api.get("/conducteur-travaux/mes-chantiers")
-        .then(res => setData({ chantiers: res.data||[], projects:[], artisan:null, devis:[], missions:[], contrats:[] }))
+      Promise.allSettled([api.get('/conducteur-travaux/mes-chantiers'), api.get('/conducteur-travaux/mes-offres')])
+        .then(([ch, of]) => setData({ chantiers: ch.status==='fulfilled' ? (ch.value.data||[]) : [], offres: of.status==='fulfilled' ? (of.value.data||[]) : [], projects:[], artisan:null, devis:[], missions:[], contrats:[] }))
         .finally(() => setLoading(false));
     }
   }, [user]);
@@ -73,7 +73,7 @@ export default function Dashboard() {
         {user.role === 'client' && <ClientDashboard projects={data.projects} devis={data.devis} user={user} visites={data.visites||[]} jalonsEnAttente={data.jalonsEnAttente||[]}/> }
         {user.role === 'artisan' && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user} visitesDisponibles={data.visitesDisponibles||[]} missions={data.missions||[]}/>}
         {user.role === 'entreprise' && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} demandes={data.missions} contrats={data.contrats}/>}
-        {user.role === "conducteur" && <ConducteurDashboard chantiers={data.chantiers||[]} user={user}/>}
+        {user.role === "conducteur" && <ConducteurDashboard chantiers={data.chantiers||[]} offres={data.offres||[]} user={user}/>}
       </div>
     </div>
   );
@@ -616,7 +616,7 @@ function EntrepriseDashboard({ entreprise, missions, contrats, demandes }) {
 
 
 
-function ConducteurDashboard({ chantiers, user }) {
+function ConducteurDashboard({ chantiers, offres, user }) {
   return (
     <div className="space-y-6">
       <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-6 text-white">
@@ -639,6 +639,29 @@ function ConducteurDashboard({ chantiers, user }) {
         ))}
       </div>
 
+      {/* Offres reçues */}
+      {offres && offres.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="font-display font-bold text-gray-900 flex items-center gap-2">🎯 Offres de mission <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">{offres.length}</span></h3>
+          {offres.map((o, i) => (
+            <div key={i} className="bg-white rounded-2xl border-2 border-blue-200 p-5 shadow-sm">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h4 className="font-bold text-gray-900">{o.titreChantier}</h4>
+                  <p className="text-gray-500 text-sm">📍 {o.localisation} — {o.ville}</p>
+                  <p className="text-gray-500 text-sm capitalize">🏗️ {o.typeChantier}</p>
+                </div>
+                <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-xs font-black">{o.offre?.tarifjour ? new Intl.NumberFormat("fr-FR").format(o.offre.tarifjour)+" FCFA/jour" : "Tarif à voir"}</span>
+              </div>
+              {o.offre?.message && <p className="text-gray-600 text-sm italic mb-3">"{o.offre.message}"</p>}
+              <div className="grid grid-cols-2 gap-2">
+                <button onClick={async()=>{ try{ await (await import("../utils/api")).default.put("/conducteur-travaux/offres/"+o.demandeId+"/repondre",{reponse:"acceptee"}); window.location.reload(); }catch(e){ alert(e.response?.data?.message||"Erreur"); }}} className="py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm hover:bg-green-700">✅ Accepter</button>
+                <button onClick={async()=>{ const msg=prompt("Raison du refus:"); if(!msg)return; try{ await (await import("../utils/api")).default.put("/conducteur-travaux/offres/"+o.demandeId+"/repondre",{reponse:"refusee",messageReponse:msg}); window.location.reload(); }catch(e){ alert(e.response?.data?.message||"Erreur"); }}} className="py-2.5 bg-red-50 text-red-600 border border-red-200 rounded-xl font-bold text-sm hover:bg-red-100">❌ Refuser</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       {chantiers.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
           <div className="text-5xl mb-3">🏗️</div>
