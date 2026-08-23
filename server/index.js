@@ -46,6 +46,7 @@ app.use("/api/jalons", require("./routes/jalons"));
 app.use("/api/litiges", require("./routes/litiges"));
 app.use("/api/avis", require("./routes/avis"));
 app.use("/api/paiements", require("./routes/paiements"));
+app.use("/api/conducteur", require("./routes/conducteur"));
 app.use("/api/visites", require("./routes/visites"));
 app.use("/api/signalements", require("./routes/signalements"));
 app.use("/api/photos-chantier", require("./routes/photos-chantier"));

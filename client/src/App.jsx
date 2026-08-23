@@ -23,6 +23,8 @@ import MissionList from './pages/MissionList';
 import MesDevis from './pages/MesDevis';
 import MesPaiements from './pages/MesPaiements';
 import MesRevenus from './pages/MesRevenus';
+import ConducteurMissions from './pages/ConducteurMissions';
+import ConducteurDetail from './pages/ConducteurDetail';
 import MesLitiges from './pages/MesLitiges';
 import MesContrats from './pages/MesContrats';
 import MesVisites from './pages/MesVisites';
@@ -99,6 +101,8 @@ function AppRoutes() {
           <Route path="/litiges" element={<PrivateRoute><MesLitiges/></PrivateRoute>}/>
           <Route path="/paiements" element={<PrivateRoute><MesPaiements/></PrivateRoute>}/>
           <Route path="/revenus" element={<PrivateRoute><MesRevenus/></PrivateRoute>}/>
+          <Route path="/conducteur" element={<PrivateRoute><ConducteurMissions/></PrivateRoute>}/>
+          <Route path="/conducteur/missions/:id" element={<PrivateRoute><ConducteurDetail/></PrivateRoute>}/>
           <Route path="/devis" element={<PrivateRoute><MesDevis/></PrivateRoute>}/>
           <Route path="/devis/creer" element={<PrivateRoute role={['artisan','entreprise']}><CreerDevis/></PrivateRoute>}/>
           <Route path="/devis/:id" element={<PrivateRoute><DevisDetail/></PrivateRoute>}/>
