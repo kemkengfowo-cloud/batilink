@@ -101,6 +101,7 @@ router.post('/admin/demandes/:id/envoyer-offres', auth, async (req, res) => {
     for (let i = 0; i < conducteurs.length; i++) {
       const c = conducteurs[i];
       const dejaOffert = demande.offres.find(function(o) { return o.conducteur.toString() === c.conducteurId; });
+      if (dejaOffert === undefined) {
         demande.offres.push({ conducteur: c.conducteurId, tarifjour: c.tarifjour, message: c.message || '', statut: 'envoyee' });
         notifyUser(c.conducteurId, 'nouvelle_offre_chantier', { demandeId: demande._id, titreChantier: demande.titreChantier, tarifjour: c.tarifjour });
         const cond = await User.findById(c.conducteurId);
