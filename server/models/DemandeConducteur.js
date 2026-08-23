@@ -15,33 +15,47 @@ const demandeConducteurSchema = new mongoose.Schema({
   superficie:       { type: String },
   budgetChantier:   { type: Number },
 
-  // Budget conducteur
+  // Budget
   budgetPropose:    { type: Number },
   budgetFinal:      { type: Number },
 
-  // Statut de la demande
-  statut:           { type: String, enum: [
-    'en_attente',      // Client vient de soumettre
-    'en_traitement',   // B.Y.H cherche un conducteur
-    'conducteur_propose', // B.Y.H propose un conducteur au client
-    'contrat_client',  // Contrat envoyé au client
-    'valide_client',   // Client a validé le contrat
-    'contrat_conducteur', // Contrat envoyé au conducteur
-    'en_cours',        // Mission en cours
-    'terminee',        // Mission terminée
-    'annulee'          // Annulée
+  // Offres envoyées aux conducteurs par l'admin
+  offres: [{
+    conducteur:     { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    tarifjour:      { type: Number, required: true },
+    message:        { type: String },
+    statut:         { type: String, enum: ['envoyee', 'acceptee', 'refusee', 'expiree'], default: 'envoyee' },
+    messageReponse: { type: String },
+    dateEnvoi:      { type: Date, default: Date.now },
+    dateReponse:    { type: Date },
+  }],
+
+  // Statut global
+  statut: { type: String, enum: [
+    'en_attente',           // Client vient de soumettre
+    'offres_envoyees',      // Admin a envoyé offres aux conducteurs
+    'conducteur_accepte',   // Un conducteur a accepté
+    'contrat_conducteur',   // Contrat envoyé au conducteur
+    'conducteur_valide',    // Conducteur a signé son contrat
+    'propose_client',       // Admin propose le conducteur au client
+    'contrat_client',       // Contrat envoyé au client
+    'valide_client',        // Client a validé
+    'en_cours',             // Mission en cours
+    'terminee',             // Mission terminée
+    'annulee'               // Annulée
   ], default: 'en_attente' },
 
-  // Conducteur proposé par admin
-  conducteurPropose: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  messagePropositon: { type: String },
+  // Conducteur retenu
+  conducteurRetenu:     { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  tarifjourFinal:       { type: Number },
 
   // Contrats
-  contratClientUrl:     { type: String },
-  contratConducteurUrl: { type: String },
-  contratClientValide:  { type: Boolean, default: false },
-  contratConducteurValide: { type: Boolean, default: false },
-  dateValidationClient: { type: Date },
+  contratClientUrl:         { type: String },
+  contratConducteurUrl:     { type: String },
+  contratClientValide:      { type: Boolean, default: false },
+  contratConducteurValide:  { type: Boolean, default: false },
+  dateValidationClient:     { type: Date },
+  dateValidationConducteur: { type: Date },
 
   // Notes admin
   notesAdmin:       { type: String },
@@ -55,6 +69,7 @@ const demandeConducteurSchema = new mongoose.Schema({
 
 demandeConducteurSchema.index({ client: 1, statut: 1 });
 demandeConducteurSchema.index({ conducteur: 1, statut: 1 });
+demandeConducteurSchema.index({ 'offres.conducteur': 1 });
 demandeConducteurSchema.index({ statut: 1 });
 
 module.exports = mongoose.model('DemandeConducteur', demandeConducteurSchema);
