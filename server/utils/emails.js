@@ -131,4 +131,4 @@ const sendNouveauMessage = async ({ destinataireEmail, destinataireName, expedit
   });
 };
 
-module.exports = { sendBienvenue, sendNouveauDevis, sendDevisAccepte, sendJalonValide, sendNouveauMessage };
+module.exports = { sendBienvenue, sendNouveauDevis, sendDevisAccepte, sendJalonValide, sendNouveauMessage, sendEmail };
