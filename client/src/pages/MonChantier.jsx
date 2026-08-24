@@ -55,7 +55,7 @@ export default function MonChantier() {
       ? `/conducteur-travaux/chantiers/${id}/rapports?type=${filtre}`
       : `/conducteur-travaux/chantiers/${id}/rapports`;
     Promise.all([
-      api.get('/conducteur-travaux/mes-chantiers').catch(() => ({ data: [] })),
+      api.get(user?.role === "conducteur" ? "/conducteur-travaux/mes-chantiers" : "/conducteur-travaux/mes-demandes").catch(() => ({ data: [] })),
       api.get(url).catch(() => ({ data: { rapports: [] } })),
     ]).then(([chantiersRes, rapportsRes]) => {
       const c = (chantiersRes.data || []).find(x => x._id === id);
