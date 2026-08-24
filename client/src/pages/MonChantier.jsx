@@ -479,6 +479,10 @@ export default function MonChantier() {
                 )}
               </div>
 
+              <button type="button" onClick={() => { setShowRapport(false); setPhotos([]); setRapport(RAPPORT_INITIAL); }}
+                className="w-full py-3 border-2 border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition-all">
+                Annuler
+              </button>
               <button type="submit" disabled={submitting || uploadingPhotos}
                 className="w-full py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 disabled:opacity-50 shadow-lg text-lg">
                 {submitting ? '⏳ Envoi en cours...' : `📤 Soumettre le rapport${photos.length > 0 ? ` avec ${photos.length} photo(s)` : ''}`}
