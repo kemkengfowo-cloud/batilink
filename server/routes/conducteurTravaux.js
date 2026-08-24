@@ -218,3 +218,39 @@ router.put('/rapports/:id/contester', auth, async (req, res) => {
 });
 
 module.exports = router;
+
+// GET /api/conducteur-travaux/contrat-conducteur/:id
+router.get('/contrat-conducteur/:id', auth, async (req, res) => {
+  try {
+    const demande = await DemandeConducteur.findById(req.params.id)
+      .populate('conducteurRetenu', 'name email phone matricule')
+      .populate('client', 'name email phone');
+    if (!demande) return res.status(404).json({ message: 'Demande non trouvee.' });
+    const isAuthorized = req.user.role === 'admin' ||
+      (demande.conducteurRetenu && demande.conducteurRetenu._id.toString() === req.user.id);
+    if (!isAuthorized) return res.status(403).json({ message: 'Acces refuse.' });
+    const { generateContratConducteur } = require('../utils/generateContrat');
+    const pdfBuffer = await generateContratConducteur(demande, demande.conducteurRetenu);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'inline; filename=contrat-conducteur-byh.pdf');
+    res.send(pdfBuffer);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+// GET /api/conducteur-travaux/contrat-client/:id
+router.get('/contrat-client/:id', auth, async (req, res) => {
+  try {
+    const demande = await DemandeConducteur.findById(req.params.id)
+      .populate('conducteurRetenu', 'name email phone')
+      .populate('client', 'name email phone');
+    if (!demande) return res.status(404).json({ message: 'Demande non trouvee.' });
+    const isAuthorized = req.user.role === 'admin' ||
+      demande.client._id.toString() === req.user.id;
+    if (!isAuthorized) return res.status(403).json({ message: 'Acces refuse.' });
+    const { generateContratClient } = require('../utils/generateContrat');
+    const pdfBuffer = await generateContratClient(demande, demande.client, demande.conducteurRetenu);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'inline; filename=contrat-client-byh.pdf');
+    res.send(pdfBuffer);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});

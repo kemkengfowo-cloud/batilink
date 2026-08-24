@@ -58,7 +58,7 @@ app.use("/api/admin", require("./routes/admin"));
 app.get("/api/health", (req, res) => res.json({ status: "OK", message: "B.Y.H API running" }));
 
 mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/batilink")
-  .then(async () => { console.log("MongoDB connecte"); const { createIndexes } = require("./utils/createIndexes"); await createIndexes(); })
+  .then(async () => { console.log("MongoDB connecte"); const { createIndexes } = require("./utils/createIndexes"); await createIndexes(); require("./utils/cronJobs"); })
   .catch(err => console.error("Erreur MongoDB:", err));
 
 const { lancerTousLesRappels } = require("./utils/rappels");
