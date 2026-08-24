@@ -661,6 +661,25 @@ function ConducteurDashboard({ chantiers, offres, user }) {
             </div>
           ))}
         </div>
+      {/* Contrat a signer */}
+      {chantiers.filter(c=>c.statut==='contrat_conducteur').map(c=>(
+        <div key={c._id} className="bg-white rounded-2xl border-2 border-purple-300 p-5 shadow-sm">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-3xl">📄</span>
+            <div>
+              <h4 className="font-bold text-gray-900">{c.titreChantier}</h4>
+              <p className="text-gray-500 text-sm">📍 {c.localisation} — {c.ville}</p>
+            </div>
+          </div>
+          <div className="bg-purple-50 border border-purple-200 rounded-xl p-3 mb-3">
+            <p className="text-purple-700 text-sm font-semibold">Contrat pret a signer !</p>
+            <p className="text-purple-600 text-xs mt-1">Veuillez signer votre contrat pour demarrer la mission.</p>
+          </div>
+          <button onClick={async()=>{ if(!window.confirm("Confirmer la signature du contrat ?")) return; try{ const {default:api}=await import("../utils/api"); await api.put("/conducteur-travaux/demandes/"+c._id+"/valider-contrat-conducteur",{}); window.location.reload(); }catch(e){ alert(e.response?.data?.message||"Erreur"); }}} className="w-full py-2.5 bg-purple-600 text-white rounded-xl font-bold text-sm hover:bg-purple-700">
+            ✍️ Signer le contrat
+          </button>
+        </div>
+      ))}
       )}
       {chantiers.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
