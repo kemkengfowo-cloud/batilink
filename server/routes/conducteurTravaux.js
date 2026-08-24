@@ -76,7 +76,8 @@ router.put('/demandes/:id/valider-contrat-conducteur', auth, async (req, res) =>
   try {
     if (req.user.role !== 'conducteur') return res.status(403).json({ message: 'Acces reserve aux conducteurs.' });
     const demande = await DemandeConducteur.findById(req.params.id);
-    if (demande.conducteurRetenu.toString() !== req.user.id) return res.status(403).json({ message: 'Acces refuse.' });
+    const conducteurRetenuId = demande.conducteurRetenu?._id ? demande.conducteurRetenu._id.toString() : demande.conducteurRetenu ? demande.conducteurRetenu.toString() : null;
+    if (conducteurRetenuId !== req.user.id) return res.status(403).json({ message: "Acces refuse." });
     demande.statut = 'conducteur_valide'; demande.contratConducteurValide = true; demande.dateValidationConducteur = new Date();
     await demande.save();
     notifyAdmins('contrat_conducteur_valide', { demandeId: demande._id });
