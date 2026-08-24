@@ -45,6 +45,7 @@ app.use("/api/contrats", require("./routes/contrats"));
 app.use("/api/jalons", require("./routes/jalons"));
 app.use("/api/litiges", require("./routes/litiges"));
 app.use("/api/avis", require("./routes/avis"));
+app.use("/api/paiements-conducteur", require("./routes/paiementsConducteur"));
 app.use("/api/paiements", require("./routes/paiements"));
 app.use("/api/conducteur", require("./routes/conducteur"));
 app.use("/api/conducteur-travaux", require("./routes/conducteurTravaux"));
