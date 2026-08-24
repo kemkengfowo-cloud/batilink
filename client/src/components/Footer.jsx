@@ -20,7 +20,6 @@ export default function Footer() {
               <li><Link to="/artisans" className="hover:text-white transition-colors">Artisans & Techniciens</Link></li>
               <li><Link to="/entreprises" className="hover:text-white transition-colors">Entreprises BTP</Link></li>
               <li><Link to="/projects" className="hover:text-white transition-colors">Projets clients</Link></li>
-              <li><Link to="/missions" className="hover:text-white transition-colors">Missions de location</Link></li>
               <li><Link to="/comment-ca-marche" className="hover:text-white transition-colors">Comment ca marche</Link></li>
             </ul>
           </div>
