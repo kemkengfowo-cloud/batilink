@@ -217,3 +217,12 @@ router.put('/rapports/:id/contester', auth, async (req, res) => {
 });
 
 module.exports = router;
+// DELETE temporaire - nettoyer toutes les demandes test
+router.delete('/admin/purge-demandes', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') return res.status(403).json({ message: 'Admin requis.' });
+    const result = await DemandeConducteur.deleteMany({});
+    const rapports = await RapportChantier.deleteMany({});
+    res.json({ message: 'Nettoyage effectue !', demandesSupprimees: result.deletedCount, rapportsSupprimees: rapports.deletedCount });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
