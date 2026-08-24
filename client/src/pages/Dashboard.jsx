@@ -661,6 +661,7 @@ function ConducteurDashboard({ chantiers, offres, user }) {
             </div>
           ))}
         </div>
+      )}
       {/* Contrat a signer */}
       {chantiers.filter(c=>c.statut==='contrat_conducteur').map(c=>(
         <div key={c._id} className="bg-white rounded-2xl border-2 border-purple-300 p-5 shadow-sm">
@@ -680,7 +681,6 @@ function ConducteurDashboard({ chantiers, offres, user }) {
           </button>
         </div>
       ))}
-      )}
       {chantiers.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
           <div className="text-5xl mb-3">🏗️</div>
