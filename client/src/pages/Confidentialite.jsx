@@ -6,6 +6,7 @@ export default function Confidentialite() {
       <div style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 100%)'}} className="py-12">
         <div className="max-w-4xl mx-auto px-4 text-white">
           <h1 className="text-3xl font-display font-black">Politique de Confidentialite</h1>
+          <Link to="/" className="text-blue-300 hover:text-white text-sm mb-4 inline-block">← Accueil</Link>
           <p className="text-blue-200 mt-2">Derniere mise a jour : Aout 2026</p>
         </div>
       </div>

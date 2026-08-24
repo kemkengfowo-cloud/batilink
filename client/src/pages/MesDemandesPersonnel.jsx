@@ -33,6 +33,7 @@ export default function MesDemandesPersonnel() {
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 py-8">
           <div className="flex items-center justify-between flex-wrap gap-4">
+        <Link to="/dashboard" className="text-gray-500 hover:text-gray-700 text-sm mb-4 inline-flex items-center gap-1">← Tableau de bord</Link>
             <div>
               <h1 className="text-3xl font-display font-bold text-gray-900">
                 {user?.role === 'admin' ? 'Toutes les demandes de personnel' : 'Mes demandes de personnel'}

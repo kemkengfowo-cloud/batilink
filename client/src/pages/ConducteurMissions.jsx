@@ -68,6 +68,7 @@ export default function ConducteurMissions() {
         <div className="absolute inset-0 opacity-5" style={{backgroundImage:'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize:'30px 30px'}}/>
         <div className="relative z-10 max-w-5xl mx-auto px-4">
           <div className="flex items-center justify-between">
+          <Link to="/dashboard" className="text-blue-300 hover:text-white text-sm mb-4 inline-block">← Tableau de bord</Link>
             <div className="text-white">
               <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 text-blue-300 px-4 py-2 rounded-full text-sm font-semibold mb-4">
                 <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"/>
