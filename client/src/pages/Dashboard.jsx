@@ -676,6 +676,9 @@ function ConducteurDashboard({ chantiers, offres, user }) {
             <p className="text-purple-700 text-sm font-semibold">Contrat pret a signer !</p>
             <p className="text-purple-600 text-xs mt-1">Veuillez signer votre contrat pour demarrer la mission.</p>
           </div>
+          <a href={`${process.env.REACT_APP_API_URL}/api/conducteur-travaux/contrat-conducteur/${c._id}`} target="_blank" rel="noopener noreferrer" className="block w-full py-2.5 mb-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl font-bold text-sm text-center hover:bg-blue-100">
+            📄 Lire le contrat PDF
+          </a>
           <button onClick={async()=>{ if(!window.confirm("Confirmer la signature du contrat ?")) return; try{ const {default:api}=await import("../utils/api"); await api.put("/conducteur-travaux/demandes/"+c._id+"/valider-contrat-conducteur",{}); window.location.reload(); }catch(e){ alert(e.response?.data?.message||"Erreur"); }}} className="w-full py-2.5 bg-purple-600 text-white rounded-xl font-bold text-sm hover:bg-purple-700">
             ✍️ Signer le contrat
           </button>

@@ -185,6 +185,12 @@ export default function DemandeConducteur() {
                       </Link>
                     )}
                     {d.statut === 'contrat_client' && (
+                      <a href={`${process.env.REACT_APP_API_URL}/api/conducteur-travaux/contrat-client/${d._id}`} target="_blank" rel="noopener noreferrer"
+                        className="flex-1 py-2.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl font-bold text-sm text-center hover:bg-blue-100">
+                        📄 Lire le contrat
+                      </a>
+                    )}
+                    {d.statut === 'contrat_client' && (
                       <button onClick={() => handleValiderContrat(d._id)}
                         className="flex-1 py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm hover:bg-green-700">
                         ✅ Valider le contrat
