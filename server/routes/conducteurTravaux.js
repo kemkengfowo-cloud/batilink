@@ -47,7 +47,7 @@ router.get('/mes-offres', auth, async (req, res) => {
 
 router.get('/mes-chantiers', auth, async (req, res) => {
   try {
-    const demandes = await DemandeConducteur.find({ conducteur: req.user.id, statut: { $in: ['en_cours','conducteur_valide','valide_client','contrat_client'] } }).populate('client','name phone email city').sort({ createdAt: -1 });
+    const demandes = await DemandeConducteur.find({ conducteur: req.user.id, statut: { $in: ['en_cours','conducteur_valide','valide_client','contrat_client','contrat_conducteur','conducteur_accepte'] } }).populate('client','name phone email city').sort({ createdAt: -1 });
     res.json(demandes);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
