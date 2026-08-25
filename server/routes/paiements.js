@@ -63,14 +63,25 @@ router.post('/initier', auth, async (req, res) => {
       typePaiement = 'jalon';
       jalonRef = jalonId;
     } else {
-      // Vérifier qu'il n'y a pas déjà un paiement total pour ce devis
-      const dejaPayéTotal = await Paiement.findOne({
-        devis: devisId,
-        jalon: null,
-        statut: { $in: ['en_attente', 'confirme'] }
-      });
-      if (dejaPayéTotal) {
-        return res.status(400).json({ message: 'Un paiement total est deja en cours pour ce devis.' });
+      const modePaiement = devis.modePaiement || "total";
+      if (modePaiement === "jalons") {
+        return res.status(400).json({ message: "Ce devis necessite un paiement par jalons. Selectionnez un jalon." });
+      }
+      const dejaEnAttente = await Paiement.findOne({ devis: devisId, jalon: null, statut: { $in: ["en_attente","confirme"] } });
+      if (dejaEnAttente) return res.status(400).json({ message: "Un paiement est deja en cours pour ce devis." });
+      if (modePaiement === "acompte") {
+        if (!devis.acompteVerse) {
+          montant = Math.round(devis.total * 0.50);
+          typePaiement = "acompte";
+        } else if (!devis.soldeVerse) {
+          montant = devis.total - Math.round(devis.total * 0.50);
+          typePaiement = "solde";
+        } else {
+          return res.status(400).json({ message: "Ce devis est entierement paye." });
+        }
+      } else {
+        montant = devis.total;
+        typePaiement = "total";
       }
     }
 
@@ -188,6 +199,15 @@ router.put('/:id/confirmer', auth, async (req, res) => {
     paiement.transactionId = req.body.transactionId || '';
     paiement.notes = req.body.notes || '';
     await paiement.save();
+    // Mettre a jour acompteVerse ou soldeVerse
+    if (paiement.type === "acompte" || paiement.type === "solde" || paiement.type === "total") {
+      const devisAUpdate = await Devis.findById(paiement.devis);
+      if (devisAUpdate) {
+        if (paiement.type === "acompte") devisAUpdate.acompteVerse = true;
+        if (paiement.type === "solde" || paiement.type === "total") devisAUpdate.soldeVerse = true;
+        await devisAUpdate.save();
+      }
+    }
 
     // Notifications temps réel
     notifyUser(paiement.client._id, 'paiement_confirme', {

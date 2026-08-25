@@ -68,6 +68,14 @@ router.put('/:id/accepter', auth, async (req, res) => {
     devis.statut = 'accepte';
     logAction({ userId: req.user.id, nom:'', email:'', role: req.user.role, action: 'DEVIS_ACCEPTE', details: { devisId: devis._id, numeroDevis: devis.numeroDevis, total: devis.total } });
     devis.dateAcceptation = new Date();
+    // Mode paiement automatique selon montant
+    if (devis.total >= 500000) {
+      devis.modePaiement = "jalons";
+    } else if (devis.total >= 100000) {
+      devis.modePaiement = "acompte";
+    } else {
+      devis.modePaiement = "total";
+    }
     devis.noteClient = req.body.note || '';
     await devis.save();
     res.json(devis);
