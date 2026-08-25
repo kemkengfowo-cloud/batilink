@@ -584,7 +584,7 @@ export default function MonChantier() {
               </button>
               <button type="submit" disabled={submitting || uploadingPhotos}
                 className="w-full py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 disabled:opacity-50 shadow-lg text-lg">
-                {submitting ? '⏳ Envoi en cours...' : `📤 Soumettre le rapport${photos.length > 0 ? ` avec ${photos.length} photo(s)` : ''}`}
+                {submitting ? "En cours..." : "Soumettre le rapport" + (photos.length > 0 ? " avec " + photos.length + " photo(s)" : "")}
               </button>
             </form>
           </div>
