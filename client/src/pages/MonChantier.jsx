@@ -170,6 +170,7 @@ export default function MonChantier() {
               </button>
             )}
           </div>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
             {[
               { label:'Avancement', value:`${chantier?.avancementGlobal || 0}%`, icon:'📊' },
@@ -593,3 +594,4 @@ export default function MonChantier() {
     </div>
   );
 }
+
