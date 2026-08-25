@@ -154,7 +154,7 @@ export default function MonChantier() {
               <h1 className="text-3xl font-display font-black mb-2">{chantier?.titreChantier || 'Mon Chantier'}</h1>
               <p className="text-green-200">📍 {chantier?.localisation} — {chantier?.ville}</p>
               {chantier?.client?.name && (
-                <p className="text-green-300 text-sm mt-1">Client : {chantier.client.name}{chantier.client.phone ? ` • ${chantier.client.phone}` : ''}</p>
+                <p className="text-green-300 text-sm mt-1">Client : {chantier.client.name}{chantier.client.phone ? " 2022 " + chantier.client.phone : ""}</p>
               )}
             </div>
             {isConducteur && (
