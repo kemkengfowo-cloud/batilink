@@ -43,6 +43,10 @@ export default function MonChantier() {
   const [loading, setLoading] = useState(true);
   const [showRapport, setShowRapport] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showPaiement, setShowPaiement] = useState(false);
+  const [paiementForm, setPaiementForm] = useState({ operateur:"orange_money", telephone:"", nombreJours:7 });
+  const [payingConducteur, setPayingConducteur] = useState(false);
+  const [paiementsConducteur, setPaiementsConducteur] = useState([]);
   const [filtre, setFiltre] = useState('');
   const [rapport, setRapport] = useState(RAPPORT_INITIAL);
   const [photos, setPhotos] = useState([]);
@@ -57,13 +61,13 @@ export default function MonChantier() {
     Promise.all([
       api.get(user?.role === "conducteur" ? "/conducteur-travaux/mes-chantiers" : "/conducteur-travaux/mes-demandes").catch(() => ({ data: [] })),
       api.get(url).catch(() => ({ data: { rapports: [] } })),
-    ]).then(([chantiersRes, rapportsRes]) => {
+      api.get(`/paiements-conducteur/demande/${id}`).catch(() => ({ data: { paiements: [], totalPaye: 0 } })),
+    ]).then(([chantiersRes, rapportsRes, paiementsRes]) => {
       const c = (chantiersRes.data || []).find(x => x._id === id);
       setChantier(c);
       setRapports(rapportsRes.data.rapports || []);
+      setPaiementsConducteur(paiementsRes.data.paiements || []);
     }).finally(() => setLoading(false));
-  };
-
   useEffect(() => { loadData(); }, [id, filtre]);
 
   const handlePhotoChange = async (e) => {
@@ -118,6 +122,19 @@ export default function MonChantier() {
     } catch(err) { alert(err.response?.data?.message || 'Erreur'); }
   };
 
+  const handlePayer = async (e) => {
+    e.preventDefault();
+    setPayingConducteur(true);
+    try {
+      const res = await api.post("/paiements-conducteur/initier", { demandeId: id, ...paiementForm });
+      alert("Paiement initie ! " + res.data.instructions.etape1 + " Reference: " + res.data.paiement.reference);
+      setShowPaiement(false);
+      loadData();
+    } catch(err) {
+      alert(err.response?.data?.message || "Erreur");
+    } finally { setPayingConducteur(false); }
+  };
+
   const isClient = chantier?.client?._id === user?._id || chantier?.client?._id === user?.id ||
     chantier?.client === user?._id || chantier?.client === user?.id;
   const isConducteur = chantier?.conducteur?._id === user?._id || chantier?.conducteur?._id === user?.id ||
@@ -144,6 +161,12 @@ export default function MonChantier() {
               <button onClick={() => setShowRapport(true)}
                 className="flex-shrink-0 px-5 py-3 bg-white text-green-700 font-bold rounded-xl hover:bg-green-50 transition-all shadow-lg">
                 📝 Nouveau rapport
+              </button>
+            )}
+            {isClient && chantier?.statut === "en_cours" && (
+              <button onClick={() => setShowPaiement(true)}
+                className="flex-shrink-0 px-5 py-3 bg-yellow-400 text-yellow-900 font-bold rounded-xl hover:bg-yellow-300 transition-all shadow-lg">
+                💳 Payer le conducteur
               </button>
             )}
           </div>
@@ -340,6 +363,82 @@ export default function MonChantier() {
         )}
       </div>
 
+      {/* Section paiements conducteur */}
+      {isClient && paiementsConducteur.length > 0 && (
+        <div className="max-w-5xl mx-auto px-4 pb-6">
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+            <h3 className="font-bold text-gray-900 mb-4">💳 Historique des paiements</h3>
+            <div className="space-y-3">
+              {paiementsConducteur.map(p => (
+                <div key={p._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                  <div>
+                    <p className="font-semibold text-sm">{p.nombreJours} jours — {new Intl.NumberFormat("fr-FR").format(p.montant)} FCFA</p>
+                    <p className="text-gray-400 text-xs">Ref: {p.reference} — {new Date(p.createdAt).toLocaleDateString("fr-FR")}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                    p.statut === "confirme" ? "bg-green-50 text-green-700" :
+                    p.statut === "echoue" ? "bg-red-50 text-red-600" :
+                    "bg-amber-50 text-amber-700"
+                  }`}>{p.statut === "confirme" ? "✅ Confirme" : p.statut === "echoue" ? "❌ Echoue" : "⏳ En attente"}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal paiement conducteur */}
+      {showPaiement && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md">
+            <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 p-6 text-white rounded-t-3xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold">💳 Payer le conducteur</h2>
+                  <p className="text-yellow-100 text-sm">{chantier?.titreChantier}</p>
+                </div>
+                <button onClick={() => setShowPaiement(false)} className="text-white/70 hover:text-white text-2xl">×</button>
+              </div>
+            </div>
+            <form onSubmit={handlePayer} className="p-6 space-y-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                <p className="text-yellow-800 text-sm font-semibold">Tarif journalier : {chantier?.tarifjourFinal ? new Intl.NumberFormat("fr-FR").format(chantier.tarifjourFinal) + " FCFA/jour" : "Non defini"}</p>
+                <p className="text-yellow-700 text-xs mt-1">Total = Tarif x Nombre de jours — 10% commission BYH</p>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Nombre de jours</label>
+                <input type="number" min="1" max="30" value={paiementForm.nombreJours}
+                  onChange={e => setPaiementForm(f => ({...f, nombreJours: parseInt(e.target.value)}))}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500"/>
+                {chantier?.tarifjourFinal && <p className="text-green-600 text-sm mt-1 font-semibold">Total : {new Intl.NumberFormat("fr-FR").format(chantier.tarifjourFinal * paiementForm.nombreJours)} FCFA</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Operateur Mobile Money</label>
+                <select value={paiementForm.operateur} onChange={e => setPaiementForm(f => ({...f, operateur: e.target.value}))}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500 bg-white">
+                  <option value="orange_money">Orange Money</option>
+                  <option value="mtn_momo">MTN MoMo</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Votre numero Mobile Money</label>
+                <input type="tel" value={paiementForm.telephone}
+                  onChange={e => setPaiementForm(f => ({...f, telephone: e.target.value}))}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500"
+                  placeholder="+237 6XX XXX XXX" required/>
+              </div>
+              <button type="submit" disabled={payingConducteur}
+                className="w-full py-4 bg-yellow-500 text-white font-bold rounded-xl hover:bg-yellow-600 disabled:opacity-50 shadow-lg">
+                {payingConducteur ? "⏳ Traitement..." : "💳 Initier le paiement"}
+              </button>
+              <button type="button" onClick={() => setShowPaiement(false)}
+                className="w-full py-3 border-2 border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50">
+                Annuler
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
       {/* Modal rapport */}
       {showRapport && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
