@@ -254,3 +254,13 @@ router.get('/contrat-client/:id', auth, async (req, res) => {
     res.send(pdfBuffer);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
+
+// DELETE temporaire - supprimer une demande specifique
+router.delete('/admin/demande/:id', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') return res.status(403).json({ message: 'Admin requis.' });
+    await DemandeConducteur.findByIdAndDelete(req.params.id);
+    await RapportChantier.deleteMany({ demande: req.params.id });
+    res.json({ message: 'Demande supprimee.' });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
