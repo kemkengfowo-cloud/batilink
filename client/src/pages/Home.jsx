@@ -10,10 +10,10 @@ const PHOTOS = {
 };
 
 const STATS = [
-  { num: '500+', label: 'Artisans vérifiés', icon: '🔨' },
-  { num: '1200+', label: 'Projets réalisés', icon: '🏗️' },
-  { num: '98%', label: 'Clients satisfaits', icon: '⭐' },
-  { num: '10+', label: 'Villes couvertes', icon: '📍' },
+  { num: "20+", label: "Artisans verifies", icon: "🔨" },
+  { num: "100%", label: "Artisans verifies par BYH", icon: "🏗️" },
+  { num: "100%", label: "Paiements securises", icon: "⭐" },
+  { num: "10+", label: "Villes couvertes", icon: "📍" },
 ];
 
 const SERVICES = [
