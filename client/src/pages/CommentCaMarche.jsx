@@ -155,7 +155,7 @@ export default function CommentCaMarche() {
           <h2 className="text-3xl font-display font-black text-gray-900 mb-4">
             Prêt à commencer ?
           </h2>
-          <p className="text-gray-500 mb-8">Rejoignez des milliers de Camerounais qui font confiance à B.Y.H</p>
+          <p className="text-gray-500 mb-8">Rejoignez les premiers Camerounais qui font confiance a B.Y.H pour leurs travaux BTP</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register" className="px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 hover:scale-105">
               S'inscrire gratuitement →
