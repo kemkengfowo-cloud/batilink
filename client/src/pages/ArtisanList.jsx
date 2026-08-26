@@ -40,7 +40,7 @@ export default function ArtisanList() {
         <div className="relative z-10 max-w-6xl mx-auto px-4 text-center text-white">
           <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 text-blue-300 px-4 py-2 rounded-full text-sm font-semibold mb-6 backdrop-blur-sm">
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"/>
-            500+ artisans verifies
+            {total > 0 ? total + " artisans verifies" : "Artisans verifies"}
           </div>
           <h1 className="text-5xl font-display font-black mb-3">🔨 Artisans du Cameroun</h1>
           <p className="text-blue-200 text-lg mb-8">Trouvez le technicien ideal pour vos travaux</p>
