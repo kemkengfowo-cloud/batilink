@@ -108,6 +108,14 @@ router.delete('/users/:id', auth, adminOnly, async (req, res) => {
     res.json({ message: 'Utilisateur supprimé.' });
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
+router.put("/users/:id", auth, adminOnly, async (req, res) => {
+  try {
+    const { matricule, name, phone, city, role } = req.body;
+    const user = await User.findByIdAndUpdate(req.params.id, { matricule, name, phone, city, role }, { new: true });
+    if (!user) return res.status(404).json({ message: "Utilisateur non trouve." });
+    res.json({ message: "Utilisateur mis a jour.", user });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
 
 // Bloquer/débloquer utilisateur
 router.put('/users/:id/block', auth, adminOnly, async (req, res) => {
