@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import PaiementsAdmin from '../components/PaiementsAdmin';
+import PaiementsConducteurAdmin from '../components/PaiementsConducteurAdmin';
 import React, { useState, useEffect } from 'react';
 import ConducteurTravauxAdmin from '../components/ConducteurTravauxAdmin';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +33,7 @@ export default function Admin() {
   const navigate = useNavigate();
   const toast = useToast();
   const [tab, setTab] = useState('stats');
+  const [paiementSousTab, setPaiementSousTab] = useState("artisans");
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
   const [artisans, setArtisans] = useState([]);
@@ -646,7 +648,14 @@ export default function Admin() {
 
         {/* PAIEMENTS */}
         {tab==="paiements" && (
-          <PaiementsAdmin />
+          <div className="space-y-4">
+            <div className="flex gap-2 mb-4">
+              <button onClick={()=>setPaiementSousTab("artisans")} className={"px-4 py-2 rounded-xl text-sm font-bold transition-all " + (paiementSousTab==="artisans" ? "bg-blue-600 text-white" : "bg-white border border-gray-200 text-gray-600")}>💳 Artisans</button>
+              <button onClick={()=>setPaiementSousTab("conducteurs")} className={"px-4 py-2 rounded-xl text-sm font-bold transition-all " + (paiementSousTab==="conducteurs" ? "bg-green-600 text-white" : "bg-white border border-gray-200 text-gray-600")}>🏗️ Conducteurs</button>
+            </div>
+            {paiementSousTab==="artisans" && <PaiementsAdmin />}
+            {paiementSousTab==="conducteurs" && <PaiementsConducteurAdmin />}
+          </div>
         )}
         {/* HISTORIQUE */}
         {tab==="historique" && (
