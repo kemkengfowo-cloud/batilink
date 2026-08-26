@@ -366,7 +366,7 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles, missions }
             { label:'Devis envoyes', value:devisEnvoyes, icon:'📤', color:'text-blue-600' },
             { label:'En cours', value:devisAcceptes, icon:'🔨', color:'text-green-600' },
             { label:'Termines', value:devisTermines, icon:'✅', color:'text-purple-600' },
-            { label:'Gains totaux', value:gainTotal>0?formatBudget(gainTotal):'--', icon:'💰', color:'text-amber-600' },
+            { label:'Gains totaux', value:gainTotal>0?formatBudget(gainTotal):'0 FCFA', icon:'💰', color:'text-amber-600' },
           ].map(s=>(
             <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-5 text-center hover:shadow-md transition-shadow relative overflow-hidden">
               <p className={`text-2xl font-display font-black ${s.color}`}>{s.value}</p>
@@ -381,7 +381,7 @@ function ArtisanDashboard({ artisan, devis, user, visitesDisponibles, missions }
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-blue-200 text-xs mb-1">Gains ce mois</p>
-              <p className="text-2xl font-display font-black">{gainCeMois > 0 ? formatBudget(gainCeMois) : "--"}</p>
+              <p className="text-2xl font-display font-black">{gainCeMois > 0 ? formatBudget(gainCeMois) : "0 FCFA"}</p>
             </div>
             <div>
               <p className="text-blue-200 text-xs mb-1">Gains totaux</p>
