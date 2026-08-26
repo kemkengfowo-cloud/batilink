@@ -171,7 +171,6 @@ router.post('/chantiers/:id/rapports', auth, async (req, res) => {
     if (demande.statut !== 'en_cours') return res.status(400).json({ message: 'Chantier non en cours.' });
     const { meteo, avancement, activites, problemes, noteGenerale, nombreOuvriers, type } = req.body;
     const rapport = await RapportChantier.create({ demande: req.params.id, conducteur: req.user.id, client: demande.client._id, date: new Date(), type: type || 'quotidien', meteo: meteo || 'ensoleille', avancement: parseInt(avancement)||0, activites: activites ? (Array.isArray(activites)?activites:[activites]) : [], problemes: problemes ? (Array.isArray(problemes)?problemes:[problemes]) : [], nombreOuvriers: parseInt(nombreOuvriers)||0, noteGenerale: noteGenerale });
-    demande.avancementGlobal = parseInt(avancement)||demande.avancementGlobal;
     demande.nombreRapports = demande.nombreRapports + 1;
     demande.derniereActivite = new Date();
     await demande.save();
@@ -199,7 +198,13 @@ router.put('/rapports/:id/valider', auth, async (req, res) => {
   try {
     const rapport = await RapportChantier.findById(req.params.id);
     if (rapport.client.toString()!==req.user.id) return res.status(403).json({ message: 'Acces refuse.' });
-    rapport.statut='valide'; rapport.commentaireClient=req.body.commentaire||''; rapport.valideLe=new Date();
+    rapport.statut="valide"; rapport.commentaireClient=req.body.commentaire||""; rapport.valideLe=new Date();
+    const demande = await DemandeConducteur.findById(rapport.demande);
+    if (demande && rapport.avancement > (demande.avancementGlobal||0)) {
+      demande.avancementGlobal = rapport.avancement;
+      demande.nombreRapports = (demande.nombreRapports||0) + 1;
+      await demande.save();
+    }
     await rapport.save();
     notifyUser(rapport.conducteur, 'rapport_valide', { rapportId: rapport._id });
     res.json({ message: 'Rapport valide !', rapport });
