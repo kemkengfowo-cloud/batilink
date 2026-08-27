@@ -330,7 +330,8 @@ export default function Admin() {
                         </td>
                         <td className="px-5 py-3 text-sm text-gray-500">{u.city||'-'}</td>
                         <td className="px-5 py-3 text-xs text-gray-400">{formatDate(u.createdAt)}</td>
-                        <td className="px-5 py-3">
+                        <td className="px-5 py-3 flex gap-2">
+                          <button onClick={()=>blockUser(u._id, !u.blocked)} className={"px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors " + (u.blocked ? "bg-green-50 text-green-600 hover:bg-green-100" : "bg-amber-50 text-amber-600 hover:bg-amber-100")}>{u.blocked ? "✅ Débloquer" : "🔒 Bloquer"}</button>
                           <button onClick={()=>deleteUser(u._id)} className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-100 transition-colors">Supprimer</button>
                         </td>
                       </tr>
