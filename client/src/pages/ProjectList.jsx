@@ -13,18 +13,20 @@ export default function ProjectList() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({ categorie:'', localisation:'', budgetMin:'', budgetMax:'' });
+  const [metierArtisan, setMetierArtisan] = useState("");
   const [applied, setApplied] = useState({});
+  useEffect(() => { if (user?.role === "artisan") { api.get("/artisans/me").then(res => setMetierArtisan(res.data.metier || "")).catch(()=>{}); } }, [user]);
 
   const fetchProjects = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ page, limit:10, ...Object.fromEntries(Object.entries(applied).filter(([,v])=>v)) });
+      const params = new URLSearchParams({ page, limit:10, ...Object.fromEntries(Object.entries(applied).filter(([,v])=>v)), ...(user?.role === "artisan" && metierArtisan && !applied.categorie ? { categorie: metierArtisan } : {}) });
       const res = await api.get(`/projects?${params}`);
       setProjects(res.data.projects || res.data);
       setTotal(res.data.total || res.data.length);
     } catch { setProjects([]); }
     finally { setLoading(false); }
-  }, [page, applied]);
+  }, [page, applied, metierArtisan]);
 
   useEffect(() => { fetchProjects(); }, [fetchProjects]);
 
