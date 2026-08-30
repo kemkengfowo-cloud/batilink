@@ -62,12 +62,12 @@ const PublicOnly = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <Loader/>;
   if (user) return <Navigate to="/dashboard" replace/>;
+  return children;
+};
 const HomeRoute = () => {
   const { user, loading } = useAuth();
   if (loading) return <Loader/>;
   return user ? <Home/> : <ComingSoon/>;
-};
-  return children;
 };
 
 function AppRoutes() {
