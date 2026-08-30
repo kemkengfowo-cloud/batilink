@@ -29,6 +29,8 @@ const setCookies = (res, token, refreshToken) => {
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
+  // INSCRIPTION TEMPORAIREMENT BLOQUEE - Lancement imminent
+  return res.status(503).json({ message: "Les inscriptions sont temporairement suspendues. Le lancement officiel de B.Y.H est imminent. Revenez très bientôt !" });
   try {
     const { name, email, password, role, phone, city, metier, whatsapp, experience,
             nomEntreprise, nomResponsable, rccm, lotsTravauxPropose, typePersonnel,
