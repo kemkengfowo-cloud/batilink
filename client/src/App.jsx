@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
+import ComingSoon from './pages/ComingSoon';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -70,7 +71,7 @@ function AppRoutes() {
       <Navbar/>
       <main className="flex-1">
         <Routes>
-          <Route path="/" element={<Home/>}/>
+          <Route path="/" element={user ? <Home/> : <ComingSoon/>}/>
           <Route path="/login" element={<PublicOnly><Login/></PublicOnly>}/>
           <Route path="/register" element={<PublicOnly><Register/></PublicOnly>}/>
 
