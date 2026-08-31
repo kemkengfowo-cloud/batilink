@@ -1,16 +1,33 @@
 const express = require('express');
 const router = express.Router();
 const Project = require('../models/Project');
+const Entreprise = require("../models/Entreprise");
 const auth = require('../middleware/auth');
 const { notifyUser, notifyAdmins } = require('../socket');
 const upload = require('../middleware/upload');
 const { logAction } = require('../middleware/logger');
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const { categorie, localisation, statut = 'ouvert', page = 1, limit = 10 } = req.query;
+    const { categorie, localisation, statut = "ouvert", page = 1, limit = 10 } = req.query;
     const filter = { statut };
-    if (categorie) filter.categorie = new RegExp(categorie, 'i');
+    if (categorie) filter.categorie = new RegExp(categorie, "i");
+    // Filtrage automatique selon les lots de l entreprise connectee
+    if (req.headers.authorization) {
+      try {
+        const jwt = require("jsonwebtoken");
+        const token = req.headers.authorization.split(" ")[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (decoded.role === "entreprise") {
+          const entreprise = await Entreprise.findOne({ user: decoded.id });
+          if (entreprise && entreprise.lotsTravauxPropose && entreprise.lotsTravauxPropose.length > 0 && !categorie) {
+            const LOTS_CATS = { "Gros oeuvre": ["Ma\u00e7onnerie","Coffreur","Ferrailleur","Dalleur","Maconnerie"], "Finition": ["Peinture","Carrelage","Menuiserie","Plomberie","Electricite"], "Architecture": ["Autre"], "Geotechnique": ["Autre"] };
+            const cats = entreprise.lotsTravauxPropose.flatMap(l => LOTS_CATS[l] || []);
+            if (cats.length > 0) filter.categorie = { $in: cats.map(c => new RegExp(c, "i")) };
+          }
+        }
+      } catch(e) {}
+    }
     if (localisation) filter.localisation = new RegExp(localisation, 'i');
     const projects = await Project.find(filter)
       .populate('client', 'name avatar city')
