@@ -411,7 +411,7 @@ export default function MonChantier() {
                 <p className="text-yellow-800 text-sm font-semibold">
                   Tarif/jour : {chantier && chantier.tarifjourFinal ? (new Intl.NumberFormat('fr-FR').format(chantier.tarifjourFinal) + ' FCFA') : 'Non défini'}
                 </p>
-                <p className="text-yellow-700 text-xs mt-1">Total = Tarif x Jours — 10% commission BYH</p>
+                <p className="text-yellow-700 text-xs mt-1">Total = Tarif x Jours — 8% commission BYH</p>
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Nombre de jours</label>

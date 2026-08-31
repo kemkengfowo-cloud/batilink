@@ -20,7 +20,7 @@ const ETAPES = {
     { num:'02', icon:'🔍', titre:'Parcourez les projets', desc:'Consultez les projets publiés par les clients dans votre ville et votre domaine d\'expertise.' },
     { num:'03', icon:'📄', titre:'Envoyez un devis', desc:'Proposez votre meilleur devis avec délais et conditions. Plus votre profil est complet, plus vous décrochez de missions.' },
     { num:'04', icon:'🏗️', titre:'Réalisez les travaux', desc:'Publiez des photos à chaque jalon pour rassurer le client et valider l\'avancement des travaux.' },
-    { num:'05', icon:'💰', titre:'Recevez le paiement', desc:'Une fois les travaux validés, recevez 90% du montant sur votre Mobile Money. B.Y.H prélève 10% de commission.' },
+    { num:'05', icon:'💰', titre:'Recevez le paiement', desc:'Une fois les travaux validés, recevez 92% du montant sur votre Mobile Money. B.Y.H prélève 8% de commission.' },
   ],
   entreprise: [
     { num:'01', icon:'🏢', titre:'Créez votre profil entreprise', desc:'Renseignez vos lots de travaux, votre RCCM, vos références et votre équipe disponible.' },
@@ -139,7 +139,7 @@ export default function CommentCaMarche() {
             {[
               { label:'Inscription', prix:'Gratuit', desc:'Pour clients et artisans' },
               { label:'Publication projet', prix:'Gratuit', desc:'Publiez autant de projets' },
-              { label:'Commission B.Y.H', prix:'10%', desc:'Seulement sur transactions' },
+              { label:'Commission B.Y.H', prix:'8%', desc:'Seulement sur transactions' },
             ].map((t, i) => (
               <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5">
                 <p className="text-blue-200 text-sm font-medium mb-1">{t.label}</p>

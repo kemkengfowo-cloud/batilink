@@ -50,7 +50,7 @@ const FAQ = [
   { q: 'Comment B.Y.H vérifie-t-il les artisans ?', r: 'Chaque artisan passe par une vérification d\'identité, de compétences et d\'antécédents avant d\'être publié sur la plateforme.' },
   { q: 'Comment sont sécurisés les paiements ?', r: 'Les paiements sont effectués via Mobile Money (Orange Money, MTN MoMo) et sécurisés par notre système de jalons progressifs.' },
   { q: 'Que se passe-t-il en cas de litige ?', r: 'B.Y.H dispose d\'une équipe d\'arbitrage dédiée qui intervient rapidement pour résoudre tout différend entre clients et artisans.' },
-  { q: 'Combien coûte l\'utilisation de B.Y.H ?', r: 'L\'inscription et la publication de projets sont gratuites. B.Y.H prélève une commission de 10% uniquement sur les transactions finalisées.' },
+  { q: 'Combien coûte l\'utilisation de B.Y.H ?', r: 'L\'inscription et la publication de projets sont gratuites. B.Y.H prélève une commission de 8% uniquement sur les transactions finalisées.' },
 ];
 
 export default function Home() {

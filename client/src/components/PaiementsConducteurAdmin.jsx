@@ -137,11 +137,11 @@ export default function PaiementsConducteurAdmin() {
                     <p className="font-black text-blue-700">{new Intl.NumberFormat('fr-FR').format(p.montant)} FCFA</p>
                   </div>
                   <div className="bg-green-50 rounded-xl p-3 text-center">
-                    <p className="text-green-400 text-xs mb-1">Conducteur (90%)</p>
+                    <p className="text-green-400 text-xs mb-1">Conducteur (92%)</p>
                     <p className="font-black text-green-700">{new Intl.NumberFormat('fr-FR').format(p.montantConducteur)} FCFA</p>
                   </div>
                   <div className="bg-amber-50 rounded-xl p-3 text-center">
-                    <p className="text-amber-400 text-xs mb-1">B.Y.H (10%)</p>
+                    <p className="text-amber-400 text-xs mb-1">B.Y.H (8%)</p>
                     <p className="font-black text-amber-700">{new Intl.NumberFormat('fr-FR').format(p.commission)} FCFA</p>
                   </div>
                 </div>

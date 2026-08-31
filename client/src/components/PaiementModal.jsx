@@ -30,7 +30,7 @@ export default function PaiementModal({ devis, jalon, onClose, onSuccess }) {
   const [result, setResult] = useState(null);
 
   const montant = jalon ? jalon.montant : devis?.total;
-  const commission = Math.round(montant * 0.10);
+  const commission = Math.round(montant * 0.08);
   const montantArtisan = montant - commission;
 
   const handlePayer = async () => {

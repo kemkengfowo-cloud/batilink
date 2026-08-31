@@ -75,7 +75,7 @@ export default function FacturePDF({ devis }) {
   const montantHT = devis.sousTotal || devis.total;
   const tva = 0;
   const total = devis.total || devis.montantTotal;
-  const commission = Math.round(total * 0.10);
+  const commission = Math.round(total * 0.08);
   const montantArtisan = total - commission;
 
   const factureHTML = (
@@ -177,7 +177,7 @@ export default function FacturePDF({ devis }) {
             <span>0 FCFA</span>
           </div>
           <div className="totaux-row">
-            <span>Commission B.Y.H (10%)</span>
+            <span>Commission B.Y.H (8%)</span>
             <span>{new Intl.NumberFormat('fr-FR').format(commission)} FCFA</span>
           </div>
           <div className="totaux-row total">

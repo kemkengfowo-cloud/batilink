@@ -188,7 +188,7 @@ export default function DevisDetail() {
               <div className="p-5 border-t border-gray-100">
                 <div className="max-w-xs ml-auto space-y-2">
                   <div className="flex justify-between text-sm text-gray-600"><span>Sous-total</span><span className="font-semibold">{formatBudget(devis.sousTotal)}</span></div>
-                  <div className="flex justify-between text-sm text-gray-500"><span>Commission B.Y.H (10%)</span><span>{formatBudget(devis.montantCommission)}</span></div>
+                  <div className="flex justify-between text-sm text-gray-500"><span>Commission B.Y.H (8%)</span><span>{formatBudget(devis.montantCommission)}</span></div>
                   <div className="flex justify-between text-lg font-display font-black text-blue-600 pt-2 border-t border-gray-200">
                     <span>Total</span><span>{formatBudget(devis.total)}</span>
                   </div>

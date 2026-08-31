@@ -156,7 +156,7 @@ export default function ContratDetail() {
               <span className="font-bold">{formatBudget(contrat.remunerationTotal)}</span>
             </div>
             <div className="flex justify-between text-sm text-gray-500 py-2 border-b border-gray-100">
-              <span>Commission B.Y.H (10%)</span>
+              <span>Commission B.Y.H (8%)</span>
               <span>{formatBudget(contrat.montantCommission)}</span>
             </div>
             <div className="flex justify-between text-lg font-display font-black text-green-600 py-2">

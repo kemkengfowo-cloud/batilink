@@ -86,10 +86,10 @@ export default function CGU() {
             </h2>
             <div className="text-gray-600 leading-relaxed space-y-3 ml-11">
               <p>L'utilisation de B.Y.H est gratuite pour l'inscription et la publication de projets.</p>
-              <p>B.Y.H prélève une <strong>commission de 10%</strong> sur chaque transaction finalisée entre un client et un artisan/entreprise.</p>
+              <p>B.Y.H prélève une <strong>commission de 8%</strong> sur chaque transaction finalisée entre un client et un artisan/entreprise.</p>
               <ul className="list-disc ml-6 space-y-1">
-                <li>L'artisan reçoit 90% du montant convenu.</li>
-                <li>B.Y.H conserve 10% à titre de commission.</li>
+                <li>L'artisan reçoit 92% du montant convenu.</li>
+                <li>B.Y.H conserve 8% à titre de commission.</li>
                 <li>Aucun frais caché n'est appliqué.</li>
               </ul>
               <p>Les paiements transitent par le compte B.Y.H avant distribution. B.Y.H s'engage à distribuer les fonds dans un délai maximum de 48 heures après validation des travaux.</p>

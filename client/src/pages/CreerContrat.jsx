@@ -62,7 +62,7 @@ export default function CreerContrat() {
     set('remunerationTotal', TARIFS[type] || 50000);
   };
 
-  const commission = Math.round((form.remunerationTotal||0) * 0.10);
+  const commission = Math.round((form.remunerationTotal||0) * 0.08);
   const montantTechnicien = (form.remunerationTotal||0) - commission;
 
   const handleSubmit = async (e) => {
@@ -189,8 +189,8 @@ export default function CreerContrat() {
                 <p className="text-sm font-bold text-blue-700 mb-3">Recap financier</p>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between"><span className="text-gray-600">Remuneration totale</span><span className="font-bold">{formatBudget(+form.remunerationTotal)}</span></div>
-                  <div className="flex justify-between text-gray-500"><span>Commission B.Y.H (10%)</span><span>{formatBudget(commission)}</span></div>
-                  <div className="flex justify-between text-green-600 font-bold"><span>Technicien recevra (90%)</span><span>{formatBudget(montantTechnicien)}</span></div>
+                  <div className="flex justify-between text-gray-500"><span>Commission B.Y.H (8%)</span><span>{formatBudget(commission)}</span></div>
+                  <div className="flex justify-between text-green-600 font-bold"><span>Technicien recevra (92%)</span><span>{formatBudget(montantTechnicien)}</span></div>
                 </div>
               </div>
             )}

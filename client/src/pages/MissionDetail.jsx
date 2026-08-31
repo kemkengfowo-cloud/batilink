@@ -207,7 +207,7 @@ export default function MissionDetail() {
               <div className="mt-4 pt-4 border-t border-blue-500 space-y-1 text-sm text-blue-200">
                 <div className="flex justify-between">
                   <span>Commission B.Y.H</span>
-                  <span>10%</span>
+                  <span>8%</span>
                 </div>
                 <div className="flex justify-between text-white font-bold">
                   <span>Vous recevrez</span>

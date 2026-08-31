@@ -23,13 +23,13 @@ router.post("/initier", auth, async (req, res) => {
     const dejaEnAttente = await PaiementConducteur.findOne({ demande: demandeId, statut: { $in: ["en_attente", "initie"] } });
     if (dejaEnAttente) return res.status(400).json({ message: "Un paiement est deja en cours pour cette mission." });
     const montant = tarifjour * nombreJours;
-    const commission = Math.round(montant * 0.10);
+    const commission = Math.round(montant * 0.08);
     const montantConducteur = montant - commission;
     const reference = genRef();
     const op = OPERATEURS[operateur];
     const paiement = await PaiementConducteur.create({ demande: demandeId, client: req.user.id, conducteur: demande.conducteur._id, montant, montantConducteur, commission, operateur, telephone, statut: "en_attente", reference, type: type || "semaine", nombreJours, tarifjour });
     notifyAdmins("nouveau_paiement_conducteur", { paiementId: paiement._id, reference, montant, operateur: op.nom, clientNom: demande.client.name });
-    res.status(201).json({ message: "Paiement initie via " + op.nom, paiement: { _id: paiement._id, reference, montant, montantConducteur, commission, statut: "en_attente" }, instructions: { etape1: "Envoyez " + new Intl.NumberFormat("fr-FR").format(montant) + " FCFA au numero " + op.nom + " de BYH", numeroByh: op.numero, etape2: "Reference: " + reference, etape3: "BYH va confirmer sous 30 minutes", conducteurRecevra: new Intl.NumberFormat("fr-FR").format(montantConducteur) + " FCFA (90%)", commission: new Intl.NumberFormat("fr-FR").format(commission) + " FCFA (10% BYH)" } });
+    res.status(201).json({ message: "Paiement initie via " + op.nom, paiement: { _id: paiement._id, reference, montant, montantConducteur, commission, statut: "en_attente" }, instructions: { etape1: "Envoyez " + new Intl.NumberFormat("fr-FR").format(montant) + " FCFA au numero " + op.nom + " de BYH", numeroByh: op.numero, etape2: "Reference: " + reference, etape3: "BYH va confirmer sous 30 minutes", conducteurRecevra: new Intl.NumberFormat("fr-FR").format(montantConducteur) + " FCFA (92%)", commission: new Intl.NumberFormat("fr-FR").format(commission) + " FCFA (8% BYH)" } });
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
 

@@ -85,7 +85,7 @@ router.post('/initier', auth, async (req, res) => {
       }
     }
 
-    const commission = Math.round(montant * 0.10);
+    const commission = Math.round(montant * 0.08);
     const montantArtisan = montant - commission;
     const reference = genReference();
     const op = OPERATEURS[operateur];
@@ -133,7 +133,7 @@ router.post('/initier', auth, async (req, res) => {
         etape2: `Reference a indiquer : ${reference}`,
         etape3: "L equipe B.Y.H va confirmer votre paiement sous 30 minutes",
         artisanRecevra: `${new Intl.NumberFormat('fr-FR').format(montantArtisan)} FCFA (90%)`,
-        commission: `${new Intl.NumberFormat('fr-FR').format(commission)} FCFA (10% B.Y.H)`,
+        commission: `${new Intl.NumberFormat('fr-FR').format(commission)} FCFA (8% B.Y.H)`,
       }
     });
   } catch(err) { res.status(500).json({ message: err.message }); }

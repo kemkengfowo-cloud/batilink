@@ -166,7 +166,7 @@ export default function DemanderPersonnel() {
                 className={inputCls} placeholder="Ex: 50000"/>
               <p className="text-amber-700 text-xs mt-2">
                 💡 Ce montant est une proposition. L'admin et les techniciens peuvent negocier.
-                B.Y.H prend une commission de 10% sur le montant final.
+                B.Y.H prend une commission de 8% sur le montant final.
               </p>
             </div>
 
