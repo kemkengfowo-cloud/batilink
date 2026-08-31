@@ -39,11 +39,6 @@ export default function MesContrats() {
               <h1 className="text-3xl font-display font-bold text-gray-900">Mes contrats</h1>
               <p className="text-gray-500 mt-1">{contrats.length} contrat{contrats.length>1?'s':''} au total</p>
             </div>
-            {(user?.role === 'entreprise' || user?.role === 'client') && (
-              <Link to="/contrats/creer" className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
-                + Nouveau contrat
-              </Link>
-            )}
           </div>
         </div>
       </div>
@@ -64,11 +59,6 @@ export default function MesContrats() {
             <div className="text-6xl mb-4">📋</div>
             <h3 className="text-xl font-display font-bold text-gray-700 mb-2">Aucun contrat</h3>
             <p className="text-gray-400 mb-6">Vos contrats de mission apparaitront ici</p>
-            {(user?.role==='entreprise'||user?.role==='client') && (
-              <Link to="/contrats/creer" className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">
-                Creer un contrat
-              </Link>
-            )}
           </div>
         ) : (
           <div className="space-y-4">
