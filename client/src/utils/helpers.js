@@ -11,8 +11,8 @@ export const renderStars = (note) => Array.from({length:5},(_,i) => i < Math.rou
 
 export const CATEGORIES = [
   'Maçonnerie','Plomberie','Électricité','Peinture','Menuiserie',
-  'Carrelage','Toiture','Climatisation','Soudure','Jardinage',
-  'Nettoyage','Déménagement','Coffreur','Ferrailleur','Dalleur','Autre'
+  'Carrelage','Toiture','Climatisation','Soudure',
+  'Coffreur','Ferrailleur','Dalleur','Autre'
 ];
 
 export const VILLES = [
