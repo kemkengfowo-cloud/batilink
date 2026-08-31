@@ -112,7 +112,6 @@ export default function FacturePDF({ devis }) {
           <div className="partie-name">{devis.client?.name}</div>
           <div className="partie-info">
             {devis.client?.email && <div>📧 {devis.client.email}</div>}
-            {devis.client?.phone && <div>📱 {devis.client.phone}</div>}
             {devis.client?.city && <div>📍 {devis.client.city}, Cameroun</div>}
             {devis.client?.matricule && <div style={{marginTop:'6px', color:'#2563EB', fontWeight:'700'}}>#{devis.client.matricule}</div>}
           </div>
@@ -122,7 +121,6 @@ export default function FacturePDF({ devis }) {
           <div className="partie-name">{devis.artisan?.name}</div>
           <div className="partie-info">
             {devis.artisan?.email && <div>📧 {devis.artisan.email}</div>}
-            {devis.artisan?.phone && <div>📱 {devis.artisan.phone}</div>}
             {devis.artisan?.city && <div>📍 {devis.artisan.city}, Cameroun</div>}
             {devis.artisan?.matricule && <div style={{marginTop:'6px', color:'#2563EB', fontWeight:'700'}}>#{devis.artisan.matricule}</div>}
           </div>
