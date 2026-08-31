@@ -13,18 +13,16 @@ router.get("/", async (req, res) => {
     const filter = { statut };
     if (categorie) filter.categorie = new RegExp(categorie, "i");
     // Filtrage automatique selon les lots de l entreprise connectee
+    // Filtrage par typeClient selon le role
     if (req.headers.authorization) {
       try {
         const jwt = require("jsonwebtoken");
         const token = req.headers.authorization.split(" ")[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if (decoded.role === "entreprise") {
-          const entreprise = await Entreprise.findOne({ user: decoded.id });
-          if (entreprise && entreprise.lotsTravauxPropose && entreprise.lotsTravauxPropose.length > 0 && !categorie) {
-            const LOTS_CATS = { "Gros oeuvre": ["Ma\u00e7onnerie","Coffreur","Ferrailleur","Dalleur","Maconnerie"], "Finition": ["Peinture","Carrelage","Menuiserie","Plomberie","Electricite"], "Architecture": ["Autre"], "Geotechnique": ["Autre"] };
-            const cats = entreprise.lotsTravauxPropose.flatMap(l => LOTS_CATS[l] || []);
-            if (cats.length > 0) filter.categorie = { $in: cats.map(c => new RegExp(c, "i")) };
-          }
+          filter.typeClient = { $in: ["entreprise", "tous"] };
+        } else if (decoded.role === "artisan") {
+          filter.typeClient = { $in: ["artisan", "tous"] };
         }
       } catch(e) {}
     }
@@ -57,11 +55,11 @@ router.get('/:id', async (req, res) => {
 router.post('/', auth, upload.array('photos', 4), async (req, res) => {
   try {
     if (req.user.role !== 'client') return res.status(403).json({ message: 'Seuls les clients peuvent publier.' });
-    const { titre, description, budget, localisation, categorie } = req.body;
+    const { titre, description, budget, localisation, categorie, typeClient } = req.body;
     if (!titre || !description || !budget || !localisation || !categorie)
       return res.status(400).json({ message: 'Tous les champs sont requis.' });
     const photos = req.files?.map(f => `/uploads/${f.filename}`) || [];
-    const project = await Project.create({ client: req.user.id, titre, description, budget: +budget, localisation, categorie, photos });
+    const project = await Project.create({ client: req.user.id, titre, description, budget: +budget, localisation, categorie, photos, typeClient: typeClient || "artisan" });
     const populated = await Project.findById(project._id).populate('client', 'name avatar city');
     notifierTousArtisans(populated);
     logAction({ userId: req.user.id, nom: '', email: '', role: req.user.role, action: 'PROJET_PUBLIE', details: { titre: populated.titre, localisation: populated.localisation, budget: populated.budget } });

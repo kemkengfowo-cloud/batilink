@@ -7,7 +7,7 @@ import Avertissement from '../components/Avertissement';
 export default function CreateProject() {
   const navigate = useNavigate();
   const [besoinEvaluation, setBesoinEvaluation] = useState(null);
-  const [form, setForm] = useState({ titre:'', description:'', budget:'', localisation:'', categorie:'' });
+  const [form, setForm] = useState({ titre:'', description:'', budget:'', localisation:'', categorie:'', typeClient:'artisan' });
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -106,6 +106,19 @@ export default function CreateProject() {
               <label className={labelCls}>Titre du projet *</label>
               <input type="text" required value={form.titre} onChange={e=>set('titre',e.target.value)}
                 className={inputCls} placeholder="Ex: Renovation salle de bain..."/>
+            </div>
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5 mb-2">
+              <label className="block text-sm font-bold text-blue-800 mb-3">🎯 Ce projet est destine a *</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button type="button" onClick={()=>set("typeClient","artisan")} className={"p-4 rounded-xl border-2 font-semibold transition-all " + (form.typeClient==="artisan" ? "border-blue-600 bg-blue-600 text-white" : "border-gray-200 bg-white text-gray-700 hover:border-blue-300")}>
+                  🔨 Artisan individuel
+                  <p className={"text-xs mt-1 " + (form.typeClient==="artisan" ? "text-blue-200" : "text-gray-400")}>Petits travaux, renovation, finition</p>
+                </button>
+                <button type="button" onClick={()=>set("typeClient","entreprise")} className={"p-4 rounded-xl border-2 font-semibold transition-all " + (form.typeClient==="entreprise" ? "border-purple-600 bg-purple-600 text-white" : "border-gray-200 bg-white text-gray-700 hover:border-purple-300")}>
+                  🏢 Entreprise BTP
+                  <p className={"text-xs mt-1 " + (form.typeClient==="entreprise" ? "text-purple-200" : "text-gray-400")}>Grands travaux, construction, genie civil</p>
+                </button>
+              </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>

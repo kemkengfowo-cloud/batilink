@@ -9,7 +9,8 @@ const projectSchema = new mongoose.Schema({
   categorie:    { type: String, required: true },
   photos:       [{ type: String }],
   statut:       { type: String, enum: ['ouvert', 'en_cours', 'termine', 'annule'], default: 'ouvert' },
-  vues:         { type: Number, default: 0 }
+  vues:         { type: Number, default: 0 },
+  typeClient:   { type: String, enum: ['artisan', 'entreprise', 'tous'], default: 'artisan' }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Project', projectSchema);
