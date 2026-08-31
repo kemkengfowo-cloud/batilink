@@ -168,17 +168,7 @@ export default function ArtisanProfile() {
                   📄 Demander un devis
                 </Link>
               )}
-              {whatsapp ? (
-                <a href={getWhatsAppLink(whatsapp, waMsg)} target="_blank" rel="noopener noreferrer"
-                  className="block w-full text-center py-2.5 bg-white/20 text-white rounded-xl font-bold text-sm hover:bg-white/30 transition-colors">
-                  WhatsApp
-                </a>
-              ) : (
-                <button onClick={() => setMsgModal(true)}
-                  className="block w-full text-center py-2.5 bg-white/20 text-white rounded-xl font-bold text-sm hover:bg-white/30 transition-colors">
-                  Envoyer un message
-                </button>
-              )}
+              <button onClick={() => setMsgModal(true)} className="block w-full text-center py-2.5 bg-white/20 text-white rounded-xl font-bold text-sm hover:bg-white/30 transition-colors">Envoyer un message</button>
             </div>
           </div>
         </div>
