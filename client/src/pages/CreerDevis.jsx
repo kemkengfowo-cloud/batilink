@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import { formatBudget } from '../utils/helpers';
 import Avertissement from '../components/Avertissement';
-
 export default function CreerDevis() {
-  const navigate = useNavigate();
+
+  const { user } = useAuth();
+  const isEntreprise = user?.role === "entreprise";
   const [searchParams] = useSearchParams();
   const [form, setForm] = useState({
     clientEmail: '', projetId: '',
     titre: '', description: '',
     delaiExecution: '', validiteJours: 15,
     conditionsPaiement: 'Paiement via B.Y.H — Libere apres validation des travaux',
-    materielsInclus: false
+    materielsInclus: false,
+    nombreEquipes: "", superviseur: "", garantie: "", lotsCouverts: ""
   });
   const [lignes, setLignes] = useState([
     { designation:'', quantite:1, unite:'unite', prixUnitaire:0 }
@@ -36,7 +39,6 @@ export default function CreerDevis() {
     if (clientIdParam) {
       api.get(`/users/profile/${clientIdParam}`).then(res => setClientFound(res.data)).catch(()=>{});
     }
-  }, []);
     const editId = searchParams.get("edit");
     if (editId) {
       api.get("/devis/" + editId).then(res => {
@@ -51,6 +53,7 @@ export default function CreerDevis() {
         if (d.lignes) setLignes(d.lignes);
       }).catch(() => {});
     }
+  }, []);
 
   const searchClient = async () => {
     if (!form.clientEmail) return;
@@ -209,6 +212,29 @@ export default function CreerDevis() {
               <input type="checkbox" id="materiels" checked={form.materielsInclus} onChange={e=>set('materielsInclus',e.target.checked)}
                 className="w-5 h-5 accent-blue-500 cursor-pointer"/>
               <label htmlFor="materiels" className="text-sm font-semibold text-gray-700 cursor-pointer">
+            {isEntreprise && (
+              <div className="bg-purple-50 border-2 border-purple-200 rounded-2xl p-5 space-y-4">
+                <h3 className="font-bold text-purple-900">🏢 Informations entreprise</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelCls}>Nombre d equipes</label>
+                    <input type="number" min="1" value={form.nombreEquipes} onChange={e=>set("nombreEquipes",e.target.value)} className={inputCls} placeholder="Ex: 2"/>
+                  </div>
+                  <div>
+                    <label className={labelCls}>Nom du superviseur</label>
+                    <input type="text" value={form.superviseur} onChange={e=>set("superviseur",e.target.value)} className={inputCls} placeholder="Ex: Ing. Dupont"/>
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}>Lots couverts</label>
+                  <input type="text" value={form.lotsCouverts} onChange={e=>set("lotsCouverts",e.target.value)} className={inputCls} placeholder="Ex: Gros oeuvre, Finition"/>
+                </div>
+                <div>
+                  <label className={labelCls}>Garantie offerte</label>
+                  <input type="text" value={form.garantie} onChange={e=>set("garantie",e.target.value)} className={inputCls} placeholder="Ex: 2 ans sur les travaux de structure"/>
+                </div>
+              </div>
+            )}
                 Les materiels et fournitures sont inclus dans ce devis
               </label>
             </div>
