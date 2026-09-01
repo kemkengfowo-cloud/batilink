@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+Allow: /artisans
+Allow: /entreprises
+Allow: /projects
+Allow: /comment-ca-marche
+Allow: /register
+Allow: /login
+Allow: /cgu
+Allow: /confidentialite
+
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /devis
+Disallow: /paiements
+Disallow: /messages
+Disallow: /contrats
+
+Sitemap: https://www.byh-cm.com/sitemap.xml
