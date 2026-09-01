@@ -32,7 +32,6 @@ router.post('/avatar', auth, upload.single('avatar'), async (req, res) => {
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
-module.exports = router;
 
 // GET /api/users/search?email=xxx
 router.get('/search', auth, async (req, res) => {
@@ -44,3 +43,15 @@ router.get('/search', auth, async (req, res) => {
     res.json(user);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
+
+// POST /api/users/push-token — Sauvegarder token push notifications
+router.post('/push-token', auth, async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ message: 'Token requis.' });
+    await User.findByIdAndUpdate(req.user.id, { pushToken: token });
+    res.json({ message: 'Token enregistre.' });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+module.exports = router;

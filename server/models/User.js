@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   role:        { type: String, enum: ['client', 'artisan', 'entreprise', 'admin', 'conducteur'], required: true },
   phone:       { type: String },
   city:        { type: String },
+  pushToken:   { type: String },
   avatar:      { type: String },
   matricule:   { type: String, unique: true, sparse: true },
   blocked:     { type: Boolean, default: false },
