@@ -24,9 +24,9 @@ app.use(mongoSanitize());
 app.options("*", cors(corsOptions));
 
 const limiter = rateLimit({ windowMs: 15*60*1000, max: 200 });
-const authLimiter = rateLimit({ windowMs: 15*60*1000, max: 20 });
+const authLimiter = rateLimit({ windowMs: 15*60*1000, max: 10, message: { message: "Trop de tentatives de connexion. Réessayez dans 15 minutes." } });
 app.use("/api/", limiter);
-app.use("/api/auth/", authLimiter);
+app.use("/api/auth", authLimiter);
 
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
