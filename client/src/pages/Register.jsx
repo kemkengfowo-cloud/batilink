@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AddressAutocomplete from "../components/AddressAutocomplete";
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { VILLES, CATEGORIES } from '../utils/helpers';
@@ -114,13 +115,9 @@ export default function Register() {
               </div>
             </div>
 
-            {/* Ville */}
             <div>
-              <label className={labelCls}>{role === 'client' && form.estDiaspora ? 'Ville du chantier au Cameroun' : 'Ville'} *</label>
-              <select required value={form.city} onChange={e=>set('city',e.target.value)} className={inputCls}>
-                <option value="">{role === 'client' && form.estDiaspora ? 'Ville du chantier' : 'Selectionner votre ville'}</option>
-                {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
-              </select>
+              <label className={labelCls}>Ville / Adresse *</label>
+              <AddressAutocomplete value={form.city} onChange={v=>set("city",v)} placeholder="Ex: Bastos, Yaoundé" className={inputCls}/>
             </div>
 
             {/* Case diaspora — clients uniquement */}
