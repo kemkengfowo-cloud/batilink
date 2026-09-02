@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
   }
 
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET || "byh_secret_2024");
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
     next();
   } catch {
     res.status(401).json({ message: "Token invalide ou expiré." });

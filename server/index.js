@@ -12,7 +12,7 @@ const app = express();
 app.set("trust proxy", 1);
 
 const corsOptions = {
-  origin: ["https://www.byh-cm.com", "https://byh-cm.com", "https://batilink-woad.vercel.app", "https://www.batilink.org", "http://localhost:3000", "http://localhost:8081"],
+  origin: ["https://www.byh-cm.com", "https://byh-cm.com", "http://localhost:3000", "http://localhost:8081"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: false

@@ -9,8 +9,8 @@ const { logAction } = require('../middleware/logger');
 
 const genToken = (user) => jwt.sign(
   { id: user._id, role: user.role },
-  process.env.JWT_SECRET || "byh_secret_2024",
-  { expiresIn: "7d" }
+  process.env.JWT_SECRET,
+  { expiresIn: "24h" }
 );
 
 const generateRefreshToken = async (userId) => {
@@ -209,7 +209,7 @@ router.post('/refresh', async (req, res) => {
 
     const newToken = jwt.sign(
       { id: user._id, role: user.role },
-      process.env.JWT_SECRET || 'byh_secret_2024',
+      process.env.JWT_SECRET,
       { expiresIn: '15m' }
     );
 
