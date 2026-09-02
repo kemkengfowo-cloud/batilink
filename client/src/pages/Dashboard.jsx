@@ -247,7 +247,7 @@ function ClientDashboard({ projects, devis, user, visites, jalonsEnAttente }) {
             { to:'/devis', icon:'📄', label:'Mes devis' },
             { to:'/contrats', icon:'✍️', label:'Mes contrats' },
             { to:'/paiements', icon:'💳', label:'Mes paiements' },
-            { to:'/conducteur-travaux', icon:'CT', label:'Conducteur travaux' },
+            { to:'/conducteur-travaux', icon:'🏗️', label:'Conducteur travaux' },
           ].map(l=>(
             <Link key={l.to} to={l.to}
               className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-all">
