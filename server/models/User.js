@@ -9,6 +9,8 @@ const userSchema = new mongoose.Schema({
   phone:       { type: String },
   city:        { type: String },
   pushToken:   { type: String },
+  resetPasswordToken: { type: String },
+  resetPasswordExpiry: { type: Date },
   avatar:      { type: String },
   matricule:   { type: String, unique: true, sparse: true },
   blocked:     { type: Boolean, default: false },

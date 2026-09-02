@@ -123,6 +123,9 @@ export default function Login() {
                   {showPassword ? '🙈' : '👁️'}
                 </button>
               </div>
+              <div className="text-right">
+                <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline font-semibold">Mot de passe oublié ?</Link>
+              </div>
             </div>
 
             <button type="submit" disabled={loading}

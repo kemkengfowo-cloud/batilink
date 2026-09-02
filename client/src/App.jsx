@@ -8,6 +8,8 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import ComingSoon from './pages/ComingSoon';
 import NotFound from './pages/NotFound';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -78,6 +80,8 @@ function AppRoutes() {
         <Routes>
           <Route path="/" element={<HomeRoute/>}/>
           <Route path="/login" element={<PublicOnly><Login/></PublicOnly>}/>
+          <Route path="/forgot-password" element={<PublicOnly><ForgotPassword/></PublicOnly>}/>
+          <Route path="/reset-password" element={<ResetPassword/>}/>
           <Route path="/register" element={<PublicOnly><Register/></PublicOnly>}/>
 
           {/* Pages publiques */}

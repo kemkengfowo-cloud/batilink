@@ -226,3 +226,69 @@ router.post('/logout', async (req, res) => {
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
 
+
+// POST /api/auth/forgot-password — Demande de réinitialisation
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'Email requis.' });
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) return res.json({ message: 'Si cet email existe, un lien de réinitialisation a été envoyé.' });
+    
+    const crypto = require('crypto');
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiry = new Date(Date.now() + 3600000); // 1 heure
+    
+    user.resetPasswordToken = token;
+    user.resetPasswordExpiry = expiry;
+    await user.save();
+    
+    const resetUrl = `https://www.byh-cm.com/reset-password?token=${token}`;
+    const { sendEmail } = require('../utils/emails');
+    await sendEmail({
+      to: user.email,
+      subject: 'B.Y.H — Réinitialisation de votre mot de passe',
+      html: `
+        <div style="font-family:Arial;max-width:600px;margin:0 auto">
+          <div style="background:#0F172A;padding:24px;text-align:center">
+            <h1 style="color:#fff;margin:0">B.Y.H — Build Your Home</h1>
+          </div>
+          <div style="padding:32px">
+            <h2>Réinitialisation de mot de passe</h2>
+            <p>Bonjour ${user.name},</p>
+            <p>Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous :</p>
+            <a href="${resetUrl}" style="display:inline-block;background:#2563EB;color:#fff;padding:14px 28px;border-radius:10px;font-weight:bold;text-decoration:none;margin:16px 0">
+              Réinitialiser mon mot de passe →
+            </a>
+            <p style="color:#64748B;font-size:13px">Ce lien expire dans 1 heure. Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
+          </div>
+        </div>
+      `
+    });
+    res.json({ message: 'Si cet email existe, un lien de réinitialisation a été envoyé.' });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+// POST /api/auth/reset-password — Nouveau mot de passe
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ message: 'Token et mot de passe requis.' });
+    if (password.length < 6) return res.status(400).json({ message: 'Mot de passe trop court (6 caractères minimum).' });
+    
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpiry: { $gt: new Date() }
+    });
+    if (!user) return res.status(400).json({ message: 'Lien invalide ou expiré. Veuillez recommencer.' });
+    
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpiry = undefined;
+    await user.save();
+    
+    res.json({ message: 'Mot de passe modifié avec succès. Vous pouvez vous connecter.' });
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+module.exports = router;
