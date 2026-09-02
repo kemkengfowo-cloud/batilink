@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AddressAutocomplete from "../components/AddressAutocomplete";
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
 import { CATEGORIES, VILLES } from '../utils/helpers';
@@ -123,17 +124,14 @@ export default function CreateProject() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={labelCls}>Categorie *</label>
-                <select required value={form.categorie} onChange={e=>set('categorie',e.target.value)} className={inputCls}>
+                <select required value={form.categorie} onChange={e=>set("categorie",e.target.value)} className={inputCls}>
                   <option value="">Selectionner</option>
                   {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className={labelCls}>Ville *</label>
-                <select required value={form.localisation} onChange={e=>set('localisation',e.target.value)} className={inputCls}>
-                  <option value="">Selectionner</option>
-                  {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
-                </select>
+                <label className={labelCls}>Adresse du chantier *</label>
+                <AddressAutocomplete value={form.localisation} onChange={v=>set("localisation",v)} placeholder="Ex: Bastos, Yaounde" className={inputCls}/>
               </div>
             </div>
             <div>
