@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AddressAutocomplete from "../components/AddressAutocomplete";
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../components/Toast';
 import api from '../utils/api';
@@ -121,10 +122,7 @@ export default function DemanderPersonnel() {
               </div>
               <div>
                 <label className={labelCls}>Ville du chantier *</label>
-                <select required value={form.ville} onChange={e => set('ville', e.target.value)} className={inputCls}>
-                  <option value="">Selectionner</option>
-                  {VILLES.map(v => <option key={v} value={v}>{v}</option>)}
-                </select>
+                <AddressAutocomplete value={form.ville} onChange={v=>set("ville",v)} placeholder="Ex: Bonanjo, Douala" className={inputCls}/>
               </div>
             </div>
 

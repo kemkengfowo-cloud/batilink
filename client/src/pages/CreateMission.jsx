@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AddressAutocomplete from "../components/AddressAutocomplete";
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
 import { VILLES } from '../utils/helpers';
@@ -99,11 +100,7 @@ export default function CreateMission() {
                 </select>
               </div>
               <div>
-                <label className={labelCls}>Adresse du chantier *</label>
-                <select required value={form.localisation} onChange={e=>set('localisation',e.target.value)} className={inputCls}>
-                  <option value="">Ville du chantier</option>
-                  {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
-                </select>
+                <AddressAutocomplete value={form.localisation} onChange={v=>set("localisation",v)} placeholder="Ex: Bastos, Yaoundé" className={inputCls}/>
               </div>
             </div>
 

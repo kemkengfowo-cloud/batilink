@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AddressAutocomplete from "../components/AddressAutocomplete";
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../components/Toast';
 import api from '../utils/api';
@@ -107,10 +108,7 @@ export default function DemanderVisite() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={labelCls}>Ville du chantier *</label>
-                <select required value={form.ville} onChange={e=>set('ville',e.target.value)} className={inputCls}>
-                  <option value="">Selectionner la ville</option>
-                  {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
-                </select>
+                <AddressAutocomplete value={form.ville} onChange={v=>set("ville",v)} placeholder="Ex: Nlongkak, Yaoundé" className={inputCls}/>
               </div>
               <div>
                 <label className={labelCls}>Date souhaitee pour la visite</label>

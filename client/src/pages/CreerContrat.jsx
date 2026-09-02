@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import AddressAutocomplete from "../components/AddressAutocomplete";
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import api from '../utils/api';
 import { formatBudget, VILLES } from '../utils/helpers';
@@ -140,10 +141,7 @@ export default function CreerContrat() {
               </div>
               <div>
                 <label className={labelCls}>Adresse du chantier *</label>
-                <select required value={form.adresseChantier} onChange={e=>set('adresseChantier',e.target.value)} className={inputCls}>
-                  <option value="">Ville du chantier</option>
-                  {VILLES.map(v=><option key={v} value={v}>{v}</option>)}
-                </select>
+                <AddressAutocomplete value={form.adresseChantier} onChange={v=>set("adresseChantier",v)} placeholder="Ex: Bonapriso, Douala" className={inputCls}/>
               </div>
             </div>
 
