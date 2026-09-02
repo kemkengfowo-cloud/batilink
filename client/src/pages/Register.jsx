@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AddressAutocomplete from "../components/AddressAutocomplete";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { VILLES, CATEGORIES } from '../utils/helpers';
@@ -10,6 +11,7 @@ const PAYS_MONDE = ['France','Belgique','Suisse','Canada','Etats-Unis','Allemagn
 
 export default function Register() {
   const { register } = useAuth();
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const defaultRole = params.get('role') || 'client';
@@ -33,11 +35,13 @@ export default function Register() {
   const toggleArr = (k,v) => setForm(f=>({...f,[k]:f[k].includes(v)?f[k].filter(x=>x!==v):[...f[k],v]}));
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); setError(''); setLoading(true);
+    e.preventDefault(); setError(""); setLoading(true);
     try {
-      await register({...form, role});
-      navigate('/dashboard');
-    } catch(err) { setError(err.response?.data?.message || 'Erreur d inscription'); }
+      if (!executeRecaptcha) { setError("reCAPTCHA non disponible."); setLoading(false); return; }
+      const token = await executeRecaptcha("register");
+      await register({...form, role, recaptchaToken: token});
+      navigate("/dashboard");
+    } catch(err) { setError(err.response?.data?.message || "Erreur d inscription"); }
     finally { setLoading(false); }
   };
 

@@ -32,6 +32,14 @@ router.post('/register', async (req, res) => {
   // INSCRIPTION TEMPORAIREMENT BLOQUEE - Lancement imminent
   return res.status(503).json({ message: "Les inscriptions sont temporairement suspendues. Le lancement officiel de B.Y.H est imminent. Revenez très bientôt !" });
   try {
+    const { recaptchaToken } = req.body;
+    if (recaptchaToken) {
+      const axios = require("axios");
+      const verify = await axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`);
+      if (!verify.data.success || verify.data.score < 0.5) {
+        return res.status(400).json({ message: "Verification anti-robot echouee. Veuillez reessayer." });
+      }
+    }
     const { name, email, password, role, phone, city, metier, whatsapp, experience,
             nomEntreprise, nomResponsable, rccm, lotsTravauxPropose, typePersonnel,
             estDiaspora, paysDiaspora, specialites } = req.body;

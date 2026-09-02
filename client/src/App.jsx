@@ -1,4 +1,5 @@
 import React from 'react';
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import { ToastProvider } from './components/Toast';
 import NotificationToast from './components/NotificationToast';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -140,6 +141,7 @@ function AppRoutes() {
 
 export default function App() {
   return (
+    <GoogleReCaptchaProvider reCaptchaKey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}>
     <AuthProvider>
       <ToastProvider>
     <BrowserRouter>
@@ -148,6 +150,7 @@ export default function App() {
       </BrowserRouter>
     </ToastProvider>
     </AuthProvider>
+    </GoogleReCaptchaProvider>
   );
 }
 
