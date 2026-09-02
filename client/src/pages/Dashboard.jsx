@@ -89,6 +89,8 @@ function ClientDashboard({ projects, devis, user, visites, jalonsEnAttente }) {
   const visitesRapport = v.filter(x=>x.statut==='rapport_soumis').length;
   const jea = jalonsEnAttente || [];
   const nbJalons = jea.length;
+  const depenseTotal = d.filter(x=>x.statut==="termine").reduce((s,x)=>s+(x.total||0),0);
+  const depenseCeMois = d.filter(x=>x.statut==="termine" && new Date(x.updatedAt).getMonth()===new Date().getMonth()).reduce((s,x)=>s+(x.total||0),0);
 
       {/* Guide onboarding nouveau client */}
       {p.length === 0 && d.length === 0 && (
@@ -157,6 +159,25 @@ function ClientDashboard({ projects, devis, user, visites, jalonsEnAttente }) {
         ))}
       </div>
 
+      {depenseTotal > 0 && (
+        <div className="bg-gradient-to-br from-blue-900 to-blue-800 rounded-2xl p-5 text-white">
+          <h3 className="font-bold text-white/80 text-sm mb-3">💰 Tableau financier</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white/10 rounded-xl p-4 text-center">
+              <p className="text-xs text-blue-200 mb-1">Dépensé ce mois</p>
+              <p className="text-xl font-black">{depenseCeMois > 0 ? new Intl.NumberFormat("fr-FR").format(depenseCeMois) + " FCFA" : "0 FCFA"}</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4 text-center">
+              <p className="text-xs text-blue-200 mb-1">Total dépensé</p>
+              <p className="text-xl font-black">{new Intl.NumberFormat("fr-FR").format(depenseTotal)} FCFA</p>
+            </div>
+          </div>
+          <div className="mt-3 bg-white/10 rounded-xl p-3 flex justify-between items-center">
+            <span className="text-blue-200 text-sm">Projets terminés</span>
+            <span className="font-bold">{d.filter(x=>x.statut==="termine").length} projet(s)</span>
+          </div>
+        </div>
+      )}
       {/* Alertes */}
       {devisEnAttente > 0 && (
         <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5">
@@ -493,6 +514,8 @@ function EntrepriseDashboard({ entreprise, missions, contrats, demandes }) {
   const c = contrats || [];
   const d = demandes || [];
   const demandesEnAttente = d.filter(x=>['en_attente','en_negociation'].includes(x.statut)).length;
+  const gainTotal = c.filter(x=>x.statut==="termine").reduce((s,x)=>s+(x.remunerationTotal||0),0);
+  const gainCeMois = c.filter(x=>x.statut==="termine" && new Date(x.updatedAt).getMonth()===new Date().getMonth()).reduce((s,x)=>s+(x.remunerationTotal||0),0);
   const contratsEnCours = c.filter(x=>x.statut==='en_cours').length;
   const contratsEnAttente = c.filter(x=>x.statut==='en_attente_signatures').length;
 
@@ -511,6 +534,25 @@ function EntrepriseDashboard({ entreprise, missions, contrats, demandes }) {
         </div>
       </div>
 
+      {gainTotal > 0 && (
+        <div className="bg-gradient-to-br from-purple-900 to-purple-800 rounded-2xl p-5 text-white">
+          <h3 className="font-bold text-white/80 text-sm mb-3">💰 Tableau financier</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white/10 rounded-xl p-4 text-center">
+              <p className="text-xs text-purple-200 mb-1">Gains ce mois</p>
+              <p className="text-xl font-black">{gainCeMois > 0 ? new Intl.NumberFormat("fr-FR").format(gainCeMois) + " FCFA" : "0 FCFA"}</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4 text-center">
+              <p className="text-xs text-purple-200 mb-1">Gains totaux</p>
+              <p className="text-xl font-black">{new Intl.NumberFormat("fr-FR").format(gainTotal)} FCFA</p>
+            </div>
+          </div>
+          <div className="mt-3 bg-white/10 rounded-xl p-3 flex justify-between items-center">
+            <span className="text-purple-200 text-sm">Contrats terminés</span>
+            <span className="font-bold">{c.filter(x=>x.statut==="termine").length} contrat(s)</span>
+          </div>
+        </div>
+      )}
       {/* Message si aucune activite */}
       {m.length === 0 && c.length === 0 && (
         <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 text-center">
@@ -615,8 +657,10 @@ function EntrepriseDashboard({ entreprise, missions, contrats, demandes }) {
 
 
 
-
 function ConducteurDashboard({ chantiers, offres, user }) {
+  const ch = chantiers || [];
+  const gainTotal = ch.filter(x=>x.statut==="termine").reduce((s,x)=>s+(x.montantConducteur||0),0);
+  const gainCeMois = ch.filter(x=>x.statut==="termine" && new Date(x.updatedAt).getMonth()===new Date().getMonth()).reduce((s,x)=>s+(x.montantConducteur||0),0);
   return (
     <div className="space-y-6">
       <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-6 text-white">
@@ -638,6 +682,25 @@ function ConducteurDashboard({ chantiers, offres, user }) {
           </div>
         ))}
       </div>
+      {gainTotal > 0 && (
+        <div className="bg-gradient-to-br from-green-900 to-green-800 rounded-2xl p-5 text-white">
+          <h3 className="font-bold text-white/80 text-sm mb-3">💰 Tableau financier</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white/10 rounded-xl p-4 text-center">
+              <p className="text-xs text-green-200 mb-1">Gains ce mois</p>
+              <p className="text-xl font-black">{gainCeMois > 0 ? new Intl.NumberFormat("fr-FR").format(gainCeMois) + " FCFA" : "0 FCFA"}</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4 text-center">
+              <p className="text-xs text-green-200 mb-1">Gains totaux</p>
+              <p className="text-xl font-black">{new Intl.NumberFormat("fr-FR").format(gainTotal)} FCFA</p>
+            </div>
+          </div>
+          <div className="mt-3 bg-white/10 rounded-xl p-3 flex justify-between items-center">
+            <span className="text-green-200 text-sm">Chantiers terminés</span>
+            <span className="font-bold">{ch.filter(x=>x.statut==="termine").length} chantier(s)</span>
+          </div>
+        </div>
+      )}
 
       {/* Offres reçues */}
       {offres && offres.length > 0 && (
