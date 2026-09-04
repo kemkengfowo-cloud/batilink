@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const Paiement = require('../models/Paiement');
 const Devis = require('../models/Devis');
+const crypto = require('crypto');
 
 // POST /api/mesomb/initier — Initier un paiement via MeSomb
 router.post('/initier', auth, async (req, res) => {
@@ -62,12 +63,48 @@ router.post('/initier', auth, async (req, res) => {
   }
 });
 
-// POST /api/mesomb/webhook
-router.post('/webhook', async (req, res) => {
+// POST /api/mesomb/webhook — Recevoir notifications MeSomb
+router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   try {
-    console.log('Webhook MeSomb:', req.body);
+    // Vérifier la signature webhook
+    const signature = req.headers['x-mesomb-signature'];
+    const webhookSecret = process.env.MESOMB_WEBHOOK_SECRET;
+    
+    if (webhookSecret && signature) {
+      const expectedSignature = crypto
+        .createHmac('sha256', webhookSecret)
+        .update(req.body)
+        .digest('hex');
+      
+      if (signature !== expectedSignature) {
+        console.error('Signature webhook MeSomb invalide');
+        return res.status(401).json({ message: 'Signature invalide.' });
+      }
+    }
+
+    const data = JSON.parse(req.body.toString());
+    console.log('Webhook MeSomb reçu:', data);
+
+    // Traiter selon le statut
+    if (data.status === 'SUCCESS' && data.reference) {
+      await Paiement.findOneAndUpdate(
+        { reference: data.reference },
+        { statut: 'confirme', transactionId: data.transaction_id }
+      );
+      console.log('✅ Paiement MeSomb confirmé:', data.reference);
+    } else if (data.status === 'FAILED' && data.reference) {
+      await Paiement.findOneAndUpdate(
+        { reference: data.reference },
+        { statut: 'echoue' }
+      );
+      console.log('❌ Paiement MeSomb échoué:', data.reference);
+    }
+
     res.json({ message: 'OK' });
-  } catch(err) { res.status(500).json({ message: err.message }); }
+  } catch(err) {
+    console.error('Erreur webhook MeSomb:', err.message);
+    res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = router;
