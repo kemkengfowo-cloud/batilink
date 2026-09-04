@@ -664,10 +664,6 @@ export default function Admin() {
         {tab==="finances" && (
           <FinancesAdmin apiUrl={process.env.REACT_APP_API_URL}/>
         )}
-        {/* FINANCES */}
-        {tab==="finances" && (
-          <FinancesAdmin apiUrl={process.env.REACT_APP_API_URL}/>
-        )}
         {/* HISTORIQUE */}
         {tab==="historique" && (
           <div className="space-y-4">
