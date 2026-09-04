@@ -10,9 +10,21 @@ export default function FinancesAdmin() {
       .then(res => setStats(res.data))
       .catch(() => {})
       .finally(() => setLoading(false));
+  const exportCSV = async (url, filename) => {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/api${url}`, { headers: { Authorization: `Bearer ${token}` } });
+    const blob = await res.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+  };
   }, []);
 
-  const exportPaiements = () => {
+  const exportPaiements = () => exportCSV("/admin/export/paiements", "byh-paiements.csv");
+  const exportUtilisateurs = () => exportCSV("/admin/export/users", "byh-utilisateurs.csv");
+  const exportHistorique = () => exportCSV("/admin/export/historique", "byh-historique.csv");
+  const _old = () => {
     window.open(`${process.env.REACT_APP_API_URL}/api/admin/export/paiements`, '_blank');
   };
 
@@ -79,14 +91,14 @@ export default function FinancesAdmin() {
 
       {/* Export buttons */}
       <div className="flex gap-3 flex-wrap">
-        <a href={`${process.env.REACT_APP_API_URL}/api/admin/export/users`} target="_blank" rel="noopener noreferrer"
+        <button onClick={exportUtilisateurs}
           className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700">
           👥 Export Utilisateurs CSV
-        </a>
-        <a href={`${process.env.REACT_APP_API_URL}/api/admin/export/historique`} target="_blank" rel="noopener noreferrer"
+        </button>
+        <button onClick={exportHistorique}
           className="px-4 py-2 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700">
           📜 Export Historique CSV
-        </a>
+        </button>
         <button onClick={exportPaiements}
           className="px-4 py-2 bg-green-600 text-white rounded-xl text-sm font-semibold hover:bg-green-700">
           💳 Export Paiements CSV
