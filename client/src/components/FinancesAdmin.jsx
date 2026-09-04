@@ -11,7 +11,7 @@ export default function FinancesAdmin() {
       .catch(() => {})
       .finally(() => setLoading(false));
   const exportCSV = async (url, filename) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('byh_token');
     const res = await fetch(`${process.env.REACT_APP_API_URL}/api${url}`, { headers: { Authorization: `Bearer ${token}` } });
     const blob = await res.blob();
     const a = document.createElement("a");
