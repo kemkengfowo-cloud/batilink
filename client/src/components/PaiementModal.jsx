@@ -38,7 +38,7 @@ export default function PaiementModal({ devis, jalon, onClose, onSuccess }) {
     if (!telephone || telephone.length < 9) { setError('Entrez un numéro valide.'); return; }
     setLoading(true); setError('');
     try {
-      const res = await api.post('/paiements/initier', {
+      const res = await api.post('/mesomb/initier', {
         devisId: devis._id,
         jalonId: jalon?._id || null,
         operateur,
