@@ -1,0 +1,44 @@
+config:
+  target: "https://batilink-production.up.railway.app"
+  phases:
+    - duration: 30
+      arrivalRate: 10
+      name: "Montée progressive (300 users)"
+    - duration: 30
+      arrivalRate: 20
+      name: "Pic de charge (500 users)"
+    - duration: 20
+      arrivalRate: 5
+      name: "Descente"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "Visiteur consulte les artisans"
+    weight: 40
+    flow:
+      - get:
+          url: "/api/artisans"
+      - think: 2
+      - get:
+          url: "/api/projects"
+
+  - name: "Utilisateur se connecte"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "client@byh.cm"
+            password: "test123456"
+      - think: 3
+
+  - name: "Consultation homepage"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/artisans?limit=10"
+      - think: 1
+      - get:
+          url: "/api/projects?limit=10"

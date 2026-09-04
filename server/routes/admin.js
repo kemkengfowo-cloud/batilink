@@ -214,7 +214,6 @@ router.delete('/projects/:id', auth, adminOnly, async (req, res) => {
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
 
-module.exports = router;
 
 // PUT /api/admin/badges/artisan/:id
 router.put('/badges/artisan/:id', auth, adminOnly, async (req, res) => {
@@ -305,3 +304,58 @@ router.get('/export/historique', auth, adminOnly, async (req, res) => {
     res.send(csv);
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
+
+// GET /api/admin/export/paiements — Export CSV paiements
+router.get('/export/paiements', auth, adminOnly, async (req, res) => {
+  try {
+    const Paiement = require('../models/Paiement');
+    const paiements = await Paiement.find()
+      .populate('client', 'name email matricule')
+      .populate('artisan', 'name email matricule')
+      .sort({ createdAt: -1 });
+    const csv = [
+      'Reference,Date,Client,Email Client,Artisan,Email Artisan,Montant FCFA,Commission BYH,Montant Artisan,Operateur,Statut',
+      ...paiements.map(p => [
+        p.reference || '',
+        new Date(p.createdAt).toLocaleDateString('fr-FR'),
+        p.client?.name || '',
+        p.client?.email || '',
+        p.artisan?.name || '',
+        p.artisan?.email || '',
+        p.montant || 0,
+        p.commission || 0,
+        p.montantArtisan || 0,
+        p.operateur || '',
+        p.statut || ''
+      ].join(','))
+    ].join('\n');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename=byh-paiements.csv');
+    res.send('\uFEFF' + csv);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+// GET /api/admin/stats-financieres — Stats financières mensuelles
+router.get('/stats-financieres', auth, adminOnly, async (req, res) => {
+  try {
+    const Paiement = require('../models/Paiement');
+    const paiements = await Paiement.find({ statut: 'confirme' }).sort({ createdAt: 1 });
+    
+    const parMois = {};
+    paiements.forEach(p => {
+      const mois = new Date(p.createdAt).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+      if (!parMois[mois]) parMois[mois] = { mois, transactions: 0, chiffreAffaires: 0, commission: 0 };
+      parMois[mois].transactions++;
+      parMois[mois].chiffreAffaires += p.montant || 0;
+      parMois[mois].commission += p.commission || 0;
+    });
+    
+    res.json({ statsParMois: Object.values(parMois), total: {
+      transactions: paiements.length,
+      chiffreAffaires: paiements.reduce((s,p) => s + (p.montant||0), 0),
+      commission: paiements.reduce((s,p) => s + (p.commission||0), 0)
+    }});
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+module.exports = router;

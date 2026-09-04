@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import PaiementsAdmin from '../components/PaiementsAdmin';
 import PaiementsConducteurAdmin from '../components/PaiementsConducteurAdmin';
+import FinancesAdmin from "../components/FinancesAdmin";
 import React, { useState, useEffect } from 'react';
 import ConducteurTravauxAdmin from '../components/ConducteurTravauxAdmin';
 import { useNavigate } from 'react-router-dom';
@@ -151,6 +152,7 @@ export default function Admin() {
     { id:'demandes', label:'Demandes Personnel', icon:'👷', badge:demandesPersonnel.filter(d=>d.statut==='en_attente').length||null },
     { id:"conducteur-travaux", label:"Conducteur Travaux", icon:"🏗️", badge:null },
     { id:"paiements", label:"Paiements", icon:"💳", badge:null },
+    { id:"finances", label:"Finances", icon:"💰", badge:null },
     { id:'historique', label:'Journal', icon:'📜', badge:null },
   ];
 
@@ -657,6 +659,14 @@ export default function Admin() {
             {paiementSousTab==="artisans" && <PaiementsAdmin />}
             {paiementSousTab==="conducteurs" && <PaiementsConducteurAdmin />}
           </div>
+        )}
+        {/* FINANCES */}
+        {tab==="finances" && (
+          <FinancesAdmin apiUrl={process.env.REACT_APP_API_URL}/>
+        )}
+        {/* FINANCES */}
+        {tab==="finances" && (
+          <FinancesAdmin apiUrl={process.env.REACT_APP_API_URL}/>
         )}
         {/* HISTORIQUE */}
         {tab==="historique" && (
