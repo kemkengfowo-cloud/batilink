@@ -1,4 +1,5 @@
 const Historique = require('../models/Historique');
+const geoip = require("geoip-lite");
 
 const genMatricule = (userId) => {
   const date = new Date();
@@ -10,13 +11,15 @@ const genMatricule = (userId) => {
   return `BTL-${yy}${mm}${dd}-${id}-${rand}`;
 };
 
-const logAction = async ({ userId, nom, email, role, action, details={}, statut='succes', erreur='', ip='' }) => {
+const logAction = async ({ userId, nom, email, role, action, details={}, statut="succes", erreur="", ip="" }) => {
+  const geo = geoip.lookup(ip);
+  const ville = geo ? `${geo.city || ""} ${geo.country || ""}`.trim() : "Inconnu";
   try {
     await Historique.create({
       matricule: genMatricule(userId),
       utilisateur: { id: userId, nom, email, role },
       action,
-      details,
+      details: { ...details, ville },
       statut,
       erreur,
       ip
