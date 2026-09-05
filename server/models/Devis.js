@@ -15,7 +15,7 @@ const devisSchema = new mongoose.Schema({
     total: { type: Number, required: true }
   }],
   sousTotal: { type: Number, required: true },
-  commission: { type: Number, default: 10 },
+  commission: { type: Number, default: 8 },
   montantCommission: { type: Number },
   montantArtisan: { type: Number },
   total: { type: Number, required: true },
