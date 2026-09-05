@@ -26,6 +26,26 @@ export default function PaiementsAdmin() {
   useEffect(() => { loadPaiements(); }, [filtre]);
 
   const confirmer = async (id) => {
+  const liberer = async (id) => {
+    if (!window.confirm("Libérer le paiement à l artisan via MeSomb ?")) return;
+    setProcessing(id);
+    try {
+      const res = await api.post(`/mesomb/liberer/${id}`);
+      alert(res.data.message);
+      fetchPaiements();
+    } catch(err) { alert(err.response?.data?.message || "Erreur lors du virement"); }
+    finally { setProcessing(null); }
+  };
+  const rembourser = async (id) => {
+    if (!window.confirm("Rembourser le client via MeSomb ?")) return;
+    setProcessing(id);
+    try {
+      const res = await api.post(`/mesomb/rembourser/${id}`);
+      alert(res.data.message);
+      fetchPaiements();
+    } catch(err) { alert(err.response?.data?.message || "Erreur lors du remboursement"); }
+    finally { setProcessing(null); }
+  };
     const transactionId = prompt('ID de transaction (optionnel):') || '';
     setProcessing(id);
     try {
@@ -160,6 +180,16 @@ export default function PaiementsAdmin() {
                   <div className="pt-3 border-t border-gray-100 flex items-center gap-2">
                     <span className="text-green-600 text-sm">✅ Confirmé le {new Date(p.dateConfirmation).toLocaleDateString('fr-FR')}</span>
                     {p.transactionId && <span className="text-gray-400 text-xs">ID: {p.transactionId}</span>}
+                    {p.disbursementStatut === 'effectue' ? (
+                      <span className="text-green-600 text-xs font-bold">💸 Artisan payé</span>
+                    ) : (
+                      <button onClick={()=>liberer(p._id)} disabled={processing===p._id} className="ml-auto px-3 py-1.5 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 disabled:opacity-50">
+                        {processing===p._id ? '...' : '💸 Libérer artisan'}
+                      </button>
+                    )}
+                    <button onClick={()=>rembourser(p._id)} disabled={processing===p._id||p.disbursementStatut==='effectue'} className="px-3 py-1.5 bg-red-500 text-white text-xs font-bold rounded-lg hover:bg-red-600 disabled:opacity-50">
+                      {processing===p._id ? '...' : '↩️ Rembourser client'}
+                    </button>
                   </div>
                 )}
               </div>

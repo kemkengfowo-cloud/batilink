@@ -107,4 +107,116 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   }
 });
 
+
+// POST /api/mesomb/liberer/:paiementId — Libérer le paiement à l'artisan
+router.post('/liberer/:paiementId', auth, async (req, res) => {
+  try {
+    // Vérification admin ou client propriétaire
+    const Paiement = require('../models/Paiement');
+    const User = require('../models/User');
+    
+    const paiement = await Paiement.findById(req.params.paiementId)
+      .populate('artisan', 'name phone whatsapp')
+      .populate('client', 'name email');
+
+    if (!paiement) return res.status(404).json({ message: 'Paiement introuvable.' });
+    if (paiement.statut !== 'confirme') return res.status(400).json({ message: 'Ce paiement n\'est pas encore confirmé.' });
+    if (paiement.disbursementStatut === 'effectue') return res.status(400).json({ message: 'Le paiement a déjà été libéré à l\'artisan.' });
+
+    // Vérifier droits : admin ou client du paiement
+    const isAdmin = req.user.role === 'admin';
+    const isClient = paiement.client._id.toString() === req.user.id;
+    if (!isAdmin && !isClient) return res.status(403).json({ message: 'Accès refusé.' });
+
+    // Récupérer le numéro téléphone de l'artisan
+    const artisan = await User.findById(paiement.artisan._id);
+    const telephoneArtisan = artisan.phone || artisan.whatsapp;
+    if (!telephoneArtisan) return res.status(400).json({ message: 'L\'artisan n\'a pas de numéro de téléphone enregistré.' });
+
+    const { PaymentOperation, RandomGenerator } = require('@hachther/mesomb');
+    const payment = new PaymentOperation({
+      applicationKey: process.env.MESOMB_APP_KEY,
+      accessKey: process.env.MESOMB_ACCESS_KEY,
+      secretKey: process.env.MESOMB_SECRET_KEY,
+    });
+
+    const service = paiement.operateur === 'orange_money' ? 'ORANGE' : 'MTN';
+    const nonce = RandomGenerator.nonce();
+
+    const response = await payment.makeDeposit({
+      amount: paiement.montantArtisan,
+      service,
+      receiver: telephoneArtisan.replace('+237', '').replace('237', ''),
+      nonce,
+      currency: 'XAF',
+      message: `B.Y.H — Paiement travaux ref: ${paiement.reference}`,
+    });
+
+    if (response.isOperationSuccess() && response.isTransactionSuccess()) {
+      paiement.disbursementStatut = 'effectue';
+      paiement.disbursementRef = nonce;
+      await paiement.save();
+
+      console.log(`✅ Disbursement effectué: ${paiement.montantArtisan} FCFA → ${telephoneArtisan}`);
+      return res.json({
+        message: `✅ ${paiement.montantArtisan.toLocaleString('fr-FR')} FCFA envoyés à l\'artisan sur ${service} !`,
+        paiement,
+      });
+    } else {
+      paiement.disbursementStatut = 'echoue';
+      await paiement.save();
+      return res.status(400).json({ message: 'Échec du virement vers l\'artisan. Réessayez.', details: response.message });
+    }
+  } catch(err) {
+    console.error('Erreur disbursement MeSomb:', err.message);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// POST /api/mesomb/rembourser/:paiementId — Rembourser le client
+router.post('/rembourser/:paiementId', auth, async (req, res) => {
+  try {
+    const Paiement = require('../models/Paiement');
+    const paiement = await Paiement.findById(req.params.paiementId)
+      .populate('client', 'name phone');
+
+    if (!paiement) return res.status(404).json({ message: 'Paiement introuvable.' });
+    if (req.user.role !== 'admin') return res.status(403).json({ message: 'Réservé à l\'admin.' });
+    if (paiement.statut === 'rembourse') return res.status(400).json({ message: 'Déjà remboursé.' });
+    if (paiement.disbursementStatut === 'effectue') return res.status(400).json({ message: 'Fonds déjà libérés à l\'artisan — remboursement impossible.' });
+
+    const telephoneClient = paiement.telephone;
+    if (!telephoneClient) return res.status(400).json({ message: 'Numéro client introuvable.' });
+
+    const { PaymentOperation, RandomGenerator } = require('@hachther/mesomb');
+    const payment = new PaymentOperation({
+      applicationKey: process.env.MESOMB_APP_KEY,
+      accessKey: process.env.MESOMB_ACCESS_KEY,
+      secretKey: process.env.MESOMB_SECRET_KEY,
+    });
+
+    const service = paiement.operateur === 'orange_money' ? 'ORANGE' : 'MTN';
+
+    const response = await payment.makeDeposit({
+      amount: paiement.montant,
+      service,
+      receiver: telephoneClient.replace('+237', '').replace('237', ''),
+      nonce: RandomGenerator.nonce(),
+      currency: 'XAF',
+      message: `B.Y.H — Remboursement ref: ${paiement.reference}`,
+    });
+
+    if (response.isOperationSuccess() && response.isTransactionSuccess()) {
+      paiement.statut = 'rembourse';
+      await paiement.save();
+      return res.json({ message: `✅ ${paiement.montant.toLocaleString('fr-FR')} FCFA remboursés au client !`, paiement });
+    } else {
+      return res.status(400).json({ message: 'Échec du remboursement.', details: response.message });
+    }
+  } catch(err) {
+    console.error('Erreur remboursement MeSomb:', err.message);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
