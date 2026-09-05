@@ -309,7 +309,6 @@ export default function DevisDetail() {
                 nomCible={devis.artisan.name || "Artisan"}
               />
             )}
-            )}
           </>
         )}
 
