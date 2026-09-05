@@ -77,3 +77,4 @@ setInterval(() => {
 
   if (h === 6 || h === 12 || h === 18 || h === 0) lancerTousLesRappels();
 }, 60 * 60 * 1000);
+
