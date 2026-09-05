@@ -120,8 +120,8 @@ export default function Admin() {
     setSignalements(prev => prev.map(s => s._id===id ? {...s, statut} : s));
   };
 
-  const resoudreLitige = async (id, statut, decision) => {
-    await api.put(`/litiges/${id}/resoudre`, { statut, decisionAdmin: decision });
+  const resoudreLitige = async (id, statut, decision, montantPlaignant=0, montantAccuse=0) => {
+    await api.put(`/litiges/${id}/resoudre`, { statut, decisionAdmin: decision, montantPlaignant: parseInt(montantPlaignant)||0, montantAccuse: parseInt(montantAccuse)||0 });
     setLitiges(prev => prev.map(l => l._id===id ? {...l, statut, decisionAdmin: decision} : l));
   };
 
@@ -515,7 +515,7 @@ export default function Admin() {
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${l.statut==='ouvert'?'bg-red-50 text-red-700':l.statut==='en_examen'?'bg-amber-50 text-amber-700':l.statut.includes('resolu')?'bg-green-50 text-green-700':'bg-gray-100 text-gray-500'}`}>
-                        {l.statut==='ouvert'?'Ouvert':l.statut==='en_examen'?'En examen':l.statut==='resolu_plaignant'?'Resolu en faveur du plaignant':l.statut==='resolu_accuse'?'Resolu en faveur de l accuse':'Classe'}
+                        {l.statut==='ouvert'?'🔴 Ouvert':l.statut==='en_attente_reponse'?'⏳ En attente réponse':l.statut==='en_examen'?'🔍 En examen':l.statut==='resolu_plaignant'?'✅ Faveur plaignant':l.statut==='resolu_accuse'?'✅ Faveur accusé':l.statut==='resolu_partage'?'⚖️ Partage':l.statut==='classe'?'📁 Classé':'Inconnu'}
                       </span>
                     </div>
                     <p className="font-bold text-gray-900">{l.motif}</p>
@@ -550,23 +550,19 @@ export default function Admin() {
                 {['ouvert','en_examen'].includes(l.statut) && (
                   <div className="space-y-3">
                     <textarea
-                      placeholder="Decision de l administrateur..."
+                      placeholder="Décision de l administrateur (ex: Remboursement total client, travaux non conformes)..."
                       id={`decision-${l._id}`}
                       rows={2}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 resize-none text-sm"/>
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      <div><label className="text-xs text-gray-500">Montant plaignant (FCFA)</label><input type="number" id={`montant-plaignant-${l._id}`} placeholder="0" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm mt-1"/></div>
+                      <div><label className="text-xs text-gray-500">Montant accusé (FCFA)</label><input type="number" id={`montant-accuse-${l._id}`} placeholder="0" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm mt-1"/></div>
+                    </div>
                     <div className="flex gap-2 flex-wrap">
-                      <button onClick={()=>resoudreLitige(l._id,'resolu_plaignant',document.getElementById(`decision-${l._id}`).value)}
-                        className="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700">
-                        Donner raison au plaignant
-                      </button>
-                      <button onClick={()=>resoudreLitige(l._id,'resolu_accuse',document.getElementById(`decision-${l._id}`).value)}
-                        className="flex-1 py-2.5 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600">
-                        Donner raison a l accuse
-                      </button>
-                      <button onClick={()=>resoudreLitige(l._id,'classe',document.getElementById(`decision-${l._id}`).value)}
-                        className="px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl text-sm font-semibold hover:bg-gray-200">
-                        Classer
-                      </button>
+                      <button onClick={()=>resoudreLitige(l._id,"resolu_plaignant",document.getElementById("decision-"+l._id).value,document.getElementById("montant-plaignant-"+l._id).value,document.getElementById("montant-accuse-"+l._id).value)} className="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700">✅ Donner raison au plaignant</button>
+                      <button onClick={()=>resoudreLitige(l._id,"resolu_accuse",document.getElementById("decision-"+l._id).value,document.getElementById("montant-plaignant-"+l._id).value,document.getElementById("montant-accuse-"+l._id).value)} className="flex-1 py-2.5 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600">✅ Donner raison a l accuse</button>
+                      <button onClick={()=>resoudreLitige(l._id,"resolu_partage",document.getElementById("decision-"+l._id).value,document.getElementById("montant-plaignant-"+l._id).value,document.getElementById("montant-accuse-"+l._id).value)} className="flex-1 py-2.5 bg-amber-500 text-white rounded-xl text-sm font-bold hover:bg-amber-600">⚖️ Partage</button>
+                      <button onClick={()=>resoudreLitige(l._id,"classe",document.getElementById("decision-"+l._id).value)} className="px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl text-sm font-semibold hover:bg-gray-200">📁 Classer</button>
                     </div>
                   </div>
                 )}
