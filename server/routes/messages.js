@@ -13,6 +13,7 @@ router.get('/conversations', auth, async (req, res) => {
 
     const map = {};
     messages.forEach(msg => {
+      if (!msg.expediteur || !msg.destinataire) return;
       const isSender = msg.expediteur._id.toString() === req.user.id;
       const otherId = isSender ? msg.destinataire._id.toString() : msg.expediteur._id.toString();
       if (!map[otherId]) {
