@@ -8,6 +8,8 @@ const devisSchema = new mongoose.Schema({
   titre: { type: String, required: true },
   description: { type: String, required: true },
   lignes: [{
+  montantMainOeuvre: { type: Number, default: 0 },
+  montantMateriaux:  { type: Number, default: 0 },
     designation: { type: String, required: true },
     quantite: { type: Number, required: true },
     unite: { type: String, default: 'unite' },
@@ -37,7 +39,8 @@ devisSchema.pre('save', function(next) {
   if (!this.numeroDevis) {
     this.numeroDevis = `BL-${Date.now()}-${Math.floor(Math.random()*1000)}`;
   }
-  this.montantCommission = Math.round(this.total * this.commission / 100);
+  const baseCommission = this.materielsInclus ? this.total : (this.montantMainOeuvre || this.total);
+  this.montantCommission = Math.round(baseCommission * this.commission / 100);
   this.montantArtisan = this.total - this.montantCommission;
   if (!this.dateExpiration) {
     const exp = new Date();

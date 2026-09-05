@@ -20,6 +20,7 @@ export default function CreerDevis() {
   const [lignes, setLignes] = useState([
     { designation:'', quantite:1, unite:'unite', prixUnitaire:0 }
   ]);
+  const [lignesMateriaux, setLignesMateriaux] = useState([]);
   const [clientId, setClientId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -69,9 +70,15 @@ export default function CreerDevis() {
   const addLigne = () => setLignes(l=>[...l, { designation:'', quantite:1, unite:'unite', prixUnitaire:0 }]);
   const removeLigne = (i) => setLignes(l=>l.filter((_,idx)=>idx!==i));
   const setLigne = (i,k,v) => setLignes(l=>l.map((x,idx)=>idx===i?{...x,[k]:v}:x));
+  const addLigneMat = () => setLignesMateriaux(l=>[...l, { designation:"", quantite:1, unite:"unite", prixUnitaire:0 }]);
+  const removeLigneMat = (i) => setLignesMateriaux(l=>l.filter((_,idx)=>idx!==i));
+  const setLigneMat = (i,k,v) => setLignesMateriaux(l=>l.map((x,idx)=>idx===i?{...x,[k]:v}:x));
 
-  const sousTotal = lignes.reduce((s,l)=>s+(l.quantite*l.prixUnitaire),0);
-  const commission = Math.round(sousTotal * 0.08);
+  const sousTotalMainOeuvre = lignes.reduce((s,l)=>s+(l.quantite*l.prixUnitaire),0);
+  const sousTotalMateriaux = lignesMateriaux.reduce((s,l)=>s+(l.quantite*l.prixUnitaire),0);
+  const sousTotal = sousTotalMainOeuvre + (form.materielsInclus ? sousTotalMateriaux : 0);
+  const baseCommission = form.materielsInclus ? sousTotal : sousTotalMainOeuvre;
+  const commission = Math.round(baseCommission * 0.08);
   const montantArtisan = sousTotal - commission;
 
   const handleSubmit = async (e) => {
@@ -85,7 +92,10 @@ export default function CreerDevis() {
         delaiExecution: form.delaiExecution,
         validiteJours: +form.validiteJours,
         conditionsPaiement: form.conditionsPaiement,
-        materielsInclus: form.materielsInclus
+        materielsInclus: form.materielsInclus,
+        montantMainOeuvre: sousTotalMainOeuvre,
+        montantMateriaux: sousTotalMateriaux,
+        lignesMateriaux: form.materielsInclus ? lignesMateriaux.map(l=>({...l, quantite:+l.quantite, prixUnitaire:+l.prixUnitaire})) : []
       });
       navigate(`/devis/${res.data._id}`);
     } catch(err) { setError(err.response?.data?.message || 'Erreur lors de la creation'); }
@@ -184,9 +194,12 @@ export default function CreerDevis() {
               {/* Recap financier */}
               <div className="mt-4 p-5 bg-blue-50 border-2 border-blue-200 rounded-2xl">
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between"><span className="text-gray-600">Sous-total</span><span className="font-bold">{formatBudget(sousTotal)}</span></div>
-                  <div className="flex justify-between text-gray-500"><span>Commission B.Y.H (8%)</span><span>{formatBudget(commission)}</span></div>
-                  <div className="flex justify-between text-gray-500"><span>Vous recevrez (90%)</span><span className="text-green-600 font-bold">{formatBudget(montantArtisan)}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-600">🔨 Main d'oeuvre</span><span className="font-bold">{formatBudget(sousTotalMainOeuvre)}</span></div>
+                  {form.materielsInclus && sousTotalMateriaux > 0 && (
+                    <div className="flex justify-between"><span className="text-orange-600">🧱 Matériaux</span><span className="font-bold text-orange-600">{formatBudget(sousTotalMateriaux)}</span></div>
+                  )}
+                  <div className="flex justify-between text-gray-500"><span>Commission B.Y.H (8% sur {form.materielsInclus ? "tout" : "main d'oeuvre"})</span><span className="text-red-500">-{formatBudget(commission)}</span></div>
+                  <div className="flex justify-between text-gray-500"><span>Vous recevrez (92%)</span><span className="text-green-600 font-bold">{formatBudget(montantArtisan)}</span></div>
                   <hr className="border-blue-200"/>
                   <div className="flex justify-between text-lg font-display font-black text-blue-700">
                     <span>Total client</span><span>{formatBudget(sousTotal)}</span>
@@ -207,37 +220,30 @@ export default function CreerDevis() {
                   className={inputCls}/>
               </div>
             </div>
-
             <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-              <input type="checkbox" id="materiels" checked={form.materielsInclus} onChange={e=>set('materielsInclus',e.target.checked)}
-                className="w-5 h-5 accent-blue-500 cursor-pointer"/>
-              <label htmlFor="materiels" className="text-sm font-semibold text-gray-700 cursor-pointer">
-            {isEntreprise && (
-              <div className="bg-purple-50 border-2 border-purple-200 rounded-2xl p-5 space-y-4">
-                <h3 className="font-bold text-purple-900">🏢 Informations entreprise</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelCls}>Nombre d equipes</label>
-                    <input type="number" min="1" value={form.nombreEquipes} onChange={e=>set("nombreEquipes",e.target.value)} className={inputCls} placeholder="Ex: 2"/>
-                  </div>
-                  <div>
-                    <label className={labelCls}>Nom du superviseur</label>
-                    <input type="text" value={form.superviseur} onChange={e=>set("superviseur",e.target.value)} className={inputCls} placeholder="Ex: Ing. Dupont"/>
-                  </div>
+              <input type="checkbox" id="materiels" checked={form.materielsInclus} onChange={e=>set("materielsInclus",e.target.checked)} className="w-5 h-5 accent-blue-500 cursor-pointer"/>
+              <label htmlFor="materiels" className="text-sm font-semibold text-gray-700 cursor-pointer">Artisan fournit les matériaux et fournitures (inclus dans le devis)</label>
+            </div>
+            {form.materielsInclus && (
+              <div className="bg-orange-50 border-2 border-orange-200 rounded-2xl p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-bold text-orange-900">🧱 Matériaux et fournitures</h3>
+                  <button type="button" onClick={addLigneMat} className="text-sm px-3 py-1.5 bg-orange-500 text-white rounded-lg font-semibold">+ Ajouter</button>
                 </div>
-                <div>
-                  <label className={labelCls}>Lots couverts</label>
-                  <input type="text" value={form.lotsCouverts} onChange={e=>set("lotsCouverts",e.target.value)} className={inputCls} placeholder="Ex: Gros oeuvre, Finition"/>
-                </div>
-                <div>
-                  <label className={labelCls}>Garantie offerte</label>
-                  <input type="text" value={form.garantie} onChange={e=>set("garantie",e.target.value)} className={inputCls} placeholder="Ex: 2 ans sur les travaux de structure"/>
+                {lignesMateriaux.length === 0 && <p className="text-orange-600 text-sm">Ajoutez les matériaux inclus dans ce devis.</p>}
+                <div className="space-y-2">
+                  {lignesMateriaux.map((l,i)=>(
+                    <div key={i} className="grid grid-cols-12 gap-2 items-center p-2 bg-white rounded-xl">
+                      <div className="col-span-5"><input type="text" placeholder="Ex: Ciment, Sable..." value={l.designation} onChange={e=>setLigneMat(i,"designation",e.target.value)} className="w-full px-3 py-2 border border-orange-200 rounded-lg text-sm focus:outline-none focus:border-orange-400"/></div>
+                      <div className="col-span-2"><input type="number" min="1" value={l.quantite} onChange={e=>setLigneMat(i,"quantite",e.target.value)} className="w-full px-3 py-2 border border-orange-200 rounded-lg text-sm focus:outline-none"/></div>
+                      <div className="col-span-2"><input type="text" placeholder="Sac, m3..." value={l.unite} onChange={e=>setLigneMat(i,"unite",e.target.value)} className="w-full px-3 py-2 border border-orange-200 rounded-lg text-sm focus:outline-none"/></div>
+                      <div className="col-span-2"><input type="number" min="0" value={l.prixUnitaire} onChange={e=>setLigneMat(i,"prixUnitaire",e.target.value)} className="w-full px-3 py-2 border border-orange-200 rounded-lg text-sm focus:outline-none"/></div>
+                      <div className="col-span-1 text-center"><button type="button" onClick={()=>removeLigneMat(i)} className="text-red-400 hover:text-red-600 text-xl">×</button></div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
-                Les materiels et fournitures sont inclus dans ce devis
-              </label>
-            </div>
 
             <button type="submit" disabled={loading||!clientId}
               className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50 text-lg shadow-lg shadow-blue-600/20">
