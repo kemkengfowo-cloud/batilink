@@ -62,6 +62,39 @@ export default function JalonsSection({ devis, onUpdate }) {
       setMessage('Contestation enregistree.');
       if (onUpdate) onUpdate();
     } catch(err) { setMessage(err.response?.data?.message || 'Erreur'); }
+  const payerJalon = async (jalonId) => {
+    if (!window.confirm("Déclencher le paiement MeSomb pour ce jalon ?")) return;
+    try {
+      const res = await api.put("/jalons/" + jalonId + "/payer");
+      setMessage(res.data.message);
+      if (onUpdate) onUpdate();
+    } catch(err) { setMessage(err.response?.data?.message || "Erreur paiement jalon"); }
+  };
+  const proposerModification = async (jalonId) => {
+    const pourcentage = parseInt(window.prompt("Nouveau pourcentage (%) pour ce jalon:"));
+    if (!pourcentage || pourcentage < 5 || pourcentage > 90) { setMessage("Pourcentage invalide (5-90%)"); return; }
+    const raison = window.prompt("Raison de la modification:");
+    if (!raison) return;
+    try {
+      await api.put("/jalons/" + jalonId + "/proposer-modification", { nouveauPourcentage: pourcentage, raison });
+      setMessage("Proposition envoyée à l artisan !");
+      if (onUpdate) onUpdate();
+    } catch(err) { setMessage(err.response?.data?.message || "Erreur"); }
+  };
+  const accepterModification = async (jalonId) => {
+    try {
+      await api.put("/jalons/" + jalonId + "/accepter-modification");
+      setMessage("Modification acceptée !");
+      if (onUpdate) onUpdate();
+    } catch(err) { setMessage(err.response?.data?.message || "Erreur"); }
+  };
+  const refuserModification = async (jalonId) => {
+    try {
+      await api.put("/jalons/" + jalonId + "/refuser-modification");
+      setMessage("Modification refusée.");
+      if (onUpdate) onUpdate();
+    } catch(err) { setMessage(err.response?.data?.message || "Erreur"); }
+  };
   };
 
   const STATUT_COLOR = {
@@ -70,6 +103,7 @@ export default function JalonsSection({ devis, onUpdate }) {
     soumis:     'bg-amber-50 text-amber-700',
     valide:     'bg-green-50 text-green-700',
     conteste:   'bg-red-50 text-red-700',
+    en_negociation: 'bg-purple-50 text-purple-700',
   };
   const STATUT_LABEL = {
     en_attente: 'En attente',
@@ -77,6 +111,7 @@ export default function JalonsSection({ devis, onUpdate }) {
     soumis:     'Photos soumises',
     valide:     'Valide',
     conteste:   'Conteste',
+    en_negociation: '🔄 Négociation',
   };
 
   return (
@@ -246,6 +281,32 @@ export default function JalonsSection({ devis, onUpdate }) {
                         ❌ Contester
                       </button>
                     </div>
+                  </div>
+                )}
+                {isClient && j.statut === "en_attente" && (
+                  <div className="px-5 py-3 border-t border-gray-100">
+                    <button onClick={()=>proposerModification(j._id)} className="text-xs px-3 py-1.5 bg-purple-50 text-purple-600 border border-purple-200 rounded-lg font-semibold hover:bg-purple-100">✏️ Proposer modification</button>
+                  </div>
+                )}
+                {isArtisan && j.statut === "en_negociation" && j.propositionClient && (
+                  <div className="px-5 py-4 border-t border-purple-100 bg-purple-50">
+                    <p className="text-sm text-purple-700 font-bold mb-1">🔄 Le client propose une modification</p>
+                    <p className="text-xs text-purple-600 mb-1">Nouveau pourcentage : {j.propositionClient?.pourcentage}%</p>
+                    <p className="text-xs text-purple-600 mb-3">Raison : {j.propositionClient?.raison}</p>
+                    <div className="flex gap-2">
+                      <button onClick={()=>accepterModification(j._id)} className="flex-1 py-2 bg-green-500 text-white rounded-xl text-xs font-bold">✅ Accepter</button>
+                      <button onClick={()=>refuserModification(j._id)} className="flex-1 py-2 bg-red-50 text-red-600 border border-red-200 rounded-xl text-xs font-semibold">❌ Refuser</button>
+                    </div>
+                  </div>
+                )}
+                {j.statut === "valide" && !j.paiementEffectue && (isClient || user?.role === "admin") && (
+                  <div className="px-5 py-3 border-t border-green-100 bg-green-50">
+                    <button onClick={()=>payerJalon(j._id)} className="w-full py-2.5 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700">💸 Payer artisan ({formatBudget(Math.round(j.montant*0.92))} FCFA)</button>
+                  </div>
+                )}
+                {j.paiementEffectue && (
+                  <div className="px-5 py-2 bg-green-50 border-t border-green-100">
+                    <p className="text-xs text-green-700 font-bold">💸 Payé — {formatBudget(j.montantPaye)} FCFA versés à l artisan</p>
                   </div>
                 )}
 
