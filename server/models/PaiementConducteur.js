@@ -10,6 +10,8 @@ const paiementConducteurSchema = new mongoose.Schema({
   operateur:        { type: String, enum: ['orange_money', 'mtn_momo', 'virement'], required: true },
   telephone:        { type: String },
   statut:           { type: String, enum: ['initie', 'en_attente', 'confirme', 'echoue', 'rembourse'], default: 'initie' },
+  disbursementStatut: { type: String, enum: ["en_attente", "effectue", "echoue"], default: "en_attente" },
+  disbursementRef:    { type: String },
   reference:        { type: String, unique: true, sparse: true },
   transactionId:    { type: String },
   notes:            { type: String },

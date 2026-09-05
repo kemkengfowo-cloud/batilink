@@ -33,6 +33,16 @@ export default function PaiementsConducteurAdmin() {
       setMsg('Paiement conducteur confirme et distribue !');
       loadPaiements();
     } catch(err) {
+  const libererConducteur = async (id) => {
+    if (!window.confirm("Libérer le paiement au conducteur via MeSomb ?")) return;
+    setProcessing(id);
+    try {
+      const res = await api.post(`/mesomb/liberer-conducteur/${id}`);
+      alert(res.data.message);
+      fetchPaiements();
+    } catch(err) { alert(err.response?.data?.message || "Erreur"); }
+    finally { setProcessing(null); }
+  };
       setMsg('Erreur: ' + (err.response && err.response.data ? err.response.data.message : 'Erreur'));
     } finally { setProcessing(null); }
   };
@@ -169,6 +179,13 @@ export default function PaiementsConducteurAdmin() {
                   <div className="pt-3 border-t border-gray-100">
                     <p className="text-green-600 text-sm font-semibold">✅ Confirmé le {p.dateConfirmation ? new Date(p.dateConfirmation).toLocaleDateString('fr-FR') : '-'}</p>
                     {p.transactionId && <p className="text-gray-400 text-xs mt-1">Transaction: {p.transactionId}</p>}
+                    {p.disbursementStatut === "effectue" ? (
+                      <p className="text-green-600 text-xs font-bold mt-2">💸 Conducteur payé via MeSomb</p>
+                    ) : (
+                      <button onClick={()=>libererConducteur(p._id)} disabled={processing===p._id} className="mt-2 w-full py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 disabled:opacity-50">
+                        {processing===p._id ? "..." : "💸 Libérer conducteur via MeSomb"}
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

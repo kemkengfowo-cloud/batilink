@@ -219,4 +219,122 @@ router.post('/rembourser/:paiementId', auth, async (req, res) => {
   }
 });
 
+
+// POST /api/mesomb/liberer-conducteur/:paiementId — Libérer paiement conducteur
+router.post('/liberer-conducteur/:paiementId', auth, async (req, res) => {
+  try {
+    const PaiementConducteur = require('../models/PaiementConducteur');
+    const User = require('../models/User');
+
+    const paiement = await PaiementConducteur.findById(req.params.paiementId)
+      .populate('conducteur', 'name phone whatsapp')
+      .populate('client', 'name email');
+
+    if (!paiement) return res.status(404).json({ message: 'Paiement introuvable.' });
+    if (paiement.statut !== 'confirme') return res.status(400).json({ message: 'Paiement non confirmé.' });
+    if (paiement.disbursementStatut === 'effectue') return res.status(400).json({ message: 'Déjà libéré.' });
+
+    const isAdmin = req.user.role === 'admin';
+    const isClient = paiement.client._id.toString() === req.user.id;
+    if (!isAdmin && !isClient) return res.status(403).json({ message: 'Accès refusé.' });
+
+    const conducteur = await User.findById(paiement.conducteur._id);
+    const telephone = conducteur.phone || conducteur.whatsapp;
+    if (!telephone) return res.status(400).json({ message: 'Numéro conducteur manquant.' });
+
+    const { PaymentOperation, RandomGenerator } = require('@hachther/mesomb');
+    const payment = new PaymentOperation({
+      applicationKey: process.env.MESOMB_APP_KEY,
+      accessKey: process.env.MESOMB_ACCESS_KEY,
+      secretKey: process.env.MESOMB_SECRET_KEY,
+    });
+
+    const service = paiement.operateur === 'orange_money' ? 'ORANGE' : 'MTN';
+    const response = await payment.makeDeposit({
+      amount: paiement.montantConducteur,
+      service,
+      receiver: telephone.replace('+237', '').replace('237', ''),
+      nonce: RandomGenerator.nonce(),
+      currency: 'XAF',
+      message: `B.Y.H — Paiement conducteur ref: ${paiement.reference}`,
+    });
+
+    if (response.isOperationSuccess() && response.isTransactionSuccess()) {
+      paiement.disbursementStatut = 'effectue';
+      await paiement.save();
+      return res.json({
+        message: `✅ ${paiement.montantConducteur.toLocaleString('fr-FR')} FCFA envoyés au conducteur !`,
+        paiement,
+      });
+    } else {
+      paiement.disbursementStatut = 'echoue';
+      await paiement.save();
+      return res.status(400).json({ message: 'Échec du virement.', details: response.message });
+    }
+  } catch(err) {
+    console.error('Erreur disbursement conducteur:', err.message);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// POST /api/mesomb/initier-entreprise — Paiement vers entreprise BTP
+router.post('/initier-entreprise', auth, async (req, res) => {
+  try {
+    const { contratId, telephone, operateur } = req.body;
+    if (!contratId || !telephone || !operateur)
+      return res.status(400).json({ message: 'Champs requis manquants.' });
+
+    const Contrat = require('../models/Contrat');
+    const contrat = await Contrat.findById(contratId)
+      .populate('client')
+      .populate('entreprise');
+
+    if (!contrat) return res.status(404).json({ message: 'Contrat introuvable.' });
+    if (contrat.client._id.toString() !== req.user.id)
+      return res.status(403).json({ message: 'Accès refusé.' });
+
+    const montant = contrat.montantTotal || contrat.budget;
+    const commission = Math.round(montant * 0.08);
+    const montantEntreprise = montant - commission;
+    const reference = 'BYH-ENT-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+    const { PaymentOperation, RandomGenerator } = require('@hachther/mesomb');
+    const payment = new PaymentOperation({
+      applicationKey: process.env.MESOMB_APP_KEY,
+      accessKey: process.env.MESOMB_ACCESS_KEY,
+      secretKey: process.env.MESOMB_SECRET_KEY,
+    });
+
+    const response = await payment.makeCollect({
+      amount: montant,
+      service: operateur === 'orange_money' ? 'ORANGE' : 'MTN',
+      payer: telephone,
+      nonce: reference,
+      currency: 'XAF',
+      message: `B.Y.H Entreprise — ${contrat.titre || 'Contrat BTP'}`,
+    });
+
+    if (response.isOperationSuccess() && response.isTransactionSuccess()) {
+      const Paiement = require('../models/Paiement');
+      const paiement = await Paiement.create({
+        devis: contrat._id,
+        client: req.user.id,
+        artisan: contrat.entreprise._id,
+        montant, commission,
+        montantArtisan: montantEntreprise,
+        operateur, telephone, reference,
+        statut: 'confirme',
+        provider: 'mesomb',
+        transactionId: response.transaction?.pk,
+      });
+      return res.json({ message: 'Paiement entreprise confirmé !', paiement, reference });
+    } else {
+      return res.status(400).json({ message: 'Paiement échoué.', details: response.message });
+    }
+  } catch(err) {
+    console.error('Erreur paiement entreprise:', err.message);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
