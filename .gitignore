@@ -7,3 +7,6 @@ uploads/*
 *.log
 .env.backup
 *.env*
+
+.vercel
+.env*
