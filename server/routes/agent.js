@@ -8,7 +8,7 @@ const Entreprise = require('../models/Entreprise');
 const Paiement = require('../models/Paiement');
 const PaiementConducteur = require('../models/PaiementConducteur');
 const Litige = require('../models/Litige');
-const Visite = require('../models/Visite');
+const Visite = require('../models/VisiteEvaluation');
 
 // Middleware combiné
 router.use(auth, agentOrAdmin);
