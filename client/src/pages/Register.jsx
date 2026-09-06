@@ -3,233 +3,266 @@ import AddressAutocomplete from "../components/AddressAutocomplete";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { VILLES, CATEGORIES } from '../utils/helpers';
 
-const LOTS = ['Gros oeuvre','Finition','Geotechnique','Architecture'];
-const TYPE_PERSONNEL = ['Coffreur','Manoeuvre','Ferrailleur','Dalleur','Macon','Electricien','Plombier','Peintre','Carreleur','Menuisier','Soudeur','Autres'];
+const ROLES = [
+  { id: 'client',    icon: '👤', label: 'Client',     sub: 'Je cherche des artisans',    color: '#EFF6FF', border: '#BFDBFE', accent: '#1D4ED8' },
+  { id: 'artisan',   icon: '🔨', label: 'Artisan',    sub: 'Je propose mes services',    color: '#F0FDF4', border: '#BBF7D0', accent: '#166534' },
+  { id: 'entreprise',icon: '🏢', label: 'Entreprise', sub: 'Société de construction',    color: '#F5F3FF', border: '#DDD6FE', accent: '#5B21B6' },
+  { id: 'conducteur',icon: '🏗️', label: 'Conducteur', sub: 'Conducteur de travaux',      color: '#ECFDF5', border: '#A7F3D0', accent: '#065F46' },
+];
+
 const PAYS_MONDE = ['France','Belgique','Suisse','Canada','Etats-Unis','Allemagne','Italie','Espagne','Royaume-Uni','Portugal','Gabon','Congo','Cote d Ivoire','Senegal','Autre'];
+
+const inputCls = 'input-premium w-full px-4 py-3.5 text-slate-900 font-medium';
+const labelCls = 'block text-sm font-bold text-slate-700 mb-2';
 
 export default function Register() {
   const { register } = useAuth();
   const { executeRecaptcha } = useGoogleReCaptcha();
   const navigate = useNavigate();
-  const [params] = useSearchParams();
-  const defaultRole = params.get('role') || 'client';
-  const [role, setRole] = useState(defaultRole);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1);
-  const [otpMethod, setOtpMethod] = useState("email");
-  const [otpCode, setOtpCode] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpLoading, setOtpLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [role, setRole] = useState(searchParams.get('role') || 'client');
   const [form, setForm] = useState({
     name:'', email:'', password:'', phone:'', city:'',
-    estDiaspora: false, paysDiaspora:'',
     metier:'', whatsapp:'', experience:'',
-    nomEntreprise:'', nomResponsable:'', rccm:'',
-    lotsTravauxPropose:[], typePersonnel:[]
+    nomEntreprise:'', nomResponsable:'',
+    estDiaspora: false, paysDiaspora: '',
   });
-
-  const set = (k,v) => setForm(f=>({...f,[k]:v}));
-  const toggleArr = (k,v) => setForm(f=>({...f,[k]:f[k].includes(v)?f[k].filter(x=>x!==v):[...f[k],v]}));
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const set = (k, v) => setForm(f => ({...f, [k]: v}));
+  const isEntreprise = role === 'entreprise';
+  const isArtisan = role === 'artisan';
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); setError(""); setLoading(true);
+    e.preventDefault(); setError(''); setLoading(true);
     try {
-      if (!executeRecaptcha) { setError("reCAPTCHA non disponible."); setLoading(false); return; }
+      if (!executeRecaptcha) { setError('reCAPTCHA non disponible.'); setLoading(false); return; }
       const token = await executeRecaptcha("register");
       await register({...form, role, recaptchaToken: token});
-      navigate("/dashboard");
-    } catch(err) { setError(err.response?.data?.message || "Erreur d inscription"); }
+      navigate('/dashboard');
+    } catch(err) { setError(err.response?.data?.message || 'Erreur d\'inscription'); }
     finally { setLoading(false); }
   };
 
-  const inputCls = "w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors text-gray-800";
-  const labelCls = "block text-sm font-semibold text-gray-700 mb-1.5";
-
   return (
     <div className="min-h-screen flex">
-      {/* Cote gauche photo */}
-      <div className="hidden lg:flex w-1/2 flex-col justify-between relative overflow-hidden">
-        <img src="https://images.pexels.com/photos/1474993/pexels-photo-1474993.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="Construction" className="absolute inset-0 w-full h-full object-cover"/>
-        <div className="absolute inset-0" style={{background:'linear-gradient(135deg, rgba(10,22,40,0.85) 0%, rgba(13,32,68,0.75) 100%)'}}></div>
-        <div className="relative z-10 p-12">
-          <Link to="/" className="flex items-center gap-3"><div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 3L21 10.5V21H15V15H9V21H3V10.5Z" fill="white"/></svg></div><span className="font-display font-bold text-2xl text-white">B.Y.H</span></Link>
+      {/* Panneau gauche dégradé */}
+      <div className="hidden lg:flex lg:w-5/12 bg-byh-gradient flex-col justify-between p-12 relative overflow-hidden">
+        <div className="absolute top-[-80px] right-[-80px] w-[400px] h-[400px] rounded-full bg-blue-500/10"/>
+        <div className="absolute bottom-[-100px] left-[-60px] w-[300px] h-[300px] rounded-full bg-indigo-500/10"/>
+
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-blue-purple flex items-center justify-center text-2xl shadow-blue">🏠</div>
+          <div>
+            <div className="text-2xl font-black text-white tracking-widest">B.Y.H</div>
+            <div className="text-xs text-blue-300 font-semibold">Build Your Home 🇨🇲</div>
+          </div>
         </div>
-        <div className="relative z-10 p-12">
-          <h1 className="text-4xl font-display font-black text-white leading-tight mb-4">Rejoignez le reseau BTP <span className="text-blue-400">#1 au Cameroun</span></h1>
-          <p className="text-blue-200">Inscription 100% gratuite</p>
+
+        <div className="relative z-10 space-y-6">
+          <h1 className="text-4xl font-black text-white leading-tight">
+            Rejoignez la<br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-300">
+              plateforme BTP
+            </span><br/>
+            du Cameroun
+          </h1>
+          <p className="text-slate-400 leading-relaxed">
+            Artisans, entreprises, conducteurs de travaux et clients — tous réunis sur B.Y.H pour construire mieux, ensemble.
+          </p>
+          <div className="space-y-3">
+            {[
+              { icon: '✅', text: 'Inscription 100% gratuite' },
+              { icon: '🔒', text: 'Paiements sécurisés via Mobile Money' },
+              { icon: '⭐', text: 'Profil vérifié par B.Y.H' },
+              { icon: '📱', text: 'Application mobile disponible' },
+            ].map((f, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <span className="text-lg">{f.icon}</span>
+                <span className="text-slate-300 text-sm font-medium">{f.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative z-10 text-slate-500 text-xs">
+          🇨🇲 Fièrement Made in Cameroun — © 2026 B.Y.H
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 overflow-y-auto">
-        <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <Link to="/" className="lg:hidden flex items-center gap-2 justify-center mb-6">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">B</div>
-              <span className="font-display font-bold text-xl text-gray-900">B.Y.H</span>
-            </Link>
-            <h2 className="text-2xl font-display font-bold text-gray-900">Creer un compte</h2>
-            <p className="text-gray-500 mt-1 text-sm">Choisissez votre profil</p>
+      {/* Panneau droit — formulaire */}
+      <div className="w-full lg:w-7/12 bg-slate-50 overflow-y-auto">
+        <div className="max-w-2xl mx-auto px-6 py-10">
+
+          {/* Logo mobile */}
+          <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-blue-purple flex items-center justify-center text-xl shadow-blue">🏠</div>
+            <div className="text-xl font-black text-slate-900 tracking-widest">B.Y.H</div>
           </div>
 
-          {/* Role */}
-          <div className="grid grid-cols-3 gap-2 mb-8">
-            {[{r:"client",icon:"🏠",label:"Client"},{r:"artisan",icon:"🔨",label:"Technicien"},{r:"entreprise",icon:"🏢",label:"Entreprise"},{r:"conducteur",icon:"CT",label:"Conducteur"}].map(({r,icon,label})=>(
-              <button key={r} type="button" onClick={()=>setRole(r)}
-                className={`py-4 rounded-xl border-2 font-semibold transition-all text-center ${role===r?'border-blue-500 bg-blue-50 text-blue-700':'border-gray-200 text-gray-500 hover:border-gray-300'}`}>
-                <div className="text-2xl mb-1">{icon}</div>
-                <div className="text-xs">{label}</div>
-              </button>
-            ))}
+          <div className="mb-8">
+            <h2 className="text-3xl font-black text-slate-900 mb-2">Créer votre compte 🚀</h2>
+            <p className="text-slate-500">Rejoignez des milliers d'utilisateurs B.Y.H au Cameroun</p>
           </div>
 
-          {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">{error}</div>}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Nom */}
-            {role === 'entreprise' ? (
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className={labelCls}>Nom de l entreprise *</label>
-                  <input type="text" required value={form.nomEntreprise} onChange={e=>set('nomEntreprise',e.target.value)} className={inputCls} placeholder="SOBTP Sarl"/>
-                </div>
-                <div>
-                  <label className={labelCls}>Nom du responsable *</label>
-                  <input type="text" required value={form.nomResponsable} onChange={e=>set('nomResponsable',e.target.value)} className={inputCls} placeholder="Jean Mbarga"/>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <label className={labelCls}>Nom complet *</label>
-                <input type="text" required value={form.name} onChange={e=>set('name',e.target.value)} className={inputCls} placeholder="Jean Mbarga"/>
-              </div>
-            )}
-
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className={labelCls}>Email *</label>
-                <input type="email" required value={form.email} onChange={e=>set('email',e.target.value)} className={inputCls} placeholder="vous@email.com"/>
-              </div>
-              <div>
-                <label className={labelCls}>Telephone *</label>
-                <input type="tel" required value={form.phone} onChange={e=>set('phone',e.target.value)} className={inputCls} placeholder="+237 6XX XXX XXX"/>
-              </div>
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3">
+              <span className="text-red-500 text-lg">⚠️</span>
+              <p className="text-red-600 text-sm font-semibold">{error}</p>
             </div>
+          )}
 
+          <form onSubmit={handleSubmit} className="space-y-6">
+
+            {/* Choix du rôle */}
             <div>
-              <label className={labelCls}>Ville / Adresse *</label>
-              <AddressAutocomplete value={form.city} onChange={v=>set("city",v)} placeholder="Ex: Bastos, Yaoundé" className={inputCls}/>
+              <p className={labelCls}>Je suis...</p>
+              <div className="grid grid-cols-2 gap-3">
+                {ROLES.map(r => (
+                  <button key={r.id} type="button" onClick={() => setRole(r.id)}
+                    className="p-4 rounded-2xl border-2 text-left transition-all relative"
+                    style={{
+                      backgroundColor: r.color,
+                      borderColor: role === r.id ? r.accent : r.border,
+                      boxShadow: role === r.id ? `0 0 0 3px ${r.accent}20` : 'none',
+                    }}>
+                    <div className="text-2xl mb-1">{r.icon}</div>
+                    <div className="font-bold text-slate-900 text-sm">{r.label}</div>
+                    <div className="text-xs mt-1" style={{color: r.accent}}>{r.sub}</div>
+                    {role === r.id && (
+                      <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-black"
+                        style={{backgroundColor: r.accent}}>✓</div>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Case diaspora — clients uniquement */}
-            {role === 'client' && (
-              <div>
-                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${form.estDiaspora?'border-blue-500 bg-blue-50':'border-gray-200 hover:border-gray-300'}`}>
-                  <input type="checkbox" checked={form.estDiaspora} onChange={e=>set('estDiaspora',e.target.checked)} className="w-5 h-5 accent-blue-500"/>
+            {/* Infos principales */}
+            <div className="card-premium p-6 space-y-4">
+              <h3 className="font-display font-bold text-slate-900">📋 Informations personnelles</h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelCls}>{isEntreprise ? 'Nom du responsable *' : 'Nom complet *'}</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2">👤</span>
+                    <input type="text" required value={form.name} onChange={e=>set('name',e.target.value)}
+                      className={inputCls + ' pl-10'} placeholder="Ex: Christ Jefferson"/>
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}>Email *</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2">📧</span>
+                    <input type="email" required value={form.email} onChange={e=>set('email',e.target.value)}
+                      className={inputCls + ' pl-10'} placeholder="votre@email.com"/>
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}>Téléphone *</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2">📱</span>
+                    <input type="tel" required value={form.phone} onChange={e=>set('phone',e.target.value)}
+                      className={inputCls + ' pl-10'} placeholder="+237 6XX XXX XXX"/>
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}>Ville / Adresse *</label>
+                  <AddressAutocomplete value={form.city} onChange={v=>set('city',v)}
+                    placeholder="Ex: Bastos, Yaoundé" className={inputCls}/>
+                </div>
+              </div>
+
+              {/* Diaspora */}
+              {role === 'client' && (
+                <label className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border-2 border-blue-100 cursor-pointer hover:border-blue-300 transition-colors">
+                  <input type="checkbox" checked={form.estDiaspora} onChange={e=>set('estDiaspora',e.target.checked)}
+                    className="w-5 h-5 accent-blue-600 cursor-pointer"/>
                   <div>
-                    <p className="font-semibold text-gray-800 text-sm">🌍 Je suis hors du Cameroun (Diaspora)</p>
-                    <p className="text-gray-400 text-xs mt-0.5">J ai un chantier au Cameroun mais je vis a l etranger</p>
+                    <div className="font-bold text-slate-800 text-sm">🌍 Je suis de la diaspora</div>
+                    <div className="text-slate-500 text-xs">Je vis à l'étranger et je veux construire au Cameroun</div>
                   </div>
                 </label>
-                {form.estDiaspora && (
-                  <div className="mt-3">
-                    <label className={labelCls}>Mon pays de residence</label>
-                    <select value={form.paysDiaspora} onChange={e=>set('paysDiaspora',e.target.value)} className={inputCls}>
-                      <option value="">Selectionnez votre pays</option>
-                      {PAYS_MONDE.map(p=><option key={p} value={p}>{p}</option>)}
-                    </select>
-                  </div>
-                )}
-              </div>
-            )}
+              )}
 
-            {/* Champs artisan */}
-            {role === 'artisan' && (<>
-              <div className="grid grid-cols-2 gap-4">
+              {form.estDiaspora && role === 'client' && (
                 <div>
-                  <label className={labelCls}>Specialite *</label>
-                  <select required value={form.metier} onChange={e=>set('metier',e.target.value)} className={inputCls}>
-                    <option value="">Votre metier</option>
-                    {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
+                  <label className={labelCls}>Pays de résidence</label>
+                  <select value={form.paysDiaspora} onChange={e=>set('paysDiaspora',e.target.value)} className={inputCls}>
+                    <option value="">Sélectionner votre pays</option>
+                    {PAYS_MONDE.map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
-                <div>
-                  <label className={labelCls}>Experience (ans)</label>
-                  <input type="number" min="0" max="50" value={form.experience} onChange={e=>set('experience',e.target.value)} className={inputCls} placeholder="5"/>
-                </div>
-              </div>
-              <div>
-                <label className={labelCls}>WhatsApp</label>
-                <input type="tel" value={form.whatsapp} onChange={e=>set('whatsapp',e.target.value)} className={inputCls} placeholder="+237 6XX XXX XXX"/>
-              </div>
-            </>)}
+              )}
 
-            {/* Champs entreprise */}
-            {role === 'entreprise' && (<>
-              <div>
-                <label className={labelCls}>Numero RCCM</label>
-                <input type="text" value={form.rccm} onChange={e=>set('rccm',e.target.value)} className={inputCls} placeholder="RC/DLA/2024/B/1234"/>
-              </div>
-              <div>
-                <label className={labelCls}>Lots de travaux proposes</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {LOTS.map(l=>(
-                    <label key={l} className={`flex items-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${form.lotsTravauxPropose.includes(l)?'border-blue-500 bg-blue-50':'border-gray-200 hover:border-gray-300'}`}>
-                      <input type="checkbox" checked={form.lotsTravauxPropose.includes(l)} onChange={()=>toggleArr('lotsTravauxPropose',l)} className="accent-blue-500"/>
-                      <span className="text-xs font-medium text-gray-700">{l}</span>
-                    </label>
-                  ))}
+              {/* Artisan */}
+              {isArtisan && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+                  <div>
+                    <label className={labelCls}>Métier / Spécialité *</label>
+                    <input type="text" value={form.metier} onChange={e=>set('metier',e.target.value)}
+                      className={inputCls} placeholder="Ex: Maçon, Électricien..."/>
+                  </div>
+                  <div>
+                    <label className={labelCls}>WhatsApp</label>
+                    <input type="tel" value={form.whatsapp} onChange={e=>set('whatsapp',e.target.value)}
+                      className={inputCls} placeholder="+237 6XX XXX XXX"/>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelCls}>Années d'expérience</label>
+                    <input type="number" min="0" max="50" value={form.experience} onChange={e=>set('experience',e.target.value)}
+                      className={inputCls} placeholder="Ex: 5"/>
+                  </div>
                 </div>
-              </div>
-            </>)}
+              )}
 
-            <div>
-              <label className={labelCls}>Mot de passe *</label>
-              <input type="password" required minLength={6} value={form.password} onChange={e=>set('password',e.target.value)} className={inputCls} placeholder="Minimum 6 caracteres"/>
+              {/* Entreprise */}
+              {isEntreprise && (
+                <div className="pt-2 border-t border-slate-100">
+                  <label className={labelCls}>Nom de l'entreprise *</label>
+                  <input type="text" value={form.nomEntreprise} onChange={e=>set('nomEntreprise',e.target.value)}
+                    className={inputCls} placeholder="Ex: BTP Cameroun SARL"/>
+                </div>
+              )}
             </div>
 
+            {/* Mot de passe */}
+            <div className="card-premium p-6">
+              <h3 className="font-display font-bold text-slate-900 mb-4">🔒 Sécurité</h3>
+              <div>
+                <label className={labelCls}>Mot de passe * (6 caractères minimum)</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2">🔒</span>
+                  <input type="password" required minLength={6} value={form.password} onChange={e=>set('password',e.target.value)}
+                    className={inputCls + ' pl-10'} placeholder="Choisissez un mot de passe fort"/>
+                </div>
+              </div>
+            </div>
+
+            {/* Submit */}
             <button type="submit" disabled={loading}
-              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50 text-lg shadow-lg shadow-blue-600/20">
-              {loading?'Creation...': `Creer mon compte ${role==='client'?'client':role==='artisan'?'technicien':'entreprise'}`}
+              className="btn-byh-gradient w-full py-4 text-white font-black text-lg rounded-2xl disabled:opacity-60">
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
+                  Création du compte...
+                </span>
+              ) : 'Créer mon compte gratuitement →'}
             </button>
-          {/* ETAPE 2 - Choix methode OTP */}
-          {step === 2 && (
-            <div className="mt-6 p-6 bg-blue-50 border border-blue-200 rounded-2xl">
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Verifiez votre identite</h3>
-              <p className="text-sm text-gray-600 mb-4">Choisissez comment recevoir votre code de verification :</p>
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <button type="button" onClick={()=>setOtpMethod("email")} className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${otpMethod==="email"?"border-blue-500 bg-blue-600 text-white":"border-gray-200 text-gray-600 hover:border-blue-300"}`}>📧 Par Email</button>
-                <button type="button" onClick={()=>setOtpMethod("sms")} className={`py-3 px-4 rounded-xl border-2 font-semibold text-sm transition-all ${otpMethod==="sms"?"border-blue-500 bg-blue-600 text-white":"border-gray-200 text-gray-600 hover:border-blue-300"}`}>📱 Par SMS</button>
-              </div>
-              <p className="text-xs text-gray-500 mb-4">Code envoye a : {otpMethod==="email"?form.email:form.phone}</p>
-              <button type="button" onClick={sendOTP} disabled={otpLoading} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50">{otpLoading?"Envoi...":"Envoyer le code"}</button>
-              <button type="button" onClick={()=>setStep(1)} className="w-full py-2 mt-2 text-gray-500 text-sm hover:text-gray-700">Retour</button>
-            </div>
-          )}
-          {/* ETAPE 3 - Saisie code OTP */}
-          {step === 3 && (
-            <div className="mt-6 p-6 bg-green-50 border border-green-200 rounded-2xl">
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Entrez votre code</h3>
-              <p className="text-sm text-gray-600 mb-4">Code envoye par {otpMethod==="email"?"email":"SMS"} a {otpMethod==="email"?form.email:form.phone}</p>
-              <input type="text" maxLength={6} value={otpCode} onChange={e=>setOtpCode(e.target.value)} placeholder="000000" className="w-full text-center text-3xl font-bold tracking-widest px-4 py-4 border-2 border-green-300 rounded-xl focus:outline-none focus:border-blue-500 mb-4" />
-              <button type="button" onClick={verifyOTP} disabled={loading||otpCode.length!==6} className="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50">{loading?"Verification...":"Verifier et creer mon compte"}</button>
-              <button type="button" onClick={()=>setStep(2)} className="w-full py-2 mt-2 text-gray-500 text-sm hover:text-gray-700">Changer de methode</button>
-              <button type="button" onClick={sendOTP} disabled={otpLoading} className="w-full py-2 text-blue-600 text-sm hover:text-blue-700">{otpLoading?"Envoi...":"Renvoyer le code"}</button>
-            </div>
-          )}
-          </form>
 
-          <p className="mt-5 text-center text-sm text-gray-500">
-            Deja un compte ?{' '}
-            <Link to="/login" className="text-blue-600 font-semibold hover:text-blue-700">Se connecter</Link>
-          </p>
+            <p className="text-center text-slate-500 text-sm">
+              Déjà un compte ?{' '}
+              <Link to="/login" className="text-blue-600 font-bold hover:underline">Se connecter</Link>
+            </p>
+
+            <div className="text-center p-4 bg-slate-100 rounded-2xl">
+              <p className="text-slate-400 text-xs">🔒 Inscription sécurisée — Données protégées par B.Y.H</p>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   );
 }
-
-
