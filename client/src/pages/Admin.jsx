@@ -315,21 +315,6 @@ export default function Admin() {
               </div>
             </div>
             <input type="text" placeholder="Rechercher..." value={search} onChange={e=>setSearch(e.target.value)} className="px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm w-72"/>
-            {showCreateAgent && (
-              <div className="card-premium p-6 border-2 border-blue-200 bg-blue-50 space-y-4">
-                <h3 className="font-display font-black text-slate-900">🛡️ Créer un compte Agent B.Y.H</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div><label className="block text-sm font-bold text-slate-700 mb-2">Nom complet *</label><input required type="text" value={agentForm.name} onChange={e=>setAgentForm(f=>({...f,name:e.target.value}))} className="input-premium w-full px-4 py-3" placeholder="Ex: Marie Dupont"/></div>
-                  <div><label className="block text-sm font-bold text-slate-700 mb-2">Email *</label><input required type="email" value={agentForm.email} onChange={e=>setAgentForm(f=>({...f,email:e.target.value}))} className="input-premium w-full px-4 py-3" placeholder="agent@byh-cm.com"/></div>
-                  <div><label className="block text-sm font-bold text-slate-700 mb-2">Telephone</label><input type="tel" value={agentForm.phone} onChange={e=>setAgentForm(f=>({...f,phone:e.target.value}))} className="input-premium w-full px-4 py-3" placeholder="+237 6XX XXX XXX"/></div>
-                  <div><label className="block text-sm font-bold text-slate-700 mb-2">Mot de passe *</label><input required type="password" minLength={6} value={agentForm.password} onChange={e=>setAgentForm(f=>({...f,password:e.target.value}))} className="input-premium w-full px-4 py-3" placeholder="Minimum 6 caracteres"/></div>
-                </div>
-                <div className="flex gap-3">
-                  <button onClick={createAgent} disabled={agentLoading} className="btn-byh-gradient px-6 py-3 text-white font-bold rounded-xl text-sm disabled:opacity-60">{agentLoading ? "Creation..." : "Creer agent"}</button>
-                  <button type="button" onClick={()=>setShowCreateAgent(false)} className="px-6 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl text-sm">Annuler</button>
-                </div>
-              </div>
-            )}
             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -818,3 +803,4 @@ export default function Admin() {
 }
 
 
+// cache-bust-1788724051

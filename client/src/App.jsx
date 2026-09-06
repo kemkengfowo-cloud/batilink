@@ -53,6 +53,7 @@ import Confidentialite from './pages/Confidentialite';
 import Admin from './pages/Admin';
 import AdminHistorique from './pages/AdminHistorique';
 import Agent from './pages/Agent';
+import CreateAgent from './pages/CreateAgent';
 
 const PrivateRoute = ({ children, role }) => {
   const { user, loading } = useAuth();
@@ -130,6 +131,7 @@ function AppRoutes() {
           <Route path="/admin" element={<PrivateRoute role={['admin']}><Admin/></PrivateRoute>}/>
           <Route path="/admin/historique" element={<PrivateRoute role={['admin']}><AdminHistorique/></PrivateRoute>}/>
           <Route path="/agent" element={<PrivateRoute role={['admin','agent']}><Agent/></PrivateRoute>}/>
+          <Route path="/create-agent" element={<PrivateRoute role={['admin']}><CreateAgent/></PrivateRoute>}/>
           <Route path="/comment-ca-marche" element={<CommentCaMarche/>}/>
           <Route path="/cgu" element={<CGU/>}/>
           <Route path="/confidentialite" element={<Confidentialite/>}/>
