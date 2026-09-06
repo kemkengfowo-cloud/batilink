@@ -1,8 +1,13 @@
 {
-  "rewrites": [
-    { "source": "/((?!static/).*)", "destination": "/index.html" }
+  "version": 2,
+  "builds": [
+    {
+      "src": "client/build/index.html",
+      "use": "@vercel/static"
+    }
   ],
-  "buildCommand": "npm install && npm run build",
-  "outputDirectory": "client/build",
-  "rootDirectory": "client"
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/client/build/index.html" }
+  ]
 }
