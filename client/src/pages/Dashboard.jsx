@@ -53,26 +53,31 @@ export default function Dashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 100%)'}} className="py-8">
-        <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen bg-slate-50">
+      <div className="bg-byh-gradient relative overflow-hidden">
+        <div className="absolute top-[-60px] right-[-60px] w-[300px] h-[300px] rounded-full bg-blue-500/10"/>
+        <div className="absolute bottom-[-40px] left-[-40px] w-[200px] h-[200px] rounded-full bg-indigo-500/10"/>
+        <div className="relative max-w-4xl mx-auto px-4 py-8">
           <div className="flex items-center gap-4">
-            <img src={getAvatarUrl(user.avatar, user.name)} alt={user.name}
-              className="w-14 h-14 rounded-2xl object-cover border-2 border-white/20"/>
+            <div className="relative">
+              <img src={getAvatarUrl(user.avatar, user.name)} alt={user.name} className="w-16 h-16 rounded-2xl object-cover border-2 border-white/20 shadow-lg"/>
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-2 border-white"/>
+            </div>
             <div>
-              <h1 className="text-2xl font-display font-black text-white">
-                Bonjour, {user.name.split(' ')[0]} 👋
-              </h1>
-              <p className="text-blue-300 text-sm mt-0.5 capitalize">{user.role} · {user.city}</p>
+              <p className="text-blue-300 text-xs font-semibold mb-1 uppercase tracking-wider">{user.role}</p>
+              <h1 className="text-2xl font-black text-white">Bonjour, {user.name.split(' ')[0]} 👋</h1>
+              <p className="text-slate-400 text-sm mt-1">📍 {user.city}</p>
+            </div>
+            <div className="ml-auto">
+              <div className="badge-premium">{user.matricule || "B.Y.H"}</div>
             </div>
           </div>
         </div>
       </div>
-
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {user.role === 'client' && <ClientDashboard projects={data.projects} devis={data.devis} user={user} visites={data.visites||[]} jalonsEnAttente={data.jalonsEnAttente||[]}/> }
-        {user.role === 'artisan' && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user} visitesDisponibles={data.visitesDisponibles||[]} missions={data.missions||[]}/>}
-        {user.role === 'entreprise' && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} demandes={data.missions} contrats={data.contrats}/>}
+        {user.role === "client" && <ClientDashboard projects={data.projects} devis={data.devis} user={user} visites={data.visites||[]} jalonsEnAttente={data.jalonsEnAttente||[]}/>}
+        {user.role === "artisan" && <ArtisanDashboard artisan={data.artisan} devis={data.devis} user={user} visitesDisponibles={data.visitesDisponibles||[]} missions={data.missions||[]}/>}
+        {user.role === "entreprise" && <EntrepriseDashboard entreprise={data.entreprise} missions={data.missions} demandes={data.missions} contrats={data.contrats}/>}
         {user.role === "conducteur" && <ConducteurDashboard chantiers={data.chantiers||[]} offres={data.offres||[]} user={user}/>}
       </div>
     </div>
@@ -91,30 +96,6 @@ function ClientDashboard({ projects, devis, user, visites, jalonsEnAttente }) {
   const nbJalons = jea.length;
   const depenseTotal = d.filter(x=>x.statut==="termine").reduce((s,x)=>s+(x.total||0),0);
   const depenseCeMois = d.filter(x=>x.statut==="termine" && new Date(x.updatedAt).getMonth()===new Date().getMonth()).reduce((s,x)=>s+(x.total||0),0);
-
-      {/* Guide onboarding nouveau client */}
-      {p.length === 0 && d.length === 0 && (
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
-          <h3 className="font-display font-bold text-xl mb-4">Bienvenue sur B.Y.H ! 👋</h3>
-          <div className="space-y-3">
-            {[
-              { num:"1", text:"Publiez votre projet de construction ou renovation", done: p.length > 0 },
-              { num:"2", text:"Recevez des devis d artisans verifies", done: d.length > 0 },
-              { num:"3", text:"Choisissez le meilleur artisan et suivez les travaux", done: false },
-            ].map(s=>(
-              <div key={s.num} className={"flex items-center gap-3 " + (s.done?"opacity-60":"")}>
-                <div className={"w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 " + (s.done?"bg-green-400":"bg-white/20")}>
-                  {s.done ? "✓" : s.num}
-                </div>
-                <p className="text-blue-100 text-sm">{s.text}</p>
-              </div>
-            ))}
-          </div>
-          <Link to="/create-project" className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 bg-white text-blue-600 rounded-xl font-bold text-sm hover:bg-blue-50">
-            Commencer maintenant →
-          </Link>
-        </div>
-      )}
   return (
     <div className="space-y-6">
       {/* Actions rapides */}
