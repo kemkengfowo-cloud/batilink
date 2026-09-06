@@ -2,162 +2,234 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const PHOTOS = {
-  hero: 'https://images.pexels.com/photos/1216589/pexels-photo-1216589.jpeg?auto=compress&cs=tinysrgb&w=1920',
-  artisan: 'https://images.pexels.com/photos/2219024/pexels-photo-2219024.jpeg?auto=compress&cs=tinysrgb&w=800',
-  entreprise: 'https://images.pexels.com/photos/3862130/pexels-photo-3862130.jpeg?auto=compress&cs=tinysrgb&w=800',
-  maison: 'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=800',
-};
-
 const STATS = [
-  { num: "20+", label: "Artisans verifies", icon: "🔨" },
-  { num: "100%", label: "Artisans verifies par BYH", icon: "🏗️" },
-  { num: "100%", label: "Paiements securises", icon: "⭐" },
-  { num: "10+", label: "Villes couvertes", icon: "📍" },
+  { num: '20+',  label: 'Artisans vérifiés',     icon: '🔨' },
+  { num: '100%', label: 'Paiements sécurisés',    icon: '🔒' },
+  { num: '8%',   label: 'Commission seulement',   icon: '💰' },
+  { num: '2',    label: 'Villes couvertes',        icon: '📍' },
 ];
 
 const SERVICES = [
-  {
-    icon: '🔨',
-    titre: 'Artisans Qualifiés',
-    desc: 'Maçons, électriciens, plombiers, carreleurs — tous vérifiés et notés par notre équipe B.Y.H.',
-    photo: PHOTOS.artisan,
-    lien: '/artisans',
-    btnLabel: 'Trouver un artisan',
-    color: 'from-blue-600 to-blue-800',
-  },
-  {
-    icon: '🏢',
-    titre: 'Entreprises BTP',
-    desc: 'Pour vos projets d\'envergure — géotechnique, gros œuvre, finition — faites appel aux meilleurs.',
-    photo: PHOTOS.entreprise,
-    lien: '/entreprises',
-    btnLabel: 'Voir les entreprises',
-    color: 'from-purple-600 to-purple-800',
-  },
-  {
-    icon: '🏠',
-    titre: 'Votre Projet',
-    desc: 'Publiez votre projet, recevez des devis comparatifs et choisissez en toute confiance.',
-    photo: PHOTOS.maison,
-    lien: '/create-project',
-    btnLabel: 'Publier un projet',
-    color: 'from-emerald-600 to-emerald-800',
-  },
+  { icon: '🔨', titre: 'Artisans Qualifiés',    desc: 'Maçons, électriciens, plombiers — tous vérifiés et notés par B.Y.H.',          lien: '/artisans',   btnLabel: 'Trouver un artisan',    color: 'from-blue-600 to-blue-800',    bg: '#EFF6FF', accent: '#1D4ED8' },
+  { icon: '🏢', titre: 'Entreprises BTP',       desc: 'Sociétés de construction pour vos grands projets et travaux d\'envergure.',     lien: '/entreprises',btnLabel: 'Voir les entreprises',   color: 'from-violet-600 to-violet-800',bg: '#F5F3FF', accent: '#5B21B6' },
+  { icon: '🏗️', titre: 'Conducteur de Travaux', desc: 'Un professionnel pour superviser votre chantier et garantir la qualité.',       lien: '/conducteur-travaux',btnLabel: 'Demander un conducteur', color: 'from-emerald-600 to-emerald-800',bg: '#ECFDF5', accent: '#065F46' },
 ];
 
-const FAQ = [
-  { q: 'Comment B.Y.H vérifie-t-il les artisans ?', r: 'Chaque artisan passe par une vérification d\'identité, de compétences et d\'antécédents avant d\'être publié sur la plateforme.' },
-  { q: 'Comment sont sécurisés les paiements ?', r: 'Les paiements sont effectués via Mobile Money (Orange Money, MTN MoMo) et sécurisés par notre système de jalons progressifs.' },
-  { q: 'Que se passe-t-il en cas de litige ?', r: 'B.Y.H dispose d\'une équipe d\'arbitrage dédiée qui intervient rapidement pour résoudre tout différend entre clients et artisans.' },
-  { q: 'Combien coûte l\'utilisation de B.Y.H ?', r: 'L\'inscription et la publication de projets sont gratuites. B.Y.H prélève une commission de 8% uniquement sur les transactions finalisées.' },
+const STEPS = [
+  { num: '01', icon: '📋', titre: 'Publiez votre projet',     desc: 'Décrivez vos travaux, budget et localisation en quelques clics.' },
+  { num: '02', icon: '📄', titre: 'Recevez des devis',         desc: 'Les artisans qualifiés vous contactent avec leurs offres détaillées.' },
+  { num: '03', icon: '✅', titre: 'Choisissez et contractez',  desc: 'Signez un contrat digital sécurisé directement sur B.Y.H.' },
+  { num: '04', icon: '💳', titre: 'Payez en toute sécurité',   desc: 'Paiement Orange Money ou MTN MoMo — libéré après validation des travaux.' },
+];
+
+const TEMOIGNAGES = [
+  { nom: 'Marie K.', ville: 'Yaoundé', role: 'Cliente', txt: 'J\'ai trouvé un excellent maçon en 24h. Le système de paiement sécurisé m\'a vraiment rassurée.', note: 5 },
+  { nom: 'Jean P.', ville: 'Douala', role: 'Artisan électricien', txt: 'B.Y.H m\'a permis de trouver des clients sérieux. Les paiements arrivent directement sur mon MTN MoMo.', note: 5 },
+  { nom: 'Sophie M.', ville: 'Diaspora (France)', role: 'Cliente diaspora', txt: 'Je construis ma maison à Yaoundé depuis Paris. B.Y.H gère tout avec professionnalisme.', note: 5 },
 ];
 
 export default function Home() {
   const { user } = useAuth();
-  const [faqOpen, setFaqOpen] = useState(null);
-  const [visible, setVisible] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
 
-  useEffect(() => { setTimeout(() => setVisible(true), 100); }, []);
+  useEffect(() => {
+    const interval = setInterval(() => setActiveStep(s => (s + 1) % STEPS.length), 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="bg-white overflow-hidden">
+    <div className="min-h-screen bg-slate-50">
 
-      {/* ===== HERO ===== */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={PHOTOS.hero} alt="Chantier BTP Cameroun" className="w-full h-full object-cover"/>
-          <div className="absolute inset-0" style={{background:'linear-gradient(135deg, rgba(10,22,40,0.93) 0%, rgba(13,32,68,0.88) 40%, rgba(26,74,138,0.72) 100%)'}}/>
-        </div>
-        <div className="absolute inset-0 opacity-5" style={{backgroundImage:'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize:'60px 60px'}}/>
+      {/* HERO — Dégradé bleu premium */}
+      <section className="relative bg-byh-gradient overflow-hidden">
+        {/* Cercles décoratifs */}
+        <div className="absolute top-[-100px] right-[-100px] w-[500px] h-[500px] rounded-full bg-blue-500/10"/>
+        <div className="absolute bottom-[-80px] left-[-60px] w-[350px] h-[350px] rounded-full bg-indigo-500/10"/>
+        <div className="absolute top-1/2 left-1/3 w-[200px] h-[200px] rounded-full bg-blue-400/5"/>
 
-        <div className={`relative z-10 max-w-7xl mx-auto px-4 py-24 transition-all duration-1000 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 text-blue-300 px-4 py-2 rounded-full text-sm font-semibold mb-8 backdrop-blur-sm">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"/>
-              Plateforme BTP #1 au Cameroun
-            </div>
-            <h1 className="text-5xl md:text-7xl font-display font-black text-white leading-tight mb-6">
-              Construisez<br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">votre maison</span><br/>
-              en confiance
-            </h1>
-            <p className="text-xl text-blue-100 mb-10 max-w-2xl leading-relaxed">
-              B.Y.H connecte les propriétaires camerounais avec des artisans et entreprises BTP vérifiés. Devis gratuits, suivi en temps réel, paiement sécurisé.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              {user ? (
-                <Link to="/dashboard" className="group inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white font-bold text-lg rounded-2xl hover:bg-blue-500 transition-all shadow-2xl shadow-blue-600/30 hover:scale-105">
-                  Mon espace B.Y.H <span className="group-hover:translate-x-1 transition-transform">→</span>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-24 lg:py-32">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+
+            {/* Texte hero */}
+            <div className="space-y-8">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-2">
+                <span className="text-sm">🇨🇲</span>
+                <span className="text-blue-200 text-sm font-semibold">Plateforme BTP certifiée au Cameroun</span>
+              </div>
+
+              <div>
+                <h1 className="text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-6">
+                  Construisez<br/>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-indigo-300 to-purple-300">
+                    en confiance
+                  </span><br/>
+                  au Cameroun
+                </h1>
+                <p className="text-xl text-slate-400 leading-relaxed">
+                  B.Y.H connecte clients et artisans vérifiés avec paiements sécurisés via Orange Money et MTN MoMo.
+                </p>
+              </div>
+
+              {/* CTAs */}
+              <div className="flex flex-wrap gap-4">
+                <Link to={user ? '/dashboard' : '/register?role=client'}
+                  className="btn-byh-gradient px-8 py-4 text-white font-black text-lg rounded-2xl">
+                  {user ? 'Mon espace →' : 'Publier un projet →'}
                 </Link>
-              ) : (
-                <>
-                  <Link to="/register" className="group inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white font-bold text-lg rounded-2xl hover:bg-blue-500 transition-all shadow-2xl shadow-blue-600/30 hover:scale-105">
-                    Démarrer gratuitement <span className="group-hover:translate-x-1 transition-transform">→</span>
-                  </Link>
-                  <Link to="/artisans" className="inline-flex items-center gap-3 px-8 py-4 bg-white/10 text-white font-bold text-lg rounded-2xl hover:bg-white/20 transition-all backdrop-blur-sm border border-white/20">
-                    Voir les artisans
-                  </Link>
-                </>
-              )}
+                <Link to="/artisans"
+                  className="glass px-8 py-4 text-white font-bold text-lg rounded-2xl hover:bg-white/20 transition-all border border-white/20">
+                  Voir les artisans
+                </Link>
+              </div>
+
+              {/* Trust badges */}
+              <div className="flex flex-wrap gap-3">
+                {['🔒 Paiement sécurisé', '✅ Artisans vérifiés', '📱 Orange & MTN MoMo'].map((b, i) => (
+                  <span key={i} className="glass px-3 py-1.5 rounded-full text-blue-200 text-sm font-semibold">{b}</span>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-3">
-              {['✅ Artisans vérifiés', '🔒 Paiement sécurisé', '⭐ Avis certifiés', '📱 Suivi temps réel'].map(b => (
-                <span key={b} className="px-3 py-1.5 bg-white/10 text-white/90 rounded-full text-xs font-semibold backdrop-blur-sm border border-white/10">{b}</span>
+
+            {/* Stats card */}
+            <div className="glass rounded-3xl p-8 space-y-6">
+              <h3 className="text-white font-black text-xl">B.Y.H en chiffres</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {STATS.map((s, i) => (
+                  <div key={i} className="bg-white/10 rounded-2xl p-5 text-center">
+                    <div className="text-3xl mb-2">{s.icon}</div>
+                    <div className="text-3xl font-black text-white mb-1">{s.num}</div>
+                    <div className="text-blue-300 text-xs font-semibold">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="bg-white/10 rounded-2xl p-4 flex items-center gap-3">
+                <span className="text-2xl">🚀</span>
+                <div>
+                  <div className="text-white font-bold text-sm">Lancement — Septembre 2026</div>
+                  <div className="text-blue-300 text-xs">Yaoundé + Douala en priorité</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SERVICES */}
+      <section className="py-20 px-4 max-w-7xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-black text-slate-900 mb-4">Nos services</h2>
+          <p className="text-slate-500 text-lg max-w-2xl mx-auto">Trouvez le prestataire BTP idéal pour votre projet au Cameroun</p>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {SERVICES.map((s, i) => (
+            <div key={i} className="card-premium p-6 group">
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-5"
+                style={{backgroundColor: s.bg}}>
+                {s.icon}
+              </div>
+              <h3 className="font-display font-black text-xl text-slate-900 mb-3">{s.titre}</h3>
+              <p className="text-slate-500 text-sm leading-relaxed mb-6">{s.desc}</p>
+              <Link to={s.lien}
+                className="inline-flex items-center gap-2 font-bold text-sm px-5 py-2.5 rounded-xl transition-all"
+                style={{backgroundColor: s.bg, color: s.accent}}>
+                {s.btnLabel} →
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* COMMENT ÇA MARCHE */}
+      <section className="py-20 bg-byh-gradient">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-14">
+            <h2 className="text-4xl font-black text-white mb-4">Comment ça marche ?</h2>
+            <p className="text-slate-400 text-lg">Trouvez votre artisan en 4 étapes simples</p>
+          </div>
+          <div className="grid md:grid-cols-4 gap-6">
+            {STEPS.map((s, i) => (
+              <div key={i} className={`glass rounded-2xl p-6 transition-all ${activeStep === i ? 'bg-white/15 scale-105' : ''}`}>
+                <div className="text-5xl font-black text-blue-500/30 mb-3">{s.num}</div>
+                <div className="text-3xl mb-3">{s.icon}</div>
+                <h3 className="font-display font-black text-white text-lg mb-2">{s.titre}</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SÉCURITÉ PAIEMENT */}
+      <section className="py-20 px-4 max-w-7xl mx-auto">
+        <div className="card-premium p-10 lg:p-16 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-bold mb-6">
+                🔒 Système d'escrow sécurisé
+              </div>
+              <h2 className="text-4xl font-black text-slate-900 mb-4">
+                Votre argent est protégé<br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+                  jusqu'à validation
+                </span>
+              </h2>
+              <p className="text-slate-600 text-lg leading-relaxed mb-8">
+                Le paiement est bloqué chez B.Y.H et libéré à l'artisan uniquement après votre validation des travaux. Zéro risque d'arnaque.
+              </p>
+              <div className="space-y-3">
+                {[
+                  '✅ Paiement via Orange Money ou MTN MoMo',
+                  '✅ Fonds bloqués jusqu\'à validation des travaux',
+                  '✅ Remboursement automatique en cas de litige',
+                  '✅ Commission B.Y.H de seulement 8%',
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <span className="text-blue-600 font-bold text-sm">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-4">
+              {[
+                { step: '1', label: 'Client paie via Orange/MTN', icon: '📱', color: 'bg-orange-50 border-orange-200' },
+                { step: '2', label: 'Fonds bloqués chez B.Y.H', icon: '🔒', color: 'bg-blue-50 border-blue-200' },
+                { step: '3', label: 'Artisan réalise les travaux', icon: '🔨', color: 'bg-slate-50 border-slate-200' },
+                { step: '4', label: 'Client valide → Artisan payé', icon: '✅', color: 'bg-green-50 border-green-200' },
+              ].map((item, i) => (
+                <div key={i} className={`flex items-center gap-4 p-4 rounded-2xl border-2 ${item.color}`}>
+                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-black text-sm flex items-center justify-center flex-shrink-0">{item.step}</div>
+                  <span className="text-2xl">{item.icon}</span>
+                  <span className="font-bold text-slate-800 text-sm">{item.label}</span>
+                </div>
               ))}
             </div>
           </div>
         </div>
-
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/50">
-          <span className="text-xs">Découvrir</span>
-          <div className="w-5 h-8 border border-white/30 rounded-full flex items-start justify-center pt-1.5">
-            <div className="w-1 h-2 bg-white/50 rounded-full animate-bounce"/>
-          </div>
-        </div>
       </section>
 
-      {/* ===== STATS ===== */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-700 py-14">
+      {/* TÉMOIGNAGES */}
+      <section className="py-20 bg-slate-100">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {STATS.map(s => (
-              <div key={s.label} className="text-center">
-                <div className="text-3xl mb-2">{s.icon}</div>
-                <div className="text-4xl font-black text-white mb-1">{s.num}</div>
-                <div className="text-blue-200 text-sm font-medium">{s.label}</div>
-              </div>
-            ))}
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-black text-slate-900 mb-4">Ils nous font confiance</h2>
+            <p className="text-slate-500 text-lg">Des milliers de Camerounais utilisent B.Y.H</p>
           </div>
-        </div>
-      </section>
-
-      {/* ===== SERVICES ===== */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="text-blue-600 font-bold text-sm uppercase tracking-widest">Nos services</span>
-            <h2 className="text-4xl md:text-5xl font-display font-black text-gray-900 mt-3 mb-4">
-              Tout ce dont vous avez besoin
-            </h2>
-            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-              De la recherche d'artisan à la réception des travaux, B.Y.H vous accompagne à chaque étape.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {SERVICES.map((s, i) => (
-              <div key={i} className="group relative overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-                <div className="absolute inset-0">
-                  <img src={s.photo} alt={s.titre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
-                  <div className={`absolute inset-0 bg-gradient-to-t ${s.color} opacity-85`}/>
+          <div className="grid md:grid-cols-3 gap-6">
+            {TEMOIGNAGES.map((t, i) => (
+              <div key={i} className="card-premium p-6">
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(t.note)].map((_, j) => <span key={j} className="text-yellow-400">⭐</span>)}
                 </div>
-                <div className="relative z-10 p-8 h-72 flex flex-col justify-end">
-                  <span className="text-4xl mb-4 block">{s.icon}</span>
-                  <h3 className="text-2xl font-display font-black text-white mb-3">{s.titre}</h3>
-                  <p className="text-white/80 text-sm mb-6 leading-relaxed">{s.desc}</p>
-                  <Link to={s.lien} className="inline-flex items-center gap-2 bg-white text-gray-900 px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-100 transition-colors w-fit">
-                    {s.btnLabel} →
-                  </Link>
+                <p className="text-slate-600 text-sm leading-relaxed mb-6 italic">"{t.txt}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-blue-purple flex items-center justify-center text-white font-black text-sm">
+                    {t.nom[0]}
+                  </div>
+                  <div>
+                    <div className="font-bold text-slate-900 text-sm">{t.nom}</div>
+                    <div className="text-slate-400 text-xs">{t.role} — {t.ville}</div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -165,32 +237,30 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== FAQ ===== */}
-      <section className="py-24 bg-white">
-        <div className="max-w-3xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <span className="text-blue-600 font-bold text-sm uppercase tracking-widest">FAQ</span>
-            <h2 className="text-4xl font-display font-black text-gray-900 mt-3">Questions fréquentes</h2>
-          </div>
-          <div className="space-y-3">
-            {FAQ.map((f, i) => (
-              <div key={i} className="bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden">
-                <button onClick={() => setFaqOpen(faqOpen === i ? null : i)}
-                  className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-100 transition-colors">
-                  <span className="font-bold text-gray-900">{f.q}</span>
-                  <span className={`text-blue-600 text-xl transition-transform flex-shrink-0 ml-4 ${faqOpen === i ? 'rotate-45' : ''}`}>+</span>
-                </button>
-                {faqOpen === i && (
-                  <div className="px-6 pb-6 text-gray-600 leading-relaxed">{f.r}</div>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Link to={user ? '/dashboard' : '/register'} className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 hover:scale-105">
-              {user ? 'Mon Dashboard' : 'Commencer gratuitement'} →
+      {/* CTA FINAL */}
+      <section className="py-20 bg-byh-gradient relative overflow-hidden">
+        <div className="absolute top-[-60px] right-[-60px] w-[300px] h-[300px] rounded-full bg-blue-500/10"/>
+        <div className="absolute bottom-[-60px] left-[-60px] w-[250px] h-[250px] rounded-full bg-indigo-500/10"/>
+        <div className="relative max-w-3xl mx-auto px-4 text-center">
+          <h2 className="text-5xl font-black text-white mb-6">
+            Prêt à construire<br/>votre projet ? 🚀
+          </h2>
+          <p className="text-slate-400 text-xl mb-10">
+            Rejoignez B.Y.H et trouvez votre artisan de confiance au Cameroun dès aujourd'hui.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link to="/register?role=client"
+              className="btn-byh-gradient px-10 py-5 text-white font-black text-xl rounded-2xl">
+              Publier mon projet →
+            </Link>
+            <Link to="/register?role=artisan"
+              className="glass px-10 py-5 text-white font-bold text-xl rounded-2xl hover:bg-white/20 transition-all border border-white/20">
+              Je suis artisan
             </Link>
           </div>
+          <p className="text-slate-500 text-sm mt-8">
+            🔒 Inscription gratuite — Aucune carte bancaire requise
+          </p>
         </div>
       </section>
 
