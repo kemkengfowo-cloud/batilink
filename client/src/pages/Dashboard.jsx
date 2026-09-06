@@ -13,6 +13,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
     if (user.role === 'admin') { navigate('/admin'); return; }
+    if (user.role === 'agent') { navigate('/agent'); return; }
 
     if (user.role === 'client') {
       Promise.allSettled([api.get('/projects/my'), api.get('/devis/mes-devis'), api.get('/visites/mes-visites'), api.get('/jalons/en-attente')])

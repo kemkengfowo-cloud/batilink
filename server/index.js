@@ -55,6 +55,7 @@ app.use("/api/photos-chantier", require("./routes/photos-chantier"));
 app.use("/api/historique", require("./routes/historique"));
 app.use("/api/demandes-personnel", require("./routes/demandes-personnel"));
 app.use("/api/admin", require("./routes/admin"));
+app.use("/api/agent", require("./routes/agent"));
 app.use("/api/mesomb", require("./routes/mesomb"));
 
 const http = require("http");
