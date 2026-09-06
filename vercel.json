@@ -2,6 +2,7 @@
   "rewrites": [
     { "source": "/((?!static/).*)", "destination": "/index.html" }
   ],
-  "buildCommand": "cd client && npm install && npm run build",
-  "outputDirectory": "client/build"
+  "buildCommand": "npm install && npm run build",
+  "outputDirectory": "client/build",
+  "rootDirectory": "client"
 }
