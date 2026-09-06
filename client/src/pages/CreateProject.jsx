@@ -1,180 +1,137 @@
 import React, { useState } from 'react';
-import AddressAutocomplete from "../components/AddressAutocomplete";
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import AddressAutocomplete from '../components/AddressAutocomplete';
 import { CATEGORIES, VILLES } from '../utils/helpers';
-import Avertissement from '../components/Avertissement';
+
+const inputCls = 'input-premium w-full px-4 py-3.5 text-slate-900 font-medium';
+const labelCls = 'block text-sm font-bold text-slate-700 mb-2';
 
 export default function CreateProject() {
   const navigate = useNavigate();
-  const [besoinEvaluation, setBesoinEvaluation] = useState(null);
-  const [form, setForm] = useState({ titre:'', description:'', budget:'', localisation:'', categorie:'', typeClient:'artisan' });
-  const [photos, setPhotos] = useState([]);
+  const [form, setForm] = useState({
+    titre: '', description: '', categorie: '', ville: '',
+    budget: '', delai: '', adresse: '',
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [artisansNotifies, setArtisansNotifies] = useState(null);
-  const set = (k,v) => setForm(f=>({...f,[k]:v}));
-
-  const handlePhotos = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length > 5) { setError('Maximum 5 photos'); return; }
-    setPhotos(files);
-  };
+  const set = (k, v) => setForm(f => ({...f, [k]: v}));
 
   const handleSubmit = async (e) => {
     e.preventDefault(); setError(''); setLoading(true);
     try {
-      const res = await api.post('/projects', form);
-      setArtisansNotifies(res.data.artisansNotifies || 0);
-      setTimeout(() => navigate('/mes-projets'), 3000);
-    } catch(err) {
-      setError(err.response?.data?.message || 'Erreur lors de la publication');
-    }
-    setLoading(false);
+      await api.post('/projects', { ...form, budget: parseInt(form.budget) || 0 });
+      navigate('/mes-projets');
+    } catch(err) { setError(err.response?.data?.message || 'Erreur lors de la création'); }
+    finally { setLoading(false); }
   };
 
-  const inputCls = "w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors";
-  const labelCls = "block text-sm font-semibold text-gray-700 mb-1.5";
-
-  if (artisansNotifies !== null) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="bg-white rounded-3xl border border-gray-100 p-10 max-w-md w-full text-center shadow-xl">
-          <div className="text-6xl mb-4">🎉</div>
-          <h2 className="text-2xl font-display font-black text-gray-900 mb-3">Projet publie !</h2>
-          <p className="text-gray-500 mb-2">
-            <strong className="text-blue-600">{artisansNotifies} artisan{artisansNotifies > 1 ? 's' : ''}</strong> {artisansNotifies > 1 ? 'ont ete notifies' : 'a ete notifie'} de votre projet.
-          </p>
-          <p className="text-gray-400 text-sm mb-6">Redirection dans 3 secondes...</p>
-          <Link to="/mes-projets" className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">
-            Voir mes projets →
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (besoinEvaluation === null) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="max-w-2xl w-full">
-          <Link to="/dashboard" className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 text-sm font-medium mb-8">
-            ← Tableau de bord
-          </Link>
-          <h1 className="text-3xl font-display font-black text-gray-900 mb-3">Nouvelle demande de travaux</h1>
-          <p className="text-gray-500 mb-10">Comment voulez-vous proceder ?</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <button onClick={() => setBesoinEvaluation(false)}
-              className="text-left p-7 bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-500 hover:shadow-xl transition-all group">
-              <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl mb-5 group-hover:bg-blue-100">📋</div>
-              <h3 className="text-xl font-display font-bold text-gray-900 mb-2">Je sais ce que je veux</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Je connais les travaux. Je publie et recois des devis d artisans.</p>
-              <div className="mt-5 text-blue-600 font-semibold text-sm">Publier un projet →</div>
-            </button>
-            <button onClick={() => navigate('/visites/demander')}
-              className="text-left p-7 bg-white rounded-2xl border-2 border-gray-200 hover:border-green-500 hover:shadow-xl transition-all group">
-              <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-3xl mb-5 group-hover:bg-green-100">🔍</div>
-              <h3 className="text-xl font-display font-bold text-gray-900 mb-2">J'ai besoin d'une evaluation</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">Un technicien se deplace pour evaluer et chiffrer sur place.</p>
-              <div className="mt-5 text-green-600 font-semibold text-sm">Demander une visite →</div>
-            </button>
-          </div>
-          <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-700 text-center">
-            Ne payez jamais en dehors de B.Y.H. Tous les paiements sont securises.
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 100%)'}} className="py-10">
-        <div className="max-w-3xl mx-auto px-4">
-          <button onClick={() => setBesoinEvaluation(null)} className="inline-flex items-center gap-2 text-blue-300 hover:text-white mb-6 font-medium">
-            ← Retour
-          </button>
-          <h1 className="text-3xl font-display font-black text-white mb-2">Publier un projet</h1>
-          <p className="text-blue-200">Les artisans disponibles seront notifies automatiquement</p>
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <div className="bg-byh-gradient relative overflow-hidden">
+        <div className="absolute top-[-60px] right-[-60px] w-[300px] h-[300px] rounded-full bg-blue-500/10"/>
+        <div className="absolute bottom-[-40px] left-[-40px] w-[200px] h-[200px] rounded-full bg-indigo-500/10"/>
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 py-12">
+          <p className="text-blue-300 text-sm font-semibold mb-1 uppercase tracking-wider">Espace client</p>
+          <h1 className="text-3xl font-black text-white mb-2">📋 Publier un projet</h1>
+          <p className="text-slate-400">Décrivez votre projet et recevez des devis d'artisans vérifiés</p>
         </div>
       </div>
-      <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
-        <Avertissement type="devis"/>
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          {error && <div className="mb-5 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">{error}</div>}
-          <form onSubmit={handleSubmit} className="space-y-5">
+
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3">
+            <span className="text-red-500">⚠️</span>
+            <p className="text-red-600 text-sm font-semibold">{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Infos principales */}
+          <div className="card-premium p-6 space-y-4">
+            <h2 className="font-display font-black text-slate-900 text-lg">📝 Description du projet</h2>
+
             <div>
               <label className={labelCls}>Titre du projet *</label>
-              <input type="text" required value={form.titre} onChange={e=>set('titre',e.target.value)}
-                className={inputCls} placeholder="Ex: Renovation salle de bain..."/>
+              <input type="text" required value={form.titre} onChange={e => set('titre', e.target.value)}
+                className={inputCls} placeholder="Ex: Construction maison R+1 à Yaoundé"/>
             </div>
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5 mb-2">
-              <label className="block text-sm font-bold text-blue-800 mb-3">🎯 Ce projet est destine a *</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button type="button" onClick={()=>set("typeClient","artisan")} className={"p-4 rounded-xl border-2 font-semibold transition-all " + (form.typeClient==="artisan" ? "border-blue-600 bg-blue-600 text-white" : "border-gray-200 bg-white text-gray-700 hover:border-blue-300")}>
-                  🔨 Artisan individuel
-                  <p className={"text-xs mt-1 " + (form.typeClient==="artisan" ? "text-blue-200" : "text-gray-400")}>Petits travaux, renovation, finition</p>
-                </button>
-                <button type="button" onClick={()=>set("typeClient","entreprise")} className={"p-4 rounded-xl border-2 font-semibold transition-all " + (form.typeClient==="entreprise" ? "border-purple-600 bg-purple-600 text-white" : "border-gray-200 bg-white text-gray-700 hover:border-purple-300")}>
-                  🏢 Entreprise BTP
-                  <p className={"text-xs mt-1 " + (form.typeClient==="entreprise" ? "text-purple-200" : "text-gray-400")}>Grands travaux, construction, genie civil</p>
-                </button>
-              </div>
+
+            <div>
+              <label className={labelCls}>Description détaillée *</label>
+              <textarea required value={form.description} onChange={e => set('description', e.target.value)}
+                className={inputCls + ' resize-none'} rows={4}
+                placeholder="Décrivez en détail les travaux à réaliser, les matériaux souhaités, les contraintes..."/>
             </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className={labelCls}>Categorie *</label>
-                <select required value={form.categorie} onChange={e=>set("categorie",e.target.value)} className={inputCls}>
-                  <option value="">Selectionner</option>
-                  {CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
+                <label className={labelCls}>Catégorie *</label>
+                <select required value={form.categorie} onChange={e => set('categorie', e.target.value)}
+                  className={inputCls}>
+                  <option value="">Sélectionner une catégorie</option>
+                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className={labelCls}>Adresse du chantier *</label>
-                <AddressAutocomplete value={form.localisation} onChange={v=>set("localisation",v)} placeholder="Ex: Bastos, Yaounde" className={inputCls}/>
+                <label className={labelCls}>Budget estimé (FCFA)</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">💰</span>
+                  <input type="number" min="0" value={form.budget} onChange={e => set('budget', e.target.value)}
+                    className={inputCls + ' pl-10'} placeholder="Ex: 5000000"/>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Localisation */}
+          <div className="card-premium p-6 space-y-4">
+            <h2 className="font-display font-black text-slate-900 text-lg">📍 Localisation</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className={labelCls}>Ville *</label>
+                <select required value={form.ville} onChange={e => set('ville', e.target.value)}
+                  className={inputCls}>
+                  <option value="">Sélectionner une ville</option>
+                  {VILLES.map(v => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className={labelCls}>Délai souhaité</label>
+                <input type="text" value={form.delai} onChange={e => set('delai', e.target.value)}
+                  className={inputCls} placeholder="Ex: 3 mois, avant décembre..."/>
               </div>
             </div>
             <div>
-              <label className={labelCls}>Description detaillee *</label>
-              <textarea required value={form.description} onChange={e=>set('description',e.target.value)} rows={5}
-                className={inputCls + ' resize-none'}
-                placeholder="Decrivez precisement les travaux, materiaux, contraintes..."/>
+              <label className={labelCls}>Adresse précise</label>
+              <AddressAutocomplete value={form.adresse} onChange={v => set('adresse', v)}
+                placeholder="Ex: Quartier Bastos, Yaoundé" className={inputCls}/>
             </div>
+          </div>
+
+          {/* Info sécurité */}
+          <div className="p-4 bg-blue-50 border-2 border-blue-100 rounded-2xl flex items-start gap-3">
+            <span className="text-2xl">🔒</span>
             <div>
-              <label className={labelCls}>Budget estime (FCFA) *</label>
-              <input type="number" required min="5000" value={form.budget} onChange={e=>set('budget',e.target.value)}
-                className={inputCls} placeholder="Ex: 500000"/>
-              <p className="text-gray-400 text-xs mt-1">Budget indicatif. Les artisans proposeront leurs prix.</p>
+              <p className="text-blue-700 font-bold text-sm">Paiement sécurisé B.Y.H</p>
+              <p className="text-blue-600 text-xs mt-1">
+                Après acceptation d'un devis, le paiement est bloqué chez B.Y.H et libéré à l'artisan uniquement après validation de vos travaux.
+              </p>
             </div>
-            <div>
-              <label className={labelCls}>Photos du chantier (optionnel — max 5)</label>
-              <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-blue-300 transition-colors">
-                <input type="file" multiple accept="image/*" onChange={handlePhotos} className="hidden" id="photos-input"/>
-                <label htmlFor="photos-input" className="cursor-pointer block">
-                  <div className="text-3xl mb-2">📷</div>
-                  <p className="text-gray-500 text-sm">Cliquez pour ajouter des photos</p>
-                  <p className="text-gray-400 text-xs mt-1">JPG, PNG — max 5 photos</p>
-                </label>
-                {photos.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2 justify-center">
-                    {photos.map((p,i) => (
-                      <span key={i} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">
-                        {p.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-700">
-              Apres publication, tous les artisans disponibles dans votre ville seront notifies.
-            </div>
-            <button type="submit" disabled={loading}
-              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50 text-lg shadow-lg shadow-blue-600/20">
-              {loading ? 'Publication...' : 'Publier le projet'}
-            </button>
-          </form>
-        </div>
+          </div>
+
+          {/* Submit */}
+          <button type="submit" disabled={loading}
+            className="btn-byh-gradient w-full py-4 text-white font-black text-lg rounded-2xl disabled:opacity-60">
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
+                Publication en cours...
+              </span>
+            ) : '📋 Publier mon projet →'}
+          </button>
+        </form>
       </div>
     </div>
   );

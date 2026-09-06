@@ -1,163 +1,128 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
-import { useAuth } from '../context/AuthContext';
 import Loader from '../components/Loader';
-import { formatBudget, formatDate } from '../utils/helpers';
+import { formatDate, formatBudget } from '../utils/helpers';
 
-const STATUT = {
-  en_attente:         { label:'En attente', color:'bg-yellow-50 text-yellow-700 border-yellow-200', icon:'⏳' },
-  evaluateur_assigne: { label:'Technicien assigne', color:'bg-blue-50 text-blue-700 border-blue-200', icon:'👷' },
-  visite_effectuee:   { label:'Visite effectuee', color:'bg-indigo-50 text-indigo-700 border-indigo-200', icon:'✓' },
-  rapport_soumis:     { label:'Rapport disponible', color:'bg-green-50 text-green-700 border-green-200', icon:'📋' },
-  devis_genere:       { label:'Devis genere', color:'bg-purple-50 text-purple-700 border-purple-200', icon:'📄' },
-  annulee:            { label:'Annulee', color:'bg-red-50 text-red-700 border-red-200', icon:'❌' },
+const STATUT_CONFIG = {
+  en_attente:      { label: '⏳ En attente',      bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200' },
+  confirmee:       { label: '✅ Confirmée',        bg: 'bg-green-50',  text: 'text-green-700',  border: 'border-green-200' },
+  effectuee:       { label: '🏁 Effectuée',        bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200'  },
+  rapport_soumis:  { label: '📄 Rapport soumis',   bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200'},
+  annulee:         { label: '❌ Annulée',           bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200'   },
 };
 
 export default function MesVisites() {
-  const { user } = useAuth();
   const [visites, setVisites] = useState([]);
-  const [visitesDisponibles, setVisitesDisponibles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('mes');
+  const [filter, setFilter] = useState('tous');
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await api.get('/visites/mes-visites');
-        setVisites(res.data || []);
-        if (user?.role === 'artisan' || user?.role === 'entreprise') {
-          const res2 = await api.get('/visites/disponibles');
-          setVisitesDisponibles(res2.data || []);
-        }
-      } catch {}
-      finally { setLoading(false); }
-    };
-    load();
-  }, [user]);
+    api.get('/visites/mes-visites')
+      .then(r => setVisites(r.data || []))
+      .catch(e => console.error(e))
+      .finally(() => setLoading(false));
+  }, []);
 
-  if (loading) return <Loader/>;
+  const filtered = filter === 'tous' ? visites : visites.filter(v => v.statut === filter);
 
-  const isPrestataire = user?.role === 'artisan' || user?.role === 'entreprise';
+  if (loading) return <div className="flex justify-center py-20"><Loader/></div>;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <div className="bg-byh-gradient relative overflow-hidden">
+        <div className="absolute top-[-60px] right-[-60px] w-[300px] h-[300px] rounded-full bg-blue-500/10"/>
+        <div className="absolute bottom-[-40px] left-[-40px] w-[200px] h-[200px] rounded-full bg-indigo-500/10"/>
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-12">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-3xl font-display font-bold text-gray-900">Visites d evaluation</h1>
-              <p className="text-gray-500 mt-1">Evaluation professionnelle de vos chantiers</p>
+              <p className="text-blue-300 text-sm font-semibold mb-1 uppercase tracking-wider">Évaluations</p>
+              <h1 className="text-3xl font-black text-white mb-2">🏠 Mes Visites</h1>
+              <p className="text-slate-400">{visites.length} visite{visites.length > 1 ? 's' : ''}</p>
             </div>
-            {user?.role === 'client' && (
-              <Link to="/visites/demander"
-                className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
-                + Demander une visite
-              </Link>
-            )}
+            <Link to="/demander-visite"
+              className="btn-byh-gradient px-6 py-3 text-white font-bold rounded-2xl">
+              + Demander une visite
+            </Link>
           </div>
-
-          {isPrestataire && (
-            <div className="flex gap-1 mt-6 border-b border-gray-200">
-              {[
-                {id:'mes', label:`Mes visites (${visites.length})`},
-                {id:'disponibles', label:`Visites disponibles (${visitesDisponibles.length})`},
-              ].map(t=>(
-                <button key={t.id} onClick={()=>setActiveTab(t.id)}
-                  className={`px-5 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-all ${activeTab===t.id?'border-blue-500 text-blue-600':'border-transparent text-gray-500 hover:text-gray-700'}`}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Filtres */}
+          <div className="flex gap-2 flex-wrap mt-6">
+            {['tous', 'en_attente', 'confirmee', 'effectuee', 'rapport_soumis'].map(f => (
+              <button key={f} onClick={() => setFilter(f)}
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                  filter === f ? 'bg-white text-blue-700 shadow-md' : 'glass text-blue-200 hover:bg-white/20'
+                }`}>
+                {f === 'tous' ? 'Toutes' : STATUT_CONFIG[f]?.label || f}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-8">
-
-        {/* Mes visites */}
-        {activeTab === 'mes' && (
-          visites.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-display font-bold text-gray-700 mb-2">Aucune visite</h3>
-              {user?.role === 'client' && (
-                <>
-                  <p className="text-gray-400 mb-6">Demandez une evaluation professionnelle de votre chantier</p>
-                  <Link to="/visites/demander" className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">
-                    Demander une visite
-                  </Link>
-                </>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {visites.map(v=>(
-                <Link key={v._id} to={`/visites/${v._id}`}
-                  className="block bg-white rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all p-5">
-                  <div className="flex items-start justify-between flex-wrap gap-3">
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${STATUT[v.statut]?.color}`}>
-                          {STATUT[v.statut]?.icon} {STATUT[v.statut]?.label}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+        {filtered.length === 0 ? (
+          <div className="card-premium p-16 text-center">
+            <div className="text-6xl mb-4">🏠</div>
+            <h3 className="text-xl font-display font-black text-slate-700 mb-2">Aucune visite</h3>
+            <p className="text-slate-400 mb-6">Demandez une visite d'évaluation de votre site</p>
+            <Link to="/demander-visite"
+              className="btn-byh-gradient px-8 py-3 text-white font-bold rounded-2xl inline-block">
+              Demander une visite →
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filtered.map(v => {
+              const config = STATUT_CONFIG[v.statut] || STATUT_CONFIG.en_attente;
+              return (
+                <div key={v._id} className="card-premium p-6">
+                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-3 flex-wrap">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold border ${config.bg} ${config.text} ${config.border}`}>
+                          {config.label}
                         </span>
-                        {v.typeProbleme && <span className="px-2.5 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold">{v.typeProbleme}</span>}
+                        {v.typeVisite && (
+                          <span className="text-xs font-semibold text-slate-500 bg-slate-50 px-3 py-1 rounded-full border border-slate-200">
+                            {v.typeVisite}
+                          </span>
+                        )}
                       </div>
-                      <h3 className="font-display font-bold text-gray-900">{v.description?.substring(0,80)}...</h3>
-                      <p className="text-gray-500 text-sm mt-1">📍 {v.adresse}, {v.ville}</p>
-                      {v.dateVisite && <p className="text-gray-400 text-xs mt-0.5">📅 {formatDate(v.dateVisite)}</p>}
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xl font-display font-black text-blue-600">{formatBudget(v.fraisVisite)}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{formatDate(v.createdAt)}</p>
-                      {v.rapport?.estimationCout > 0 && (
-                        <p className="text-xs text-green-600 font-semibold mt-1">
-                          Estimation: {formatBudget(v.rapport.estimationCout)}
-                        </p>
+                      <h3 className="font-display font-black text-slate-900 text-lg mb-1">
+                        {v.adresse || v.ville || 'Visite d\'évaluation'}
+                      </h3>
+                      {v.description && (
+                        <p className="text-slate-500 text-sm line-clamp-2 mb-3">{v.description}</p>
+                      )}
+                      <div className="flex items-center gap-4 text-xs text-slate-400 flex-wrap">
+                        {v.dateVisite && <span>📅 {formatDate(v.dateVisite)}</span>}
+                        {v.artisan?.name && <span>🔨 {v.artisan.name}</span>}
+                        {v.montantEstime && <span>💰 {formatBudget(v.montantEstime)}</span>}
+                      </div>
+
+                      {/* Rapport */}
+                      {v.rapport && (
+                        <div className="mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-2xl">
+                          <p className="text-indigo-700 font-bold text-sm mb-2">📄 Rapport de visite</p>
+                          <p className="text-indigo-600 text-sm line-clamp-3">{v.rapport}</p>
+                          {v.montantEstime && (
+                            <p className="text-green-600 font-black text-sm mt-2">
+                              Estimation : {formatBudget(v.montantEstime)}
+                            </p>
+                          )}
+                        </div>
                       )}
                     </div>
+                    <Link to={`/visites/${v._id}`}
+                      className="flex-shrink-0 px-5 py-2.5 bg-blue-50 text-blue-700 border-2 border-blue-200 rounded-xl font-bold text-sm hover:bg-blue-100 transition-all">
+                      Voir →
+                    </Link>
                   </div>
-                </Link>
-              ))}
-            </div>
-          )
-        )}
-
-        {/* Visites disponibles pour artisans */}
-        {activeTab === 'disponibles' && isPrestataire && (
-          visitesDisponibles.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
-              <div className="text-6xl mb-4">📍</div>
-              <h3 className="text-xl font-display font-bold text-gray-700 mb-2">Aucune visite disponible</h3>
-              <p className="text-gray-400">Les nouvelles demandes de visite dans votre ville apparaitront ici</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {visitesDisponibles.map(v=>(
-                <Link key={v._id} to={`/visites/${v._id}`}
-                  className="block bg-white rounded-2xl border-2 border-green-200 hover:shadow-md transition-all p-5">
-                  <div className="flex items-start justify-between flex-wrap gap-3">
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="px-2.5 py-1 bg-green-50 text-green-700 rounded-full text-xs font-bold border border-green-200">
-                          Disponible
-                        </span>
-                        {v.typeProbleme && <span className="px-2.5 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold">{v.typeProbleme}</span>}
-                      </div>
-                      <h3 className="font-display font-bold text-gray-900">{v.description?.substring(0,80)}...</h3>
-                      <p className="text-gray-500 text-sm mt-1">📍 {v.adresse}, {v.ville}</p>
-                      {v.dateVisite && <p className="text-gray-400 text-xs mt-0.5">📅 Visite souhaitee le {formatDate(v.dateVisite)}</p>}
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xl font-display font-black text-green-600">{formatBudget(v.fraisVisite)}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">a gagner</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{formatDate(v.createdAt)}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>
