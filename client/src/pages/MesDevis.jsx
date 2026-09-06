@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
-import { useAuth } from '../context/AuthContext';
 import Loader from '../components/Loader';
 import { formatBudget, formatDate } from '../utils/helpers';
+import { useAuth } from '../context/AuthContext';
 
-const STATUT = {
-  envoye:   { label:'En attente', color:'bg-yellow-50 text-yellow-700 border-yellow-200' },
-  accepte:  { label:'Accepte', color:'bg-blue-50 text-blue-700 border-blue-200' },
-  refuse:   { label:'Refuse', color:'bg-red-50 text-red-700 border-red-200' },
-  expire:   { label:'Expire', color:'bg-gray-100 text-gray-500 border-gray-200' },
-  termine:  { label:'Termine', color:'bg-green-50 text-green-700 border-green-200' },
+const STATUT_CONFIG = {
+  envoye:   { label: '📤 Envoyé',    bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200'  },
+  accepte:  { label: '✅ Accepté',   bg: 'bg-green-50',  text: 'text-green-700',  border: 'border-green-200' },
+  refuse:   { label: '❌ Refusé',    bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200'   },
+  counter:  { label: '🔄 Contre-offre', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200'},
+  termine:  { label: '🏁 Terminé',   bg: 'bg-slate-50',  text: 'text-slate-600',  border: 'border-slate-200' },
+  annule:   { label: '🚫 Annulé',    bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200'   },
 };
 
 export default function MesDevis() {
@@ -21,136 +22,120 @@ export default function MesDevis() {
 
   useEffect(() => {
     api.get('/devis/mes-devis')
-      .then(res => setDevis(res.data || []))
+      .then(r => setDevis(r.data || []))
+      .catch(e => console.error(e))
       .finally(() => setLoading(false));
   }, []);
 
   const filtered = filter === 'tous' ? devis : devis.filter(d => d.statut === filter);
-  const devisEnAttente = devis.filter(d=>d.statut==="envoye");
-  const [compareMode, setCompareMode] = useState(false);
+  const isArtisan = user?.role === 'artisan';
 
-  if (loading) return <Loader/>;
+  if (loading) return <div className="flex justify-center py-20"><Loader/></div>;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 py-8">
-          <Link to="/dashboard" className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 text-sm font-medium mb-4 transition-colors">← Tableau de bord</Link>
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <div className="bg-byh-gradient relative overflow-hidden">
+        <div className="absolute top-[-60px] right-[-60px] w-[300px] h-[300px] rounded-full bg-blue-500/10"/>
+        <div className="absolute bottom-[-40px] left-[-40px] w-[200px] h-[200px] rounded-full bg-indigo-500/10"/>
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-12">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-3xl font-display font-bold text-gray-900">Mes devis</h1>
-              <p className="text-gray-500 mt-1">{devis.length} devis au total</p>
+              <p className="text-blue-300 text-sm font-semibold mb-1 uppercase tracking-wider">
+                {isArtisan ? 'Espace artisan' : 'Espace client'}
+              </p>
+              <h1 className="text-3xl font-black text-white mb-2">📄 Mes Devis</h1>
+              <p className="text-slate-400">{devis.length} devis au total</p>
             </div>
-            {(user?.role === 'artisan' || user?.role === 'entreprise') && (
-              <Link to="/devis/creer" className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
-                + Creer un devis
+            {isArtisan && (
+              <Link to="/dashboard" className="btn-byh-gradient px-6 py-3 text-white font-bold rounded-2xl">
+                ← Dashboard
               </Link>
             )}
+          </div>
+
+          {/* Filtres */}
+          <div className="flex gap-2 flex-wrap mt-6">
+            {['tous', 'envoye', 'accepte', 'refuse', 'termine'].map(f => (
+              <button key={f} onClick={() => setFilter(f)}
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                  filter === f
+                    ? 'bg-white text-blue-700 shadow-md'
+                    : 'glass text-blue-200 hover:bg-white/20'
+                }`}>
+                {f === 'tous' ? 'Tous' : STATUT_CONFIG[f]?.label || f}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-        {user?.role === "client" && devisEnAttente.length > 1 && (
-          <div className="mb-6 bg-amber-50 border-2 border-amber-200 rounded-2xl p-5">
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <div>
-                <p className="font-bold text-gray-900">Vous avez {devisEnAttente.length} devis en attente de reponse</p>
-                <p className="text-amber-700 text-sm mt-0.5">Comparez-les avant d accepter</p>
-              </div>
-              <button onClick={()=>setCompareMode(!compareMode)}
-                className="px-4 py-2 bg-amber-500 text-white rounded-xl font-semibold text-sm hover:bg-amber-600">
-                {compareMode ? "Vue normale" : "Comparer les devis"}
-              </button>
-            </div>
-            {compareMode && (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {devisEnAttente.map(d=>(
-                  <div key={d._id} className="bg-white rounded-xl border-2 border-amber-200 p-4">
-                    <p className="font-bold text-gray-900 text-sm mb-1">{d.artisan?.name || "Artisan"}</p>
-                    <p className="text-2xl font-black text-blue-600">{(d.total||0).toLocaleString("fr-FR")} FCFA</p>
-                    <p className="text-gray-500 text-xs mt-1">Delai: {d.delaiExecution || "Non precise"}</p>
-                    <p className="text-gray-500 text-xs">Valide {d.validiteJours || 15} jours</p>
-                    <Link to={"/devis/"+d._id} className="mt-3 block text-center py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700">Voir et repondre</Link>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        {/* Filtres */}
-        <div className="flex gap-2 flex-wrap mb-6">
-          {['tous','envoye','accepte','refuse','termine'].map(f=>(
-            <button key={f} onClick={()=>setFilter(f)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold border-2 transition-all capitalize ${filter===f?'bg-blue-600 text-white border-blue-600':'bg-white text-gray-600 border-gray-200 hover:border-blue-300'}`}>
-              {f==='tous'?'Tous':STATUT[f]?.label}
-              <span className="ml-2 text-xs opacity-70">
-                {f==='tous'?devis.length:devis.filter(d=>d.statut===f).length}
-              </span>
-            </button>
-          ))}
-        </div>
-
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
         {filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
-            <div className="text-6xl mb-4">📋</div>
-            <h3 className="text-xl font-display font-bold text-gray-700 mb-2">Aucun devis</h3>
-            <p className="text-gray-400 mb-6">
-              {user?.role === 'client'
-                ? 'Vos devis recus apparaitront ici'
-                : 'Creez votre premier devis pour un client'}
+          <div className="card-premium p-16 text-center">
+            <div className="text-6xl mb-4">📄</div>
+            <h3 className="text-xl font-display font-black text-slate-700 mb-2">Aucun devis</h3>
+            <p className="text-slate-400">
+              {isArtisan ? 'Vous n\'avez pas encore envoyé de devis' : 'Vous n\'avez pas encore reçu de devis'}
             </p>
-            {(user?.role === 'artisan' || user?.role === 'entreprise') && (
-              <Link to="/devis/creer" className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">
-                Creer un devis
-              </Link>
-            )}
           </div>
         ) : (
           <div className="space-y-4">
-            {filtered.map(d=>(
-              <Link key={d._id} to={`/devis/${d._id}`}
-                className="block bg-white rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all p-5">
-                <div className="flex items-start justify-between flex-wrap gap-3">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs font-mono text-gray-400">{d.numeroDevis}</span>
-                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${STATUT[d.statut]?.color}`}>
-                        {STATUT[d.statut]?.label}
-                      </span>
-                    </div>
-                    <h3 className="font-display font-bold text-gray-900 text-lg">{d.titre}</h3>
-                    <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 flex-wrap">
-                      {user?.role === 'client' ? (
-                        <span>De : {d.artisan?.name}</span>
-                      ) : (
-                        <span>Pour : {d.client?.name}</span>
+            {filtered.map(d => {
+              const config = STATUT_CONFIG[d.statut] || STATUT_CONFIG.envoye;
+              return (
+                <div key={d._id} className="card-premium p-6">
+                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-3 flex-wrap">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold border ${config.bg} ${config.text} ${config.border}`}>
+                          {config.label}
+                        </span>
+                        <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full">
+                          💰 {formatBudget(d.total)}
+                        </span>
+                        {d.modePaiement && (
+                          <span className="text-xs font-semibold text-slate-500 bg-slate-50 px-3 py-1 rounded-full border border-slate-200">
+                            {d.modePaiement === 'jalons' ? '📊 Par jalons' : d.modePaiement === 'acompte' ? '💳 Acompte' : '💵 Total'}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="font-display font-black text-slate-900 text-lg mb-1">{d.titre}</h3>
+                      <div className="flex items-center gap-4 text-xs text-slate-400 flex-wrap mt-2">
+                        {isArtisan ? (
+                          <span>👤 Client : {d.client?.name}</span>
+                        ) : (
+                          <span>🔨 Artisan : {d.artisan?.name}</span>
+                        )}
+                        {d.createdAt && <span>📅 {formatDate(d.createdAt)}</span>}
+                        {d.delaiExecution && <span>⏱️ {d.delaiExecution}</span>}
+                      </div>
+                      {/* Commission info */}
+                      {d.montantCommission > 0 && (
+                        <div className="mt-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-slate-500">🔨 Main d'œuvre</span>
+                            <span className="font-bold text-slate-700">{formatBudget(d.montantMainOeuvre || d.total)}</span>
+                          </div>
+                          <div className="flex items-center justify-between text-xs mt-1">
+                            <span className="text-slate-500">Commission B.Y.H (8%)</span>
+                            <span className="font-bold text-red-500">-{formatBudget(d.montantCommission)}</span>
+                          </div>
+                          <div className="flex items-center justify-between text-xs mt-1 pt-1 border-t border-blue-200">
+                            <span className="font-bold text-slate-700">Artisan reçoit</span>
+                            <span className="font-black text-green-600">{formatBudget(d.montantArtisan)}</span>
+                          </div>
+                        </div>
                       )}
-                      {d.projet && <span>• Projet : {d.projet?.titre}</span>}
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-display font-black text-blue-600">{formatBudget(d.total)}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{formatDate(d.createdAt)}</p>
-                    {d.statut === 'termine' && (
-                      <p className="text-xs text-green-600 font-semibold mt-1">
-                        Artisan: {formatBudget(d.montantArtisan)}
-                      </p>
-                    )}
+                    <Link to={`/devis/${d._id}`}
+                      className="flex-shrink-0 px-5 py-2.5 bg-blue-50 text-blue-700 border-2 border-blue-200 rounded-xl font-bold text-sm hover:bg-blue-100 transition-all">
+                      Voir →
+                    </Link>
                   </div>
                 </div>
-                {d.statut === 'envoye' && user?.role === 'client' && (
-                  <div className="mt-3 pt-3 border-t border-gray-100">
-                    <p className="text-sm text-amber-600 font-medium">⏳ En attente de votre reponse</p>
-                  </div>
-                )}
-                {d.statut === 'accepte' && (
-                  <div className="mt-3 pt-3 border-t border-gray-100">
-                    <p className="text-sm text-blue-600 font-medium">🔨 Travaux en cours — Validez quand c'est termine</p>
-                  </div>
-                )}
-              </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
