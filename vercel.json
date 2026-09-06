@@ -10,7 +10,7 @@
     }
   ],
   "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/static/(.*)", "dest": "/client/build/static/$1" },
+    { "src": "/(.*)", "dest": "/client/build/index.html" }
   ]
 }
