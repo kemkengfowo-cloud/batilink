@@ -1,103 +1,125 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import Loader from '../components/Loader';
+import { formatBudget, formatDate } from '../utils/helpers';
+import { useAuth } from '../context/AuthContext';
 
-const STATUTS = {
-  initie:     { bg: '#F8FAFC', text: '#64748B', label: '🔵 Initié' },
-  en_attente: { bg: '#FFF7ED', text: '#EA580C', label: '⏳ En attente' },
-  confirme:   { bg: '#F0FDF4', text: '#16A34A', label: '✅ Confirmé' },
-  echoue:     { bg: '#FFF1F2', text: '#E11D48', label: '❌ Échoué' },
-  rembourse:  { bg: '#EFF6FF', text: '#2563EB', label: '↩️ Remboursé' },
+const STATUT_CONFIG = {
+  initie:     { label: '🔄 Initié',    bg: 'bg-slate-50',  text: 'text-slate-600',  border: 'border-slate-200' },
+  en_attente: { label: '⏳ En attente',bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200' },
+  confirme:   { label: '✅ Confirmé',  bg: 'bg-green-50',  text: 'text-green-700',  border: 'border-green-200' },
+  echoue:     { label: '❌ Échoué',    bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200'   },
+  rembourse:  { label: '↩️ Remboursé', bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200'  },
 };
 
 export default function MesPaiements() {
+  const { user } = useAuth();
   const [paiements, setPaiements] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ total: 0, enAttente: 0, confirme: 0 });
+  const [processing, setProcessing] = useState(null);
 
   useEffect(() => {
     api.get('/paiements/mes-paiements')
-      .then(res => {
-        const data = Array.isArray(res.data) ? res.data : [];
-        setPaiements(data);
-        setStats({
-          total: data.reduce((s, p) => s + (p.statut === 'confirme' ? p.montant : 0), 0),
-          enAttente: data.filter(p => p.statut === 'en_attente').reduce((s, p) => s + p.montant, 0),
-          confirme: data.filter(p => p.statut === 'confirme').length,
-        });
-      })
-      .catch(() => setPaiements([]))
+      .then(r => setPaiements(r.data || []))
+      .catch(e => console.error(e))
       .finally(() => setLoading(false));
   }, []);
 
+  const liberer = async (id) => {
+    if (!window.confirm('Libérer le paiement à l\'artisan via MeSomb ?')) return;
+    setProcessing(id);
+    try {
+      const res = await api.post(`/mesomb/liberer/${id}`);
+      alert(res.data.message);
+      const r = await api.get('/paiements/mes-paiements');
+      setPaiements(r.data || []);
+    } catch(e) { alert(e.response?.data?.message || 'Erreur'); }
+    finally { setProcessing(null); }
+  };
+
+  const totalConfirme = paiements.filter(p => p.statut === 'confirme').reduce((s, p) => s + (p.montant || 0), 0);
+
+  if (loading) return <div className="flex justify-center py-20"><Loader/></div>;
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="py-12 relative overflow-hidden" style={{background:'linear-gradient(135deg, #0a1628 0%, #0d2044 100%)'}}>
-        <div className="absolute inset-0 opacity-5" style={{backgroundImage:'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize:'30px 30px'}}/>
-        <div className="relative z-10 max-w-5xl mx-auto px-4">
-          <Link to="/dashboard" className="text-blue-300 hover:text-white text-sm mb-4 inline-block">← Dashboard</Link>
-          <h1 className="text-3xl font-display font-black text-white mb-6">💳 Mes Paiements</h1>
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { label: 'Total payé', value: `${new Intl.NumberFormat('fr-FR').format(stats.total)} FCFA`, icon: '💰' },
-              { label: 'En attente', value: `${new Intl.NumberFormat('fr-FR').format(stats.enAttente)} FCFA`, icon: '⏳' },
-              { label: 'Confirmés', value: stats.confirme, icon: '✅' },
-            ].map((s, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 text-center">
-                <div className="text-2xl mb-1">{s.icon}</div>
-                <div className="text-xl font-black text-white">{s.value}</div>
-                <div className="text-blue-300 text-xs mt-1">{s.label}</div>
+    <div className="min-h-screen bg-slate-50">
+      <div className="bg-byh-gradient relative overflow-hidden">
+        <div className="absolute top-[-60px] right-[-60px] w-[300px] h-[300px] rounded-full bg-blue-500/10"/>
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-12">
+          <p className="text-blue-300 text-sm font-semibold mb-1 uppercase tracking-wider">Finances</p>
+          <h1 className="text-3xl font-black text-white mb-2">💳 Mes Paiements</h1>
+          <p className="text-slate-400">{paiements.length} transaction{paiements.length > 1 ? 's' : ''}</p>
+          {totalConfirme > 0 && (
+            <div className="mt-4 glass rounded-2xl px-6 py-4 inline-flex items-center gap-3">
+              <span className="text-2xl">💰</span>
+              <div>
+                <p className="text-blue-200 text-xs font-semibold">Total confirmé</p>
+                <p className="text-white font-black text-xl">{formatBudget(totalConfirme)}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        {loading ? <Loader/> : paiements.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+        {paiements.length === 0 ? (
+          <div className="card-premium p-16 text-center">
             <div className="text-6xl mb-4">💳</div>
-            <h3 className="text-xl font-bold text-gray-700 mb-2">Aucun paiement</h3>
-            <p className="text-gray-400">Vos paiements apparaîtront ici</p>
+            <h3 className="text-xl font-display font-black text-slate-700 mb-2">Aucun paiement</h3>
+            <p className="text-slate-400">Vos paiements apparaîtront ici</p>
           </div>
         ) : (
           <div className="space-y-4">
             {paiements.map(p => {
-              const statut = STATUTS[p.statut] || STATUTS.initie;
+              const config = STATUT_CONFIG[p.statut] || STATUT_CONFIG.initie;
+              const isClient = user?.role === 'client';
               return (
-                <div key={p._id} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <p className="font-bold text-gray-900">{p.devis?.titre || 'Projet'}</p>
-                      <p className="text-gray-400 text-sm">Ref: <span className="font-mono text-blue-600">{p.reference}</span></p>
+                <div key={p._id} className="card-premium p-6">
+                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-3 flex-wrap">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold border ${config.bg} ${config.text} ${config.border}`}>
+                          {config.label}
+                        </span>
+                        <span className="text-xs font-mono text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-200">
+                          {p.reference?.slice(-10)}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-500">
+                          {p.operateur === 'orange_money' ? '🟠 Orange Money' : '🟡 MTN MoMo'}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl mb-4">
+                        <div>
+                          <p className="text-xs text-slate-400 mb-1">Total payé</p>
+                          <p className="font-black text-slate-900">{formatBudget(p.montant)}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-400 mb-1">Commission (8%)</p>
+                          <p className="font-bold text-red-500">-{formatBudget(p.commission)}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-400 mb-1">{isClient ? 'Artisan reçoit' : 'Vous recevez'}</p>
+                          <p className="font-black text-green-600">{formatBudget(p.montantArtisan)}</p>
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-slate-400">{formatDate(p.createdAt)}</p>
                     </div>
-                    <span className="px-3 py-1 rounded-full text-xs font-bold" style={{background: statut.bg, color: statut.text}}>
-                      {statut.label}
-                    </span>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-400">Montant</p>
-                      <p className="font-bold text-gray-900">{new Intl.NumberFormat('fr-FR').format(p.montant)} FCFA</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Opérateur</p>
-                      <p className="font-bold text-gray-900">{p.operateur === 'orange_money' ? '🟠 Orange Money' : '🟡 MTN MoMo'}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Artisan</p>
-                      <p className="font-bold text-gray-900">{p.artisan?.name || '-'}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Date</p>
-                      <p className="font-bold text-gray-900">{new Date(p.createdAt).toLocaleDateString('fr-FR')}</p>
-                    </div>
-                  </div>
-                  {p.statut === 'en_attente' && (
-                    <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
-                      <p className="text-amber-700 text-sm">⏳ En attente de confirmation par l'équipe B.Y.H (max 30 min)</p>
-                    </div>
+
+                  {/* Bouton libérer */}
+                  {isClient && p.statut === 'confirme' && (
+                    p.disbursementStatut === 'effectue' ? (
+                      <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-xl text-center">
+                        <p className="text-green-700 font-bold text-sm">💸 Artisan payé via MeSomb</p>
+                      </div>
+                    ) : (
+                      <button onClick={() => liberer(p._id)} disabled={processing === p._id}
+                        className="mt-4 w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-sm disabled:opacity-50 transition-all">
+                        {processing === p._id ? '...' : '💸 Libérer le paiement à l\'artisan'}
+                      </button>
+                    )
                   )}
                 </div>
               );
