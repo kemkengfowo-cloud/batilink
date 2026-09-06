@@ -21,136 +21,156 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex">
-
-      {/* Cote gauche — Photo */}
-      <div className="hidden lg:flex w-1/2 flex-col justify-between relative overflow-hidden">
-        <img src="https://images.pexels.com/photos/1216589/pexels-photo-1216589.jpeg?auto=compress&cs=tinysrgb&w=1920"
-          alt="Construction" className="absolute inset-0 w-full h-full object-cover"/>
-        <div className="absolute inset-0" style={{background:'linear-gradient(135deg, rgba(10,22,40,0.90) 0%, rgba(13,32,68,0.80) 100%)'}}/>
-        <div className="absolute inset-0 opacity-5" style={{backgroundImage:'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize:'30px 30px'}}/>
+      {/* Panneau gauche — dégradé bleu premium */}
+      <div className="hidden lg:flex lg:w-1/2 bg-byh-gradient flex-col justify-between p-12 relative overflow-hidden">
+        {/* Cercles décoratifs */}
+        <div className="absolute top-[-80px] right-[-80px] w-[400px] h-[400px] rounded-full bg-blue-500/10"/>
+        <div className="absolute bottom-[-100px] left-[-60px] w-[300px] h-[300px] rounded-full bg-indigo-500/10"/>
+        <div className="absolute top-1/2 right-[-40px] w-[200px] h-[200px] rounded-full bg-blue-400/5"/>
 
         {/* Logo */}
-        <div className="relative z-10 p-12">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-transform">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M3 10.5L12 3L21 10.5V21H15V15H9V21H3V10.5Z" fill="white"/>
-              </svg>
-            </div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 rounded-2xl bg-blue-purple flex items-center justify-center text-2xl shadow-blue">🏠</div>
             <div>
-              <p className="font-display font-black text-2xl text-white">B.<span className="text-blue-400">Y.</span>H</p>
-              <p className="text-xs text-blue-300">Build Your Home</p>
-            </div>
-          </Link>
-        </div>
-
-        {/* Citation */}
-        <div className="relative z-10 p-12">
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
-            <p className="text-white text-lg font-medium leading-relaxed mb-4">
-              "B.Y.H m'a permis de trouver un excellent maçon en 24h. Le suivi par jalons m'a vraiment rassuré."
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">M</div>
-              <div>
-                <p className="text-white font-semibold text-sm">Marie K.</p>
-                <p className="text-blue-300 text-xs">Cliente — Yaoundé</p>
-              </div>
+              <div className="text-2xl font-black text-white tracking-widest">B.Y.H</div>
+              <div className="text-xs text-blue-300 font-semibold">Build Your Home</div>
             </div>
           </div>
-          <div className="flex gap-1 mt-6">
-            {['✅ Artisans vérifiés','🔒 Paiement sécurisé','⭐ Avis certifiés'].map(b=>(
-              <span key={b} className="px-3 py-1 bg-white/10 text-white/80 rounded-full text-xs font-medium border border-white/10">{b}</span>
+        </div>
+
+        {/* Contenu central */}
+        <div className="relative z-10 space-y-8">
+          <div>
+            <h1 className="text-5xl font-black text-white leading-tight mb-4">
+              Construisez<br/>
+              <span className="text-byh-gradient bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent">en confiance</span>
+            </h1>
+            <p className="text-slate-400 text-lg leading-relaxed">
+              La première marketplace BTP certifiée du Cameroun. Artisans vérifiés, paiements sécurisés, travaux garantis.
+            </p>
+          </div>
+
+          {/* Features */}
+          <div className="space-y-4">
+            {[
+              { icon: '🔒', title: 'Paiement escrow sécurisé', sub: 'Orange Money & MTN MoMo via MeSomb' },
+              { icon: '⭐', title: 'Artisans certifiés B.Y.H', sub: 'Profils vérifiés et notés par les clients' },
+              { icon: '🏗️', title: 'Suivi de chantier en temps réel', sub: 'Jalons photo, contrats, litiges gérés' },
+            ].map((f, i) => (
+              <div key={i} className="glass rounded-2xl p-4 flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl flex-shrink-0">{f.icon}</div>
+                <div>
+                  <div className="text-white font-bold text-sm">{f.title}</div>
+                  <div className="text-slate-400 text-xs mt-1">{f.sub}</div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
+
+        {/* Footer gauche */}
+        <div className="relative z-10">
+          <div className="text-slate-500 text-xs">🇨🇲 Fièrement Made in Cameroun — © 2026 B.Y.H</div>
+        </div>
       </div>
 
-      {/* Cote droit — Formulaire */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 bg-gray-50">
+      {/* Panneau droit — formulaire */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 bg-slate-50">
         <div className="w-full max-w-md">
 
           {/* Logo mobile */}
-          <div className="lg:hidden flex items-center gap-3 mb-10 justify-center">
-            <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M3 10.5L12 3L21 10.5V21H15V15H9V21H3V10.5Z" fill="white"/>
-              </svg>
-            </div>
+          <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-blue-purple flex items-center justify-center text-xl shadow-blue">🏠</div>
             <div>
-              <p className="font-display font-black text-2xl text-gray-900">B.<span className="text-blue-600">Y.</span>H</p>
-              <p className="text-xs text-gray-400">Build Your Home</p>
+              <div className="text-xl font-black text-slate-900 tracking-widest">B.Y.H</div>
+              <div className="text-xs text-blue-500 font-semibold">Build Your Home 🇨🇲</div>
             </div>
           </div>
 
+          {/* Header form */}
           <div className="mb-8">
-            <h1 className="text-3xl font-display font-black text-gray-900 mb-2">Bon retour ! 👋</h1>
-            <p className="text-gray-500">Connectez-vous à votre espace B.Y.H</p>
+            <h2 className="text-3xl font-black text-slate-900 mb-2">Bon retour ! 👋</h2>
+            <p className="text-slate-500">Connectez-vous à votre espace B.Y.H</p>
           </div>
 
+          {/* Error */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 text-red-700 rounded-xl text-sm flex items-center gap-2">
-              <span>⚠️</span> {error}
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3">
+              <span className="text-red-500 text-lg">⚠️</span>
+              <p className="text-red-600 text-sm font-semibold">{error}</p>
             </div>
           )}
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Adresse email</label>
-              <input
-                type="email" required
-                value={form.email}
-                onChange={e=>setForm(f=>({...f,email:e.target.value}))}
-                className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors text-gray-900 bg-white"
-                placeholder="vous@email.com"
-              />
+              <label className="block text-sm font-bold text-slate-700 mb-2">Adresse email</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg">📧</span>
+                <input
+                  type="email" required
+                  value={form.email}
+                  onChange={e => setForm(f => ({...f, email: e.target.value}))}
+                  className="input-premium w-full pl-11 pr-4 py-3.5 text-slate-900 font-medium"
+                  placeholder="votre@email.com"
+                />
+              </div>
             </div>
 
+            {/* Password */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-semibold text-gray-700">Mot de passe</label>
-              </div>
+              <label className="block text-sm font-bold text-slate-700 mb-2">Mot de passe</label>
               <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg">🔒</span>
                 <input
                   type={showPassword ? 'text' : 'password'} required
                   value={form.password}
-                  onChange={e=>setForm(f=>({...f,password:e.target.value}))}
-                  className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors text-gray-900 bg-white pr-12"
+                  onChange={e => setForm(f => ({...f, password: e.target.value}))}
+                  className="input-premium w-full pl-11 pr-12 py-3.5 text-slate-900 font-medium"
                   placeholder="Votre mot de passe"
                 />
-                <button type="button" onClick={()=>setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
                   {showPassword ? '🙈' : '👁️'}
                 </button>
               </div>
-              <div className="text-right">
-                <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline font-semibold">Mot de passe oublié ?</Link>
+              <div className="mt-2 text-right">
+                <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 font-semibold">
+                  Mot de passe oublié ?
+                </Link>
               </div>
             </div>
 
+            {/* Submit */}
             <button type="submit" disabled={loading}
-              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-xl transition-all disabled:opacity-50 shadow-lg shadow-blue-600/20 hover:scale-[1.02] active:scale-[0.98]">
+              className="btn-byh-gradient w-full py-4 text-white font-black text-lg rounded-2xl disabled:opacity-60 disabled:cursor-not-allowed">
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                  </svg>
+                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
                   Connexion...
                 </span>
               ) : 'Se connecter →'}
             </button>
+
+            {/* Séparateur */}
+            <div className="flex items-center gap-4">
+              <div className="flex-1 h-px bg-slate-200"/>
+              <span className="text-slate-400 text-sm font-semibold">ou</span>
+              <div className="flex-1 h-px bg-slate-200"/>
+            </div>
+
+            {/* Register link */}
+            <Link to="/register"
+              className="block w-full py-4 text-center font-bold text-blue-700 bg-blue-50 border-2 border-blue-200 rounded-2xl hover:bg-blue-100 transition-colors">
+              Créer un compte gratuitement
+            </Link>
           </form>
 
-          <p className="mt-6 text-center text-gray-500 text-sm">
-            Pas encore de compte ?{' '}
-            <Link to="/register" className="text-blue-600 font-bold hover:text-blue-700">S'inscrire gratuitement</Link>
-          </p>
-
-          <div className="mt-8 p-4 bg-blue-50 border border-blue-100 rounded-xl">
-            <p className="text-center text-blue-700 text-xs font-semibold">
-              🔒 Vos données sont protégées — Ne partagez jamais votre mot de passe
-            </p>
+          {/* Security note */}
+          <div className="mt-8 p-4 bg-slate-100 rounded-2xl text-center">
+            <p className="text-slate-400 text-xs">🔒 Connexion sécurisée — B.Y.H plateforme BTP certifiée Cameroun</p>
           </div>
         </div>
       </div>
