@@ -310,7 +310,7 @@ export default function Admin() {
             <div className="flex items-center justify-between flex-wrap gap-3">
               <h2 className="text-xl font-display font-bold text-gray-900">Utilisateurs ({users.length})</h2>
               <div className="flex items-center gap-3">
-                <button onClick={()=>setShowCreateAgent(!showCreateAgent)} className="btn-byh-gradient px-4 py-2 text-white font-bold rounded-xl text-sm">🛡️ Créer un agent</button>
+                <Link to="/create-agent" className="btn-byh-gradient px-4 py-2 text-white font-bold rounded-xl text-sm">🛡️ Créer un agent</Link>
                 <a href={`${process.env.REACT_APP_API_URL}/api/admin/export/users`} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-green-600 text-white rounded-xl text-sm font-semibold hover:bg-green-700">📥 Export CSV</a>
               </div>
             </div>

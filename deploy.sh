@@ -1,28 +1,35 @@
 #!/bin/bash
+set -e
+TOKEN="vcp_0kN5G47h4SLaPePkbKhuorFCWvgmYCD6bXi9iHjUQNTUnt803t16QCXQ"
+
 echo "🔨 Build React..."
 cd client
 npx react-scripts build 2>&1 | tail -2
-
-echo "📝 Renommage fichiers JS..."
 cd build
-JS_FILE=$(ls static/js/main.*.js | grep -v LICENSE | grep -v map | head -1)
-HASH=$(date +%s)
-NEW_NAME="main.byh${HASH}.js"
 
-cp $JS_FILE static/js/$NEW_NAME
-cp ${JS_FILE}.LICENSE.txt static/js/${NEW_NAME}.LICENSE.txt 2>/dev/null || true
+echo "📝 Préparation du déploiement..."
+# Trouver le nouveau fichier JS
+NEW_JS=$(ls static/js/main.*.js | grep -v "ba48ff88\|byh\|LICENSE\|map" | head -1)
+echo "Nouveau JS: $NEW_JS"
 
-OLD_NAME=$(basename $JS_FILE)
-sed -i "s/${OLD_NAME}/${NEW_NAME}/g" index.html
+# Écraser l'ancien avec le nouveau
+cp "$NEW_JS" static/js/main.ba48ff88.js
+echo "✅ main.ba48ff88.js mis à jour"
 
-echo "✅ Nouveau fichier: $NEW_NAME"
+# Vérifier
+COUNT=$(grep -c "create-agent" static/js/main.ba48ff88.js || true)
+echo "create-agent occurrences: $COUNT"
+
+# Mettre à jour index.html
+sed -i 's/main\.[a-zA-Z0-9]*\.js/main.ba48ff88.js/g' index.html
 grep -o "main\.[^.]*\.js" index.html
 
-echo "🚀 Déploiement Vercel..."
-vercel --prod --yes --force
+echo "🚀 Déploiement..."
+vercel --prod --yes --force --token "$TOKEN"
 
-echo "⏳ Attente propagation..."
-sleep 20
+echo "⏳ Attente 30s..."
+sleep 30
 
 echo "🔍 Vérification..."
-curl -s https://www.byh-cm.com/ | grep -o "main\.[^.]*\.js"
+RESULT=$(curl -s https://www.byh-cm.com/static/js/main.ba48ff88.js | grep -c "create-agent" || true)
+echo "create-agent sur le serveur: $RESULT"
