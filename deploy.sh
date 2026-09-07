@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-TOKEN="vcp_0kN5G47h4SLaPePkbKhuorFCWvgmYCD6bXi9iHjUQNTUnt803t16QCXQ"
+TOKEN="VERCEL_TOKEN_ICI"
 
 echo "🔨 Build React..."
 cd client
