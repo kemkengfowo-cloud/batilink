@@ -507,6 +507,7 @@ export default function MonChantier() {
                     onChange={(e) => setRapport((r) => Object.assign({}, r, { nombreOuvriers: parseInt(e.target.value) || 0 }))}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500" />
                 </div>
+              </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">👷 Équipes présentes</label>
                 <div className="space-y-2">
@@ -526,7 +527,6 @@ export default function MonChantier() {
                   <button type="button" onClick={() => setRapport(r=>({...r,equipes:[...r.equipes,{type:"",nombre:0}]}))}
                     className="text-sm text-green-600 font-semibold hover:underline">+ Ajouter une équipe</button>
                 </div>
-              </div>
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">✅ Activités réalisées (une par ligne)</label>
