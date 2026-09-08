@@ -23,7 +23,7 @@ export default function ConducteurDetail() {
   const [showRapport, setShowRapport] = useState(false);
   const [rapport, setRapport] = useState({
     meteo:'ensoleille', avancement:0, activites:'', problemes:'',
-    noteGenerale:'', nombreOuvriers:0, type:'quotidien'
+    noteGenerale:'', nombreOuvriers:0, type:'quotidien', equipes:[], livraisons:''
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -351,6 +351,44 @@ export default function ConducteurDetail() {
                 <input type="number" min="0" value={rapport.nombreOuvriers}
                   onChange={e => setRapport(r=>({...r,nombreOuvriers:parseInt(e.target.value)}))}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500"/>
+              </div>
+
+              {/* Section Équipes */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">👷 Équipes présentes</label>
+                <div className="space-y-2">
+                  {(rapport.equipes.length === 0 ? [{ type: "", nombre: 0 }] : rapport.equipes).map((eq, i) => (
+                    <div key={i} className="flex gap-2 items-center">
+                      <input type="text" placeholder="Ex: Maçons, Ferrailleurs..." value={eq.type}
+                        onChange={e => { const eq2=[...rapport.equipes]; if(!eq2[i]) eq2[i]={type:"",nombre:0}; eq2[i]={...eq2[i],type:e.target.value}; setRapport(r=>({...r,equipes:eq2})); }}
+                        className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500"/>
+                      <input type="number" min="0" placeholder="Nb" value={eq.nombre||""}
+                        onChange={e => { const eq2=[...rapport.equipes]; if(!eq2[i]) eq2[i]={type:"",nombre:0}; eq2[i]={...eq2[i],nombre:parseInt(e.target.value)||0}; setRapport(r=>({...r,equipes:eq2})); }}
+                        className="w-20 px-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 text-center"/>
+                      <span className="text-xs text-gray-400">pers.</span>
+                      {i === rapport.equipes.length - 1 && (
+                        <button type="button" onClick={() => setRapport(r=>({...r,equipes:[...r.equipes,{type:"",nombre:0}]}))}
+                          className="w-8 h-8 bg-green-100 text-green-600 rounded-lg font-bold hover:bg-green-200">+</button>
+                      )}
+                      {rapport.equipes.length > 1 && (
+                        <button type="button" onClick={() => setRapport(r=>({...r,equipes:r.equipes.filter((_,j)=>j!==i)}))}
+                          className="w-8 h-8 bg-red-50 text-red-500 rounded-lg font-bold hover:bg-red-100">-</button>
+                      )}
+                    </div>
+                  ))}
+                  {rapport.equipes.length === 0 && (
+                    <button type="button" onClick={() => setRapport(r=>({...r,equipes:[{type:"",nombre:0}]}))}
+                      className="text-sm text-green-600 font-semibold hover:underline">+ Ajouter une équipe</button>
+                  )}
+                </div>
+              </div>
+
+              {/* Section Livraisons */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">🚚 Livraisons reçues</label>
+                <textarea value={rapport.livraisons} onChange={e => setRapport(r=>({...r,livraisons:e.target.value}))}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 resize-none" rows={2}
+                  placeholder="Ex: 10 sacs ciment — 5 tonnes sable — Ferraillage 12mm..."/>
               </div>
 
               <button type="submit" disabled={submitting}

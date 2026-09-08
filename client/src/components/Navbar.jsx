@@ -16,7 +16,14 @@ export default function Navbar() {
 
   useEffect(() => { setMenuOpen(false); }, [location]);
 
-  const navLinks = [
+  const navLinks = user?.role === 'conducteur' ? [
+    { to: '/conducteur-travaux', label: 'Mes Chantiers', icon: '🏗️' },
+    { to: '/messages',            label: 'Messages',       icon: '💬' },
+  ] : user?.role === 'artisan' ? [
+    { to: '/projects',            label: 'Projets',        icon: '📋' },
+    { to: '/artisans',            label: 'Artisans',       icon: '🔨' },
+    { to: '/messages',            label: 'Messages',       icon: '💬' },
+  ] : [
     { to: '/artisans',          label: 'Artisans',          icon: '🔨' },
     { to: '/entreprises',       label: 'Entreprises BTP',   icon: '🏢' },
     { to: '/projects',          label: 'Projets',           icon: '📋' },

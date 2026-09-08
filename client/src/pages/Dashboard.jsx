@@ -117,6 +117,14 @@ function ClientDashboard({ projects, devis, user, visites, jalonsEnAttente }) {
             <p className="text-gray-400 text-sm">Grands projets et travaux d envergure</p>
           </div>
         </Link>
+        <Link to="/conducteur-travaux"
+          className="flex items-center gap-4 p-5 bg-white rounded-2xl border-2 border-green-200 hover:border-green-400 hover:shadow-md transition-all">
+          <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🏗️</div>
+          <div>
+            <p className="font-bold text-lg text-gray-900">Conducteur de Travaux</p>
+            <p className="text-gray-400 text-sm">Supervisez vos chantiers BTP</p>
+          </div>
+        </Link>
         <Link to="/visites/demander"
           className="flex items-center gap-4 p-5 bg-white rounded-2xl border-2 border-blue-200 hover:border-blue-400 hover:shadow-md transition-all">
           <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🔍</div>
