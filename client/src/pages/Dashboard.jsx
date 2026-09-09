@@ -125,14 +125,6 @@ function ClientDashboard({ projects, devis, user, visites, jalonsEnAttente }) {
             <p className="text-gray-400 text-sm">Supervisez vos chantiers BTP</p>
           </div>
         </Link>
-        <Link to="/visites/demander"
-          className="flex items-center gap-4 p-5 bg-white rounded-2xl border-2 border-blue-200 hover:border-blue-400 hover:shadow-md transition-all">
-          <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🔍</div>
-          <div>
-            <p className="font-bold text-lg text-gray-900">Visite evaluation</p>
-            <p className="text-gray-400 text-sm">Un technicien evalue votre chantier</p>
-          </div>
-        </Link>
       </div>
 
       {/* Stats */}

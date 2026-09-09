@@ -11,7 +11,7 @@ export default function CreateProject() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     titre: '', description: '', categorie: '', ville: '',
-    budget: '', delai: '', adresse: '',
+    budget: '', delai: '', adresse: '', demandeVisite: false,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -110,6 +110,19 @@ export default function CreateProject() {
             </div>
           </div>
 
+          {/* Visite évaluation */}
+          <div className="card-premium p-6">
+            <h2 className="font-display font-black text-slate-900 text-lg mb-4">🔍 Évaluation du site</h2>
+            <label className="flex items-start gap-4 p-4 bg-blue-50 border-2 border-blue-100 rounded-2xl cursor-pointer hover:border-blue-300 transition-all">
+              <input type="checkbox" checked={form.demandeVisite} onChange={e => set("demandeVisite", e.target.checked)}
+                className="w-5 h-5 accent-blue-600 mt-0.5 cursor-pointer flex-shrink-0"/>
+              <div>
+                <p className="font-bold text-slate-800">🔍 Je souhaite une visite d'évaluation avant les devis</p>
+                <p className="text-slate-500 text-sm mt-1">Un technicien B.Y.H visitera votre chantier et évaluera les travaux avant que les artisans soumettent leurs devis. Cela garantit des devis plus précis et fiables.</p>
+                <p className="text-blue-600 text-xs mt-2 font-semibold">✅ Recommandé pour les projets de construction ou rénovation importants</p>
+              </div>
+            </label>
+          </div>
           {/* Info sécurité */}
           <div className="p-4 bg-blue-50 border-2 border-blue-100 rounded-2xl flex items-start gap-3">
             <span className="text-2xl">🔒</span>
