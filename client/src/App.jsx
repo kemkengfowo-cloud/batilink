@@ -55,6 +55,7 @@ import AdminHistorique from './pages/AdminHistorique';
 import Agent from './pages/Agent';
 import CreateAgent from './pages/CreateAgent';
 import Calculateur from './pages/Calculateur';
+import FeedbackWidget from './components/FeedbackWidget';
 
 const PrivateRoute = ({ children, role }) => {
   const { user, loading } = useAuth();
@@ -153,6 +154,7 @@ export default function App() {
     <BrowserRouter>
       <NotificationToast/>
         <AppRoutes/>
+      <FeedbackWidget />
       </BrowserRouter>
     </ToastProvider>
     </AuthProvider>

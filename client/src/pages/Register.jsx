@@ -11,7 +11,24 @@ const ROLES = [
   { id: 'conducteur',icon: '🏗️', label: 'Conducteur', sub: 'Conducteur de travaux',      color: '#ECFDF5', border: '#A7F3D0', accent: '#065F46' },
 ];
 
-const PAYS_MONDE = ['France','Belgique','Suisse','Canada','Etats-Unis','Allemagne','Italie','Espagne','Royaume-Uni','Portugal','Gabon','Congo','Cote d Ivoire','Senegal','Autre'];
+const PAYS_MONDE = [
+  { nom:'France',       code:'+33',  flag:'🇫🇷' },
+  { nom:'Belgique',     code:'+32',  flag:'🇧🇪' },
+  { nom:'Suisse',       code:'+41',  flag:'🇨🇭' },
+  { nom:'Canada',       code:'+1',   flag:'🇨🇦' },
+  { nom:'États-Unis',   code:'+1',   flag:'🇺🇸' },
+  { nom:'Allemagne',    code:'+49',  flag:'🇩🇪' },
+  { nom:'Italie',       code:'+39',  flag:'🇮🇹' },
+  { nom:'Espagne',      code:'+34',  flag:'🇪🇸' },
+  { nom:'Royaume-Uni',  code:'+44',  flag:'🇬🇧' },
+  { nom:'Portugal',     code:'+351', flag:'🇵🇹' },
+  { nom:'Gabon',        code:'+241', flag:'🇬🇦' },
+  { nom:'Congo',        code:'+242', flag:'🇨🇬' },
+  { nom:'Côte d Ivoire',code:'+225', flag:'🇨🇮' },
+  { nom:'Sénégal',      code:'+221', flag:'🇸🇳' },
+  { nom:'Maroc',        code:'+212', flag:'🇲🇦' },
+  { nom:'Autre',        code:'',     flag:'🌍' },
+];
 
 const inputCls = 'input-premium w-full px-4 py-3.5 text-slate-900 font-medium';
 const labelCls = 'block text-sm font-bold text-slate-700 mb-2';
@@ -31,6 +48,8 @@ export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const set = (k, v) => setForm(f => ({...f, [k]: v}));
+  const paysSelectionne = PAYS_MONDE.find(p => p.nom === form.paysDiaspora);
+  const indicatif = form.estDiaspora && paysSelectionne && paysSelectionne.code ? paysSelectionne.code : "+237";
   const isEntreprise = role === 'entreprise';
   const isArtisan = role === 'artisan';
 
@@ -163,9 +182,9 @@ export default function Register() {
                 <div>
                   <label className={labelCls}>Téléphone *</label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2">📱</span>
-                    <input type="tel" required value={form.phone} onChange={e=>set('phone',e.target.value)}
-                      className={inputCls + ' pl-10'} placeholder="+237 6XX XXX XXX"/>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg z-10">{indicatif}</span>
+                    <input type="tel" required value={form.phone} onChange={e=>set("phone",e.target.value)}
+                      className={inputCls + " pl-20"} placeholder="6XX XXX XXX"/>
                   </div>
                 </div>
                 <div>
@@ -192,7 +211,7 @@ export default function Register() {
                   <label className={labelCls}>Pays de résidence</label>
                   <select value={form.paysDiaspora} onChange={e=>set('paysDiaspora',e.target.value)} className={inputCls}>
                     <option value="">Sélectionner votre pays</option>
-                    {PAYS_MONDE.map(p => <option key={p} value={p}>{p}</option>)}
+                    {PAYS_MONDE.map(p => <option key={p.nom} value={p.nom}>{p.flag} {p.nom} ({p.code})</option>)}
                   </select>
                 </div>
               )}
