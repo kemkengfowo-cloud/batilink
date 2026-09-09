@@ -15,7 +15,6 @@ const TABS = [
   { id: 'securite',label: '🔒 Sécurité', roles: ['client','artisan','entreprise','conducteur'] },
 ];
 
-const navigate = useNavigate();
 
 export default function Profile() {
   const { user, setUser } = useAuth();

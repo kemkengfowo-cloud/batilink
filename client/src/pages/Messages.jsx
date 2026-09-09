@@ -5,7 +5,6 @@ import Loader from '../components/Loader';
 import { getAvatarUrl, formatDate } from '../utils/helpers';
 import { useAuth } from '../context/AuthContext';
 
-const navigate = useNavigate();
 
 export default function Messages() {
   const { user } = useAuth();

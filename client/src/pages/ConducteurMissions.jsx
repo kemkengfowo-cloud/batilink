@@ -18,7 +18,6 @@ const STATUT_COLORS = {
   annulee:    { bg: '#FFF1F2', text: '#E11D48', label: '❌ Annulée' },
 };
 
-const navigate = useNavigate();
 
 export default function ConducteurMissions() {
   const { user } = useAuth();

@@ -12,7 +12,6 @@ const TABS = [
   { id: 'visites',    label: '🏠 Visites',           icon: '🏠' },
 ];
 
-const navigate = useNavigate();
 
 export default function Agent() {
   const [tab, setTab] = useState('stats');

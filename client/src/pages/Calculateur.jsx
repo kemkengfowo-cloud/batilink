@@ -70,7 +70,6 @@ const TRAVAUX = [
 
 const fmt = (n) => new Intl.NumberFormat('fr-FR').format(Math.round(n));
 
-const navigate = useNavigate();
 
 export default function Calculateur() {
   const [selections, setSelections] = useState({});

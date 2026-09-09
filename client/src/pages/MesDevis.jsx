@@ -14,7 +14,6 @@ const STATUT_CONFIG = {
   annule:   { label: '🚫 Annulé',    bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200'   },
 };
 
-const navigate = useNavigate();
 
 export default function MesDevis() {
   const { user } = useAuth();

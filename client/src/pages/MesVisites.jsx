@@ -12,7 +12,6 @@ const STATUT_CONFIG = {
   annulee:         { label: '❌ Annulée',           bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200'   },
 };
 
-const navigate = useNavigate();
 
 export default function MesVisites() {
   const [visites, setVisites] = useState([]);

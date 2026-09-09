@@ -13,7 +13,6 @@ const STATUT_CONFIG = {
   rembourse:  { label: '↩️ Remboursé', bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200'  },
 };
 
-const navigate = useNavigate();
 
 export default function MesPaiements() {
   const { user } = useAuth();

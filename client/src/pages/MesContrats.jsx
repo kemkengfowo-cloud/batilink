@@ -13,7 +13,6 @@ const STATUT_CONFIG = {
   resilie:    { label: '❌ Résilié',    bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200'   },
 };
 
-const navigate = useNavigate();
 
 export default function MesContrats() {
   const [contrats, setContrats] = useState([]);

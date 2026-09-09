@@ -15,7 +15,6 @@ const STATUT = {
   annulee:          { label:'Annulee', color:'bg-red-50 text-red-700 border-red-200', icon:'❌' },
 };
 
-const navigate = useNavigate();
 
 export default function MesDemandesPersonnel() {
   const { user } = useAuth();

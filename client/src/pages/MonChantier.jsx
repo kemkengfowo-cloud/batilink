@@ -49,7 +49,6 @@ function getFiltreClass(actif) {
   return 'px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-white text-gray-600 border border-gray-200 hover:border-green-300';
 }
 
-const navigate = useNavigate();
 
 export default function MonChantier() {
   const { id } = useParams();

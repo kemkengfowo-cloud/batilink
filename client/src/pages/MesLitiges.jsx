@@ -15,7 +15,6 @@ const STATUT_CONFIG = {
   classe:             { label: '📁 Classé',            bg: 'bg-slate-50',  text: 'text-slate-500',  border: 'border-slate-200' },
 };
 
-const navigate = useNavigate();
 
 export default function MesLitiges() {
   const { user } = useAuth();
