@@ -1,8 +1,5 @@
 {
-  "buildCommand": "",
-  "outputDirectory": "client/build",
-  "installCommand": "",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "github": {
+    "enabled": false
+  }
 }
