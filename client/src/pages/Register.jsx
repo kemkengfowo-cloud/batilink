@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AddressAutocomplete from "../components/AddressAutocomplete";
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -35,7 +35,7 @@ const labelCls = 'block text-sm font-bold text-slate-700 mb-2';
 
 export default function Register() {
   const { register } = useAuth();
-  const { executeRecaptcha } = useGoogleReCaptcha();
+  
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [role, setRole] = useState(searchParams.get('role') || 'client');
@@ -56,9 +56,9 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault(); setError(''); setLoading(true);
     try {
-      if (!executeRecaptcha) { setError('reCAPTCHA non disponible.'); setLoading(false); return; }
-      const token = await executeRecaptcha("register");
-      await register({...form, role, recaptchaToken: token});
+      
+      
+      await register({...form, role});
       navigate('/dashboard');
     } catch(err) { setError(err.response?.data?.message || 'Erreur d\'inscription'); }
     finally { setLoading(false); }
