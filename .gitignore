@@ -10,6 +10,3 @@ uploads/*
 
 .vercel
 .env*
-client/build/static/js/*.map
-client/build/static/css/*.map
-client/build/
