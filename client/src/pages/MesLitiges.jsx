@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import Loader from '../components/Loader';
 import { formatDate, getAvatarUrl } from '../utils/helpers';
@@ -13,6 +14,8 @@ const STATUT_CONFIG = {
   resolu_partage:     { label: '⚖️ Partage',           bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200'},
   classe:             { label: '📁 Classé',            bg: 'bg-slate-50',  text: 'text-slate-500',  border: 'border-slate-200' },
 };
+
+const navigate = useNavigate();
 
 export default function MesLitiges() {
   const { user } = useAuth();

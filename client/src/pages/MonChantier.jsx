@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import Loader from '../components/Loader';
@@ -48,6 +48,8 @@ function getFiltreClass(actif) {
   if (actif) return 'px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-green-600 text-white shadow';
   return 'px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-white text-gray-600 border border-gray-200 hover:border-green-300';
 }
+
+const navigate = useNavigate();
 
 export default function MonChantier() {
   const { id } = useParams();

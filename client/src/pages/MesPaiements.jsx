@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import Loader from '../components/Loader';
 import { formatBudget, formatDate } from '../utils/helpers';
@@ -11,6 +12,8 @@ const STATUT_CONFIG = {
   echoue:     { label: '❌ Échoué',    bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200'   },
   rembourse:  { label: '↩️ Remboursé', bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200'  },
 };
+
+const navigate = useNavigate();
 
 export default function MesPaiements() {
   const { user } = useAuth();

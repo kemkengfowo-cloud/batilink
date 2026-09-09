@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { VILLES, CATEGORIES, getAvatarUrl } from '../utils/helpers';
@@ -13,6 +14,8 @@ const TABS = [
   { id: 'profil',  label: '🔨 Profil',   roles: ['artisan','entreprise','conducteur'] },
   { id: 'securite',label: '🔒 Sécurité', roles: ['client','artisan','entreprise','conducteur'] },
 ];
+
+const navigate = useNavigate();
 
 export default function Profile() {
   const { user, setUser } = useAuth();

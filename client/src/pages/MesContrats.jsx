@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
 import Loader from '../components/Loader';
 import { formatBudget, formatDate } from '../utils/helpers';
@@ -12,6 +12,8 @@ const STATUT_CONFIG = {
   termine:    { label: '🏁 Terminé',    bg: 'bg-emerald-50',text: 'text-emerald-700',border: 'border-emerald-200'},
   resilie:    { label: '❌ Résilié',    bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200'   },
 };
+
+const navigate = useNavigate();
 
 export default function MesContrats() {
   const [contrats, setContrats] = useState([]);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import Loader from '../components/Loader';
@@ -17,6 +17,8 @@ const STATUT_COLORS = {
   terminee:   { bg: '#F8FAFC', text: '#64748B', label: '✅ Terminée' },
   annulee:    { bg: '#FFF1F2', text: '#E11D48', label: '❌ Annulée' },
 };
+
+const navigate = useNavigate();
 
 export default function ConducteurMissions() {
   const { user } = useAuth();

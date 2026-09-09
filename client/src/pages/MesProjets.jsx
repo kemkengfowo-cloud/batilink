@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
 import Loader from '../components/Loader';
 import { formatBudget, formatDate } from '../utils/helpers';
@@ -11,6 +11,8 @@ const STATUT_CONFIG = {
   en_pause:  { label: '⏸️ En pause', bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200' },
   annule:    { label: '❌ Annulé',   bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200'   },
 };
+
+const navigate = useNavigate();
 
 export default function MesProjets() {
   const [projects, setProjects] = useState([]);

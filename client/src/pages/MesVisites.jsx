@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
 import Loader from '../components/Loader';
 import { formatDate, formatBudget } from '../utils/helpers';
@@ -11,6 +11,8 @@ const STATUT_CONFIG = {
   rapport_soumis:  { label: '📄 Rapport soumis',   bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200'},
   annulee:         { label: '❌ Annulée',           bg: 'bg-red-50',    text: 'text-red-600',    border: 'border-red-200'   },
 };
+
+const navigate = useNavigate();
 
 export default function MesVisites() {
   const [visites, setVisites] = useState([]);

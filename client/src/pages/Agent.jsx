@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { formatBudget, formatDate, getAvatarUrl } from '../utils/helpers';
 
@@ -10,6 +11,8 @@ const TABS = [
   { id: 'litiges',    label: '⚖️ Litiges',           icon: '⚖️' },
   { id: 'visites',    label: '🏠 Visites',           icon: '🏠' },
 ];
+
+const navigate = useNavigate();
 
 export default function Agent() {
   const [tab, setTab] = useState('stats');

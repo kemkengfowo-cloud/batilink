@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import Loader from '../components/Loader';
@@ -14,6 +14,8 @@ const STATUT = {
   termine:          { label:'Termine', color:'bg-gray-100 text-gray-600 border-gray-200', icon:'✓' },
   annulee:          { label:'Annulee', color:'bg-red-50 text-red-700 border-red-200', icon:'❌' },
 };
+
+const navigate = useNavigate();
 
 export default function MesDemandesPersonnel() {
   const { user } = useAuth();
