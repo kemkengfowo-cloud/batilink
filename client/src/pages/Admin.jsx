@@ -56,6 +56,8 @@ export default function Admin() {
   const [prixAdmin, setPrixAdmin] = useState('');
   const [messageAdmin, setMessageAdmin] = useState('');
   const [artisansDispos, setArtisansDispos] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [feedbackStats, setFeedbackStats] = useState(null);
   const [showProposer, setShowProposer] = useState(false);
   const [propositionForm, setPropositionForm] = useState({ artisansIds:[], prixParArtisan:'', message:'' });
 
@@ -67,7 +69,7 @@ export default function Admin() {
   const loadAll = async () => {
     setLoading(true);
     try {
-      const [s, u, a, e, sig, lit, vis, dem] = await Promise.allSettled([
+      const [s, u, a, e, sig, lit, vis, dem, fb, fbs] = await Promise.allSettled([
         api.get('/admin/stats'),
         api.get('/admin/users'),
         api.get('/admin/artisans'),
@@ -76,6 +78,8 @@ export default function Admin() {
         api.get('/litiges'),
         api.get('/visites/admin/toutes'),
         api.get('/demandes-personnel/mes-demandes'),
+        api.get('/feedback'),
+        api.get('/feedback/stats'),
       ]);
       if (s.status==='fulfilled') setStats(s.value.data);
       if (u.status==='fulfilled') setUsers(u.value.data.users || []);
@@ -85,6 +89,8 @@ export default function Admin() {
       if (lit.status==='fulfilled') setLitiges(lit.value.data || []);
       if (vis.status==='fulfilled') setVisites(vis.value.data || []);
       if (dem.status==='fulfilled') setDemandesPersonnel(dem.value.data || []);
+      if (fb.status==='fulfilled') setFeedbacks(fb.value.data || []);
+      if (fbs.status==='fulfilled') setFeedbackStats(fbs.value.data);
     } finally { setLoading(false); }
   };
 
@@ -165,6 +171,7 @@ export default function Admin() {
     { id:'messagerie', label:'Messagerie', icon:'📢', badge:null },
     { id:'demandes', label:'Demandes Personnel', icon:'👷', badge:demandesPersonnel.filter(d=>d.statut==='en_attente').length||null },
     { id:"conducteur-travaux", label:"Conducteur Travaux", icon:"🏗️", badge:null },
+    { id:"feedback", label:"Feedbacks", icon:"💬", badge:null },
     { id:"paiements", label:"Paiements", icon:"💳", badge:null },
     { id:"finances", label:"Finances", icon:"💰", badge:null },
     { id:'historique', label:'Journal', icon:'📜', badge:null },
@@ -673,6 +680,65 @@ export default function Admin() {
           <FinancesAdmin apiUrl={process.env.REACT_APP_API_URL}/>
         )}
         {/* HISTORIQUE */}
+        {tab==="feedback" && (
+          <div className="space-y-6">
+            {/* Stats */}
+            {feedbackStats && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="card-premium p-5 text-center">
+                  <p className="text-3xl font-black text-blue-600">{feedbackStats.total}</p>
+                  <p className="text-sm text-slate-500 mt-1">Total feedbacks</p>
+                </div>
+                <div className="card-premium p-5 text-center">
+                  <p className="text-3xl font-black text-amber-500">{"⭐".repeat(Math.round(feedbackStats.moyenne || 0))}</p>
+                  <p className="text-sm text-slate-500 mt-1">Moyenne : {feedbackStats.moyenne}/5</p>
+                </div>
+                <div className="card-premium p-5 text-center">
+                  <p className="text-3xl font-black text-red-500">{feedbackStats.nonLus}</p>
+                  <p className="text-sm text-slate-500 mt-1">Non lus</p>
+                </div>
+                <div className="card-premium p-5 text-center">
+                  <p className="text-3xl font-black text-green-500">{feedbackStats.total - (feedbackStats.nonLus||0)}</p>
+                  <p className="text-sm text-slate-500 mt-1">Lus</p>
+                </div>
+              </div>
+            )}
+            {/* Liste feedbacks */}
+            <div className="space-y-3">
+              {feedbacks.length === 0 ? (
+                <div className="card-premium p-16 text-center">
+                  <div className="text-5xl mb-3">💬</div>
+                  <p className="text-slate-500">Aucun feedback pour le moment</p>
+                </div>
+              ) : feedbacks.map(f => (
+                <div key={f._id} className="card-premium p-5">
+                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2 flex-wrap">
+                        <span className="text-amber-400 text-lg">{"★".repeat(f.note)}{"☆".repeat(5-f.note)}</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${ f.categorie==="bug" ? "bg-red-100 text-red-600" : f.categorie==="suggestion" ? "bg-blue-100 text-blue-600" : f.categorie==="design" ? "bg-purple-100 text-purple-600" : "bg-slate-100 text-slate-600"}`}>{f.categorie}</span>
+                        <span className="text-xs text-slate-400">{f.userRole} · {f.source}</span>
+                        {!f.lu && <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full">Nouveau</span>}
+                      </div>
+                      <p className="text-slate-700 font-medium">{f.commentaire}</p>
+                      <div className="flex gap-3 mt-2 text-xs text-slate-400">
+                        <span>👤 {f.userName || f.user?.name}</span>
+                        <span>📅 {new Date(f.createdAt).toLocaleDateString("fr-FR")}</span>
+                        {f.page && <span>📄 {f.page}</span>}
+                      </div>
+                    </div>
+                    {!f.lu && (
+                      <button onClick={async()=>{ await api.put(`/feedback/${f._id}/lu`); const r=await api.get("/feedback"); setFeedbacks(r.data||[]); }}
+                        className="px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl text-xs font-bold hover:bg-green-100">
+                        ✅ Marquer lu
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         {tab==="historique" && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
