@@ -2,6 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+const PROVERBES = [
+  { texte: "Seul on va plus vite, ensemble on va plus loin.", origine: "Proverbe africain" },
+  { texte: "La maison que tu bâtis avec soin sera ton abri pour toujours.", origine: "Proverbe camerounais" },
+  { texte: "Un bon artisan ne blâme pas ses outils.", origine: "Proverbe africain" },
+  { texte: "La pierre qu'on n'a pas posée ne peut pas soutenir le mur.", origine: "Proverbe bamiléké" },
+  { texte: "Ce que l'on construit ensemble résiste aux tempêtes.", origine: "Proverbe africain" },
+  { texte: "L'union fait la force, la confiance fait l'édifice.", origine: "Sagesse B.Y.H 🇨🇲" },
+  { texte: "Un chantier bien commencé est à moitié terminé.", origine: "Proverbe africain" },
+  { texte: "La confiance est le ciment de toute construction durable.", origine: "Sagesse B.Y.H 🇨🇲" },
+];
+
 const STATS = [
   { num: '20+',  label: 'Artisans vérifiés',     icon: '🔨' },
   { num: '100%', label: 'Paiements sécurisés',    icon: '🔒' },
@@ -28,6 +39,46 @@ const TEMOIGNAGES = [
   { nom: 'Sophie M.', ville: 'Diaspora (France)', role: 'Cliente diaspora', txt: 'Je construis ma maison à Yaoundé depuis Paris. B.Y.H gère tout avec professionnalisme.', note: 5 },
 ];
 
+function BetaBannerProverbes() {
+  const [idx, setIdx] = React.useState(0);
+  const [fade, setFade] = React.useState(true);
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => { setIdx(i => (i + 1) % PROVERBES.length); setFade(true); }, 400);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+  const p = PROVERBES[idx];
+  return (
+    <div className="relative overflow-hidden">
+      {/* Bannière beta */}
+      <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 py-3 px-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-3 flex-wrap">
+          <span className="text-white text-sm font-black">🚀 BETA TEST B.Y.H</span>
+          <span className="text-amber-100 text-sm">Vous êtes parmi les premiers testeurs — votre avis compte !</span>
+          <span className="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full">💬 Utilisez le bouton feedback en bas à droite</span>
+        </div>
+      </div>
+      {/* Proverbes */}
+      <div className="bg-byh-gradient py-6 px-4 border-t border-white/10">
+        <div className="max-w-3xl mx-auto text-center">
+          <div style={{ opacity: fade ? 1 : 0, transition: "opacity 0.4s ease" }}>
+            <p className="text-white text-lg font-bold italic mb-2">&ldquo;{p.texte}&rdquo;</p>
+            <p className="text-blue-300 text-sm font-semibold">— {p.origine}</p>
+          </div>
+          {/* Points de navigation */}
+          <div className="flex justify-center gap-2 mt-4">
+            {PROVERBES.map((_, i) => (
+              <button key={i} onClick={() => { setFade(false); setTimeout(() => { setIdx(i); setFade(true); }, 400); }}
+                className={`w-2 h-2 rounded-full transition-all ${ i === idx ? "bg-white w-6" : "bg-white/30 hover:bg-white/50" }`}/>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 export default function Home() {
   const { user } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
@@ -114,6 +165,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* BANNIÈRE BETA + PROVERBES */}
+      <BetaBannerProverbes />
 
       {/* SERVICES */}
       <section className="py-20 px-4 max-w-7xl mx-auto">
