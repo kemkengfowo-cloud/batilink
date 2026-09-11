@@ -37,6 +37,17 @@ router.post('/', auth, async (req, res) => {
   try {
     if (req.user.role !== 'artisan' && req.user.role !== 'entreprise')
       return res.status(403).json({ message: 'Seuls les artisans et entreprises peuvent creer des devis.' });
+    // Verifier que le profil artisan/entreprise est valide
+    const Artisan = require("../models/Artisan");
+    const Entreprise = require("../models/Entreprise");
+    if (req.user.role === "artisan") {
+      const profil = await Artisan.findOne({ user: req.user.id });
+      if (!profil || !profil.verifie) return res.status(403).json({ message: "Votre profil doit être vérifié par B.Y.H avant d'envoyer des devis. Complétez votre profil avec une pièce d'identité valide." });
+    }
+    if (req.user.role === "entreprise") {
+      const profil = await Entreprise.findOne({ user: req.user.id });
+      if (!profil || !profil.verifie) return res.status(403).json({ message: "Votre entreprise doit être vérifiée par B.Y.H avant d'envoyer des devis. Complétez votre profil avec les documents requis." });
+    }
     const { clientId, projetId, titre, description, lignes, delaiExecution, validiteJours, conditionsPaiement, materielsInclus } = req.body;
     if (!clientId || !titre || !description || !lignes || !lignes.length)
       return res.status(400).json({ message: 'Champs requis manquants.' });

@@ -128,6 +128,7 @@ export default function FeedbackWidget() {
               </div>
 
               <button type="submit" disabled={!note || !commentaire.trim() || loading}
+                title={!note ? "Choisissez une note" : !commentaire.trim() ? "Écrivez un commentaire" : ""}
                 className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl text-sm hover:bg-blue-700 disabled:opacity-50 transition-all">
                 {loading ? '⏳ Envoi...' : '📤 Envoyer mon retour'}
               </button>

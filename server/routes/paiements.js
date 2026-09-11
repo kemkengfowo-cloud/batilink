@@ -85,7 +85,12 @@ router.post('/initier', auth, async (req, res) => {
       }
     }
 
-    const commission = Math.round(montant * 0.08);
+    // 100 premiers clients = 0% commission
+    const User = require("../models/User");
+    const nbClients = await User.countDocuments({ role: "client", createdAt: { $lte: req.user.createdAt } });
+    const tauxCommission = nbClients <= 100 ? 0 : 0.08;
+    const commission = Math.round(montant * tauxCommission);
+    const estOffrePromo = tauxCommission === 0;
     const montantArtisan = montant - commission;
     const reference = genReference();
     const op = OPERATEURS[operateur];

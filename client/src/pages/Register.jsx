@@ -162,6 +162,28 @@ export default function Register() {
             <div className="card-premium p-6 space-y-4">
               <h3 className="font-display font-bold text-slate-900">📋 Informations personnelles</h3>
 
+
+              {/* Diaspora EN PREMIER */}
+              {role === 'client' && (
+                <label className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border-2 border-blue-100 cursor-pointer hover:border-blue-300 transition-colors">
+                  <input type="checkbox" checked={form.estDiaspora} onChange={e=>set('estDiaspora',e.target.checked)}
+                    className="w-5 h-5 accent-blue-600 cursor-pointer"/>
+                  <div>
+                    <div className="font-bold text-slate-800 text-sm">🌍 Je suis de la diaspora</div>
+                    <div className="text-slate-500 text-xs">Je vis à l'étranger et je veux construire au Cameroun</div>
+                  </div>
+                </label>
+              )}
+
+              {form.estDiaspora && role === 'client' && (
+                <div>
+                  <label className={labelCls}>Pays de résidence</label>
+                  <select value={form.paysDiaspora} onChange={e=>set('paysDiaspora',e.target.value)} className={inputCls}>
+                    <option value="">Sélectionner votre pays</option>
+                    {PAYS_MONDE.map(p => <option key={p.nom} value={p.nom}>{p.flag} {p.nom} ({p.code})</option>)}
+                  </select>
+                </div>
+              )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelCls}>{isEntreprise ? 'Nom du responsable *' : 'Nom complet *'}</label>
@@ -193,28 +215,6 @@ export default function Register() {
                     placeholder="Ex: Bastos, Yaoundé" className={inputCls}/>
                 </div>
               </div>
-
-              {/* Diaspora */}
-              {role === 'client' && (
-                <label className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border-2 border-blue-100 cursor-pointer hover:border-blue-300 transition-colors">
-                  <input type="checkbox" checked={form.estDiaspora} onChange={e=>set('estDiaspora',e.target.checked)}
-                    className="w-5 h-5 accent-blue-600 cursor-pointer"/>
-                  <div>
-                    <div className="font-bold text-slate-800 text-sm">🌍 Je suis de la diaspora</div>
-                    <div className="text-slate-500 text-xs">Je vis à l'étranger et je veux construire au Cameroun</div>
-                  </div>
-                </label>
-              )}
-
-              {form.estDiaspora && role === 'client' && (
-                <div>
-                  <label className={labelCls}>Pays de résidence</label>
-                  <select value={form.paysDiaspora} onChange={e=>set('paysDiaspora',e.target.value)} className={inputCls}>
-                    <option value="">Sélectionner votre pays</option>
-                    {PAYS_MONDE.map(p => <option key={p.nom} value={p.nom}>{p.flag} {p.nom} ({p.code})</option>)}
-                  </select>
-                </div>
-              )}
 
               {/* Artisan */}
               {isArtisan && (

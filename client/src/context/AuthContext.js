@@ -4,6 +4,8 @@ import api from '../utils/api';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  const TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+  const timerRef = React.useRef(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,6 +23,25 @@ export function AuthProvider({ children }) {
     } else {
       setLoading(false);
     }
+
+  // Deconnexion automatique apres inactivite
+  useEffect(() => {
+    if (!user) return;
+    const resetTimer = () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        clearAuth();
+        alert("Session expirée pour votre sécurité. Reconnectez-vous.");
+      }, TIMEOUT_MS);
+    };
+    const events = ["mousedown","mousemove","keypress","scroll","touchstart","click"];
+    events.forEach(e => window.addEventListener(e, resetTimer));
+    resetTimer();
+    return () => {
+      events.forEach(e => window.removeEventListener(e, resetTimer));
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [user]);
   }, []);
 
   const tryRefresh = async () => {
