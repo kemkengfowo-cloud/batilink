@@ -1,8 +1,0 @@
-{
-  "buildCommand": "echo done",
-  "installCommand": "echo done",
-  "framework": null,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
