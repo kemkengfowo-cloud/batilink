@@ -1,6 +1,8 @@
 {
   "buildCommand": "echo done",
-  "outputDirectory": "client/build",
   "installCommand": "echo done",
-  "framework": null
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
