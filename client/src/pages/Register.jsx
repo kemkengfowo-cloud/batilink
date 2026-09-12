@@ -95,7 +95,7 @@ export default function Register() {
               { icon: '✅', text: 'Inscription 100% gratuite' },
               { icon: '🔒', text: 'Paiements sécurisés via Mobile Money' },
               { icon: '⭐', text: 'Profil vérifié par B.Y.H' },
-              { icon: '📱', text: 'Application mobile disponible' },
+              { icon: "📱", text: "Accessible sur mobile et tablette" },
             ].map((f, i) => (
               <div key={i} className="flex items-center gap-3">
                 <span className="text-lg">{f.icon}</span>

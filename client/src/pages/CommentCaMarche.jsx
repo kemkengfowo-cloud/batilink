@@ -33,7 +33,7 @@ const ETAPES = {
 
 const GARANTIES = [
   { icon:'🔒', titre:'Artisans vérifiés', desc:'Chaque artisan est vérifié par notre équipe avant d\'être publié sur la plateforme.' },
-  { icon:'💰', titre:'Paiement sécurisé', desc:'Votre argent est bloqué en séquestre jusqu\'à la validation de chaque jalon.' },
+  { icon:"💰", titre:"Paiement sécurisé", desc:"Le client verse l'argent AVANT les travaux. Les fonds sont bloqués chez B.Y.H et libérés à l'artisan uniquement après validation des travaux par le client." },
   { icon:'⚖️', titre:'Arbitrage B.Y.H', desc:'En cas de litige, notre équipe intervient pour trouver une solution équitable.' },
   { icon:'⭐', titre:'Avis vérifiés', desc:'Tous les avis proviennent de clients ayant réellement travaillé avec l\'artisan.' },
   { icon:'📱', titre:'Suivi temps réel', desc:'Notifications instantanées à chaque étape de votre projet.' },

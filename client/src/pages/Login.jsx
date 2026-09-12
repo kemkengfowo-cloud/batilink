@@ -47,7 +47,7 @@ export default function Login() {
               <span className="text-byh-gradient bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent">en confiance</span>
             </h1>
             <p className="text-slate-400 text-lg leading-relaxed">
-              La première marketplace BTP certifiée du Cameroun. Artisans vérifiés, paiements sécurisés, travaux garantis.
+              La première marketplace BTP certifiée du Cameroun. Artisans vérifiés, paiements sécurisés via escrow.
             </p>
           </div>
 
@@ -55,7 +55,7 @@ export default function Login() {
           <div className="space-y-4">
             {[
               { icon: '🔒', title: 'Paiement escrow sécurisé', sub: 'Orange Money & MTN MoMo via MeSomb' },
-              { icon: '⭐', title: 'Artisans certifiés B.Y.H', sub: 'Profils vérifiés et notés par les clients' },
+              { icon: '⭐', title: 'Artisans vérifiés B.Y.H', sub: 'Profils vérifiés et notés par les clients' },
               { icon: '🏗️', title: 'Suivi de chantier en temps réel', sub: 'Jalons photo, contrats, litiges gérés' },
             ].map((f, i) => (
               <div key={i} className="glass rounded-2xl p-4 flex items-start gap-4">
