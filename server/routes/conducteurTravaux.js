@@ -52,6 +52,18 @@ router.get('/mes-chantiers', auth, async (req, res) => {
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
 
+
+// GET detail chantier par ID
+router.get("/chantiers/:id", auth, async (req, res) => {
+  try {
+    const chantier = await DemandeConducteur.findById(req.params.id)
+      .populate("client", "name phone email city")
+      .populate("conducteur", "name phone email")
+      .populate("conducteurRetenu", "name phone email");
+    if (!chantier) return res.status(404).json({ message: "Chantier introuvable." });
+    res.json(chantier);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
 router.put('/offres/:demandeId/repondre', auth, async (req, res) => {
   try {
     if (req.user.role !== 'conducteur') return res.status(403).json({ message: 'Acces reserve aux conducteurs.' });
