@@ -122,7 +122,7 @@ export default function Register() {
 
           <div className="mb-8">
             <h2 className="text-3xl font-black text-slate-900 mb-2">Créer votre compte 🚀</h2>
-            <p className="text-slate-500">Rejoignez des milliers d'utilisateurs B.Y.H au Cameroun</p>
+            <p className="text-slate-500">Rejoignez les premiers utilisateurs B.Y.H au Cameroun</p>
           </div>
 
           {error && (

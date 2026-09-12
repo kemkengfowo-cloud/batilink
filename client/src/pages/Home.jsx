@@ -267,7 +267,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-black text-slate-900 mb-4">Ils nous font confiance</h2>
-            <p className="text-slate-500 text-lg">Des milliers de Camerounais utilisent B.Y.H</p>
+            <p className="text-slate-500 text-lg">Les premiers utilisateurs B.Y.H au Cameroun</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {TEMOIGNAGES.map((t, i) => (

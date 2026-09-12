@@ -23,6 +23,7 @@ export function AuthProvider({ children }) {
     } else {
       setLoading(false);
     }
+  }, []);
 
   // Deconnexion automatique apres inactivite
   useEffect(() => {
@@ -42,7 +43,6 @@ export function AuthProvider({ children }) {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [user]);
-  }, []);
 
   const tryRefresh = async () => {
     const refreshToken = localStorage.getItem('byh_refresh_token');
