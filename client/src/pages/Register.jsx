@@ -5,10 +5,10 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ROLES = [
-  { id: 'client',    icon: '👤', label: 'Client',     sub: 'Je cherche des artisans',    color: '#EFF6FF', border: '#BFDBFE', accent: '#1D4ED8' },
-  { id: 'artisan',   icon: '🔨', label: 'Artisan',    sub: 'Je propose mes services',    color: '#F0FDF4', border: '#BBF7D0', accent: '#166534' },
-  { id: 'entreprise',icon: '🏢', label: 'Entreprise', sub: 'Société de construction',    color: '#F5F3FF', border: '#DDD6FE', accent: '#5B21B6' },
-  { id: 'conducteur',icon: '🏗️', label: 'Conducteur', sub: 'Conducteur de travaux',      color: '#ECFDF5', border: '#A7F3D0', accent: '#065F46' },
+  { id: 'client',    icon: '👤', label: 'Client',     sub: 'Je cherche des artisans',    color: '#EFF6FF', border: '#BFDBFE', accent: '#1D4ED8', photo: 'https://i.pinimg.com/1200x/81/6f/43/816f4319e9794e1774ea600e5d6fe059.jpg' },
+  { id: 'artisan',   icon: '🔨', label: 'Artisan',    sub: 'Je propose mes services',    color: '#F0FDF4', border: '#BBF7D0', accent: '#166534', photo: 'https://i.pinimg.com/1200x/d7/99/6a/d7996ac1ff21eed82a46dbfc1801a0c9.jpg' },
+  { id: 'entreprise',icon: '🏢', label: 'Entreprise', sub: 'Société de construction',    color: '#F5F3FF', border: '#DDD6FE', accent: '#5B21B6', photo: 'https://i.pinimg.com/736x/c7/b0/92/c7b092bfd66043deac977f762594dc56.jpg' },
+  { id: 'conducteur',icon: '🏗️', label: 'Conducteur', sub: 'Conducteur de travaux',      color: '#ECFDF5', border: '#A7F3D0', accent: '#065F46', photo: 'https://i.pinimg.com/736x/a4/ce/48/a4ce48774f80b825937ae84758062b12.jpg' },
 ];
 
 const PAYS_MONDE = [
@@ -141,17 +141,24 @@ export default function Register() {
               <div className="grid grid-cols-2 gap-3">
                 {ROLES.map(r => (
                   <button key={r.id} type="button" onClick={() => setRole(r.id)}
-                    className="p-4 rounded-2xl border-2 text-left transition-all relative"
+                    className="rounded-2xl border-2 text-left transition-all relative overflow-hidden"
                     style={{
-                      backgroundColor: r.color,
                       borderColor: role === r.id ? r.accent : r.border,
-                      boxShadow: role === r.id ? `0 0 0 3px ${r.accent}20` : 'none',
+                      boxShadow: role === r.id ? `0 0 0 3px ${r.accent}30` : "none",
+                      transform: role === r.id ? "scale(1.02)" : "scale(1)",
                     }}>
-                    <div className="text-2xl mb-1">{r.icon}</div>
-                    <div className="font-bold text-slate-900 text-sm">{r.label}</div>
-                    <div className="text-xs mt-1" style={{color: r.accent}}>{r.sub}</div>
+                    {/* Photo */}
+                    <div style={{height:100,overflow:"hidden",position:"relative"}}>
+                      <img src={r.photo} alt={r.label} style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.3s"}}/>
+                      <div style={{position:"absolute",inset:0,background:`linear-gradient(to top, ${r.accent}dd, transparent)`}}/>
+                    </div>
+                    {/* Contenu */}
+                    <div style={{padding:"10px 12px",background:r.color}}>
+                      <div className="font-bold text-slate-900 text-sm">{r.label}</div>
+                      <div className="text-xs mt-0.5" style={{color: r.accent}}>{r.sub}</div>
+                    </div>
                     {role === r.id && (
-                      <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-black"
+                      <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-black"
                         style={{backgroundColor: r.accent}}>✓</div>
                     )}
                   </button>
