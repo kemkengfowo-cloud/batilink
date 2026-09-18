@@ -68,7 +68,7 @@ export default function Register() {
     <div className="min-h-screen flex">
       {/* Panneau gauche dégradé */}
       <div className="hidden lg:flex lg:w-5/12 flex-col justify-between p-12 relative overflow-hidden" style={{background:"#060d1f"}}>
-        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=900&q=80" alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.2,zIndex:0}}/>
+        <img src={ROLES.find(r => r.id === role)?.photo} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.35,zIndex:0,transition:"all 0.5s ease"}}/>
         <div className="absolute top-[-80px] right-[-80px] w-[400px] h-[400px] rounded-full bg-blue-500/10"/>
         <div className="absolute bottom-[-100px] left-[-60px] w-[300px] h-[300px] rounded-full bg-indigo-500/10"/>
 
@@ -147,19 +147,14 @@ export default function Register() {
                       boxShadow: role === r.id ? `0 0 0 3px ${r.accent}30` : "none",
                       transform: role === r.id ? "scale(1.02)" : "scale(1)",
                     }}>
-                    {/* Photo */}
-                    <div style={{height:100,overflow:"hidden",position:"relative"}}>
-                      <img src={r.photo} alt={r.label} style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform 0.3s"}}/>
-                      <div style={{position:"absolute",inset:0,background:`linear-gradient(to top, ${r.accent}dd, transparent)`}}/>
-                    </div>
-                    {/* Contenu */}
-                    <div style={{padding:"10px 12px",background:r.color}}>
+                    <div style={{padding:"16px",background:r.color}}>
+                      <div className="text-2xl mb-2">{r.icon}</div>
                       <div className="font-bold text-slate-900 text-sm">{r.label}</div>
-                      <div className="text-xs mt-0.5" style={{color: r.accent}}>{r.sub}</div>
+                      <div className="text-xs mt-1" style={{color:r.accent}}>{r.sub}</div>
                     </div>
                     {role === r.id && (
                       <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-black"
-                        style={{backgroundColor: r.accent}}>✓</div>
+                        style={{backgroundColor:r.accent}}>✓</div>
                     )}
                   </button>
                 ))}
