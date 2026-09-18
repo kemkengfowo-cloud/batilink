@@ -67,7 +67,8 @@ export default function Register() {
   return (
     <div className="min-h-screen flex">
       {/* Panneau gauche dégradé */}
-      <div className="hidden lg:flex lg:w-5/12 bg-byh-gradient flex-col justify-between p-12 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-5/12 flex-col justify-between p-12 relative overflow-hidden" style={{background:"#060d1f"}}>
+        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=900&q=80" alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.2,zIndex:0}}/>
         <div className="absolute top-[-80px] right-[-80px] w-[400px] h-[400px] rounded-full bg-blue-500/10"/>
         <div className="absolute bottom-[-100px] left-[-60px] w-[300px] h-[300px] rounded-full bg-indigo-500/10"/>
 

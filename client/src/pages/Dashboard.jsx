@@ -55,10 +55,12 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="bg-byh-gradient relative overflow-hidden">
+      <div className="relative overflow-hidden" style={{background:"#060d1f"}}>
+        <img src="https://i.pinimg.com/736x/a7/03/b7/a703b73e3f16b0b7b40242346dfd5e97.jpg" alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",opacity:0.25,zIndex:0}}/>
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom, rgba(6,13,31,0.7), rgba(6,13,31,0.95))",zIndex:1}}/>
         <div className="absolute top-[-60px] right-[-60px] w-[300px] h-[300px] rounded-full bg-blue-500/10"/>
         <div className="absolute bottom-[-40px] left-[-40px] w-[200px] h-[200px] rounded-full bg-indigo-500/10"/>
-        <div className="relative max-w-4xl mx-auto px-4 py-8">
+        <div className="relative max-w-4xl mx-auto px-4 py-8" style={{zIndex:2}}>
           <div className="flex items-center gap-4">
             <div className="relative">
               <img src={getAvatarUrl(user.avatar, user.name)} alt={user.name} className="w-16 h-16 rounded-2xl object-cover border-2 border-white/20 shadow-lg"/>
