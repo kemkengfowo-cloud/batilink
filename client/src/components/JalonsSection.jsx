@@ -46,10 +46,10 @@ export default function JalonsSection({ devis, onUpdate }) {
   };
 
   const validerJalon = async (jalonId) => {
-    if (!window.confirm('Valider ce jalon et liberer le paiement ?')) return;
+    if (!window.confirm('Valider ce jalon et libérer le paiement ?')) return;
     try {
       await api.put('/jalons/' + jalonId + '/valider');
-      setMessage('Jalon valide ! Paiement libere.');
+      setMessage('Jalon validé ! Paiement libéré.');
       if (onUpdate) onUpdate();
     } catch(err) { setMessage(err.response?.data?.message || 'Erreur'); }
   };
@@ -77,7 +77,7 @@ export default function JalonsSection({ devis, onUpdate }) {
     if (!raison) return;
     try {
       await api.put("/jalons/" + jalonId + "/proposer-modification", { nouveauPourcentage: pourcentage, raison });
-      setMessage("Proposition envoyée à l artisan !");
+      setMessage("Proposition envoyée à l'artisan !");
       if (onUpdate) onUpdate();
     } catch(err) { setMessage(err.response?.data?.message || "Erreur"); }
   };
@@ -269,7 +269,7 @@ export default function JalonsSection({ devis, onUpdate }) {
                 {isClient && j.statut === 'soumis' && (
                   <div className="px-5 py-4 border-t border-amber-100 bg-amber-50">
                     <p className="text-sm text-amber-700 font-medium mb-3">
-                      L artisan a soumis des photos. Validez pour liberer le paiement de {formatBudget(j.montant)}.
+                      L'artisan a soumis des photos. Validez pour libérer le paiement de {formatBudget(j.montant)}.
                     </p>
                     <div className="flex gap-2">
                       <button onClick={()=>validerJalon(j._id)}
@@ -306,7 +306,7 @@ export default function JalonsSection({ devis, onUpdate }) {
                 )}
                 {j.paiementEffectue && (
                   <div className="px-5 py-2 bg-green-50 border-t border-green-100">
-                    <p className="text-xs text-green-700 font-bold">💸 Payé — {formatBudget(j.montantPaye)} FCFA versés à l artisan</p>
+                    <p className="text-xs text-green-700 font-bold">💸 Payé — {formatBudget(j.montantPaye)} FCFA versés à l'artisan</p>
                   </div>
                 )}
 

@@ -117,7 +117,7 @@ export default function DevisDetail() {
                     <span className="text-2xl animate-bounce">🔨</span>
                     <div>
                       <p className="font-bold text-gray-900">Travaux en cours — Validez les jalons</p>
-                      <p className="text-amber-700 text-sm mt-0.5">Cliquez pour voir les photos soumises par l artisan et valider son travail</p>
+                      <p className="text-amber-700 text-sm mt-0.5">Cliquez pour voir les photos soumises par l'artisan et valider son travail</p>
                     </div>
                   </div>
                   <span className="text-amber-600 font-bold text-sm">Voir jalons →</span>
@@ -240,7 +240,7 @@ export default function DevisDetail() {
             {isClient && devis.statut === "accepte" && (
               <div className="bg-white rounded-2xl border-2 border-blue-200 p-6">
                 <h3 className="font-display font-bold text-gray-900 mb-2">💳 Payer par Mobile Money</h3>
-                <p className="text-gray-500 text-sm mb-4">Payez en toute securite via Orange Money ou MTN MoMo. B.Y.H distribue le paiement a l artisan apres confirmation.</p>
+                <p className="text-gray-500 text-sm mb-4">Payez en toute sécurité via Orange Money ou MTN MoMo. B.Y.H distribue le paiement à l'artisan apres confirmation.</p>
                 <div className="flex gap-3">
                   <button onClick={()=>setShowPaiement("total")} className="flex-1 py-3.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 text-base shadow-lg shadow-blue-600/20">
                     🟠 Payer via Orange Money
@@ -271,7 +271,7 @@ export default function DevisDetail() {
                 ) : (
                   <button onClick={()=>setAction('terminer')}
                     className="w-full py-3.5 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 text-lg">
-                    Valider et payer l artisan
+                    Valider et payer l'artisan
                   </button>
                 )}
               </div>
@@ -297,7 +297,7 @@ export default function DevisDetail() {
               <div className="bg-green-50 border-2 border-green-300 rounded-2xl p-5">
                 <p className="text-green-700 font-bold text-lg">Travaux valides et paiement libere</p>
                 <p className="text-green-600 text-sm mt-1">
-                  {isArtisan ? `Vous recevrez ${formatBudget(devis.montantArtisan)} sur votre Mobile Money.` : `Le paiement a ete libere a l artisan.`}
+                  {isArtisan ? `Vous recevrez ${formatBudget(devis.montantArtisan)} sur votre Mobile Money.` : `Le paiement a été libéré à l'artisan.`}
                 </p>
               </div>
             )}

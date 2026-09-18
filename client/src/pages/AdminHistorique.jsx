@@ -7,7 +7,7 @@ const ACTION_LABELS = {
   INSCRIPTION: { label:'Inscription', color:'bg-green-50 text-green-700', icon:'👤' },
   CONNEXION: { label:'Connexion', color:'bg-blue-50 text-blue-700', icon:'🔑' },
   PROJET_PUBLIE: { label:'Projet publie', color:'bg-purple-50 text-purple-700', icon:'📋' },
-  DEVIS_ENVOYE: { label:'Devis envoye', color:'bg-yellow-50 text-yellow-700', icon:'📄' },
+  DEVIS_ENVOYE: { label:'Devis envoyé', color:'bg-yellow-50 text-yellow-700', icon:'📄' },
   DEVIS_ACCEPTE: { label:'Devis accepte', color:'bg-green-50 text-green-700', icon:'✅' },
   DEVIS_REFUSE: { label:'Devis refuse', color:'bg-red-50 text-red-700', icon:'❌' },
   TRAVAUX_VALIDES: { label:'Travaux valides', color:'bg-green-50 text-green-700', icon:'💰' },

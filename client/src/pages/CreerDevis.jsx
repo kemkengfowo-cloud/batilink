@@ -13,7 +13,7 @@ export default function CreerDevis() {
     clientEmail: '', projetId: '',
     titre: '', description: '',
     delaiExecution: '', validiteJours: 15,
-    conditionsPaiement: 'Paiement via B.Y.H — Libere apres validation des travaux',
+    conditionsPaiement: 'Paiement via B.Y.H — Libéré après validation des travaux',
     materielsInclus: false,
     nombreEquipes: "", superviseur: "", garantie: "", lotsCouverts: ""
   });

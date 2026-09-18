@@ -89,7 +89,7 @@ export default function Notifications() {
             } else if (d.statut === 'termine') {
               envoyerNotification(
                 NOTIF_TYPES.JALON_VALIDE.titre,
-                `Les travaux "${d.titre}" ont ete valides ! Paiement de ${d.montantArtisan?.toLocaleString('fr-FR')} FCFA libere.`,
+                `Les travaux "${d.titre}" ont été validés ! Paiement de ${d.montantArtisan?.toLocaleString('fr-FR')} FCFA libéré.`,
                 { important: true, url: `/devis/${d._id}` }
               );
             }

@@ -272,7 +272,7 @@ export default function ContratDetail() {
             <p className="text-green-700 font-bold text-lg">🔨 Mission en cours</p>
             <p className="text-green-600 text-sm mt-1">
               Realisez votre mission. Vous recevrez{' '}
-              <strong>{formatBudget(contrat.montantTechnicien)}</strong> apres validation de l employeur.
+              <strong>{formatBudget(contrat.montantTechnicien)}</strong> après validation de l'employeur.
             </p>
           </div>
         )}

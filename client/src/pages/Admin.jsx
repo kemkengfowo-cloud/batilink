@@ -150,7 +150,7 @@ export default function Admin() {
     setSending(true);
     try {
       const res = await api.post('/admin/broadcast', broadcast);
-      setBroadcastMsg(`Message envoye a ${res.data.count} utilisateur(s)`);
+      setBroadcastMsg(`Message envoyé à ${res.data.count} utilisateur(s)`);
       setBroadcast({ contenu:'', roleFilter:'' });
       setTimeout(() => setBroadcastMsg(''), 4000);
     } catch { setBroadcastMsg('Erreur lors de l envoi'); }
@@ -456,7 +456,7 @@ export default function Admin() {
                   {!e.verifie ? (
                     <button onClick={()=>verifyEntreprise(e._id, true)}
                       className="w-full py-2.5 bg-green-500 text-white rounded-xl text-sm font-bold hover:bg-green-600 transition-colors">
-                      Certifier l entreprise
+                      Certifier l'entreprise
                     </button>
                   ) : (
                     <button onClick={()=>verifyEntreprise(e._id, false)}
@@ -569,7 +569,7 @@ export default function Admin() {
                 {['ouvert','en_examen'].includes(l.statut) && (
                   <div className="space-y-3">
                     <textarea
-                      placeholder="Décision de l administrateur (ex: Remboursement total client, travaux non conformes)..."
+                      placeholder="Décision de l'administrateur (ex: Remboursement total client, travaux non conformes)..."
                       id={`decision-${l._id}`}
                       rows={2}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 resize-none text-sm"/>

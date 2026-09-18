@@ -170,7 +170,7 @@ export default function CreerContrat() {
             <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
               <input type="checkbox" id="equipements" checked={form.equipementsFournis} onChange={e=>set('equipementsFournis',e.target.checked)} className="w-5 h-5 accent-blue-500 cursor-pointer"/>
               <label htmlFor="equipements" className="text-sm font-semibold text-gray-700 cursor-pointer">
-                Les equipements de protection et outils sont fournis par l employeur
+                Les equipements de protection et outils sont fournis par l'employeur
               </label>
             </div>
 

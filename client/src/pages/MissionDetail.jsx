@@ -155,7 +155,7 @@ export default function MissionDetail() {
                         placeholder="Presentez-vous et expliquez pourquoi vous etes le meilleur candidat pour cette mission..."/>
                     </div>
                     <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700">
-                      Votre message sera envoye directement a l employeur via la messagerie B.Y.H.
+                      Votre message sera envoyé directement à l'employeur via la messagerie B.Y.H.
                     </div>
                     <div className="flex gap-3">
                       <button type="submit" disabled={sending||!motivation.trim()}

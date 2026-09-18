@@ -70,7 +70,7 @@ export default function LitigeModal({ devisId, contratId, accuseId, onClose, onS
             </label>
           </div>
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700">
-            ⚠️ Une fois le litige ouvert, l admin B.Y.H examinera les preuves des deux parties et rendra une decision sous 72h maximum.
+            ⚠️ Une fois le litige ouvert, l'admin B.Y.H examinera les preuves des deux parties et rendra une décision sous 72h maximum.
           </div>
           <div className="flex gap-3">
             <button type="submit" disabled={loading}

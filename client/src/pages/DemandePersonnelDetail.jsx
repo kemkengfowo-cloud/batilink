@@ -107,7 +107,7 @@ export default function DemandePersonnelDetail() {
       });
       setShowContreOffre(false);
       setMontantContreOffre('');
-      setMessage('Contre-offre envoyee a l admin !');
+      setMessage('Contre-offre envoyée à l'admin !');
       charger();
     } catch(err) {
       setMessage('Erreur');
