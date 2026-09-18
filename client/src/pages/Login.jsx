@@ -20,160 +20,123 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Panneau gauche — dégradé bleu premium */}
-      <div className="hidden lg:flex lg:w-1/2 bg-byh-gradient flex-col justify-between p-12 relative overflow-hidden">
-        {/* Cercles décoratifs */}
-        <div className="absolute top-[-80px] right-[-80px] w-[400px] h-[400px] rounded-full bg-blue-500/10"/>
-        <div className="absolute bottom-[-100px] left-[-60px] w-[300px] h-[300px] rounded-full bg-indigo-500/10"/>
-        <div className="absolute top-1/2 right-[-40px] w-[200px] h-[200px] rounded-full bg-blue-400/5"/>
+    <div style={{ minHeight: '100vh', display: 'flex', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
 
-        {/* Logo */}
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-2xl bg-blue-purple flex items-center justify-center text-2xl shadow-blue">🏠</div>
+      {/* ─── PANNEAU GAUCHE PHOTO ─── */}
+      <div style={{ display: 'none', width: '50%', position: 'relative', overflow: 'hidden' }} className="lg-block">
+        <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=900&q=85" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(6,13,31,0.9) 0%, rgba(37,99,235,0.6) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 48 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 44, height: 44, background: 'linear-gradient(135deg, #2563EB, #7C3AED)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>🏠</div>
             <div>
-              <div className="text-2xl font-black text-white tracking-widest">B.Y.H</div>
-              <div className="text-xs text-blue-300 font-semibold">Build Your Home</div>
+              <div style={{ color: '#fff', fontWeight: 900, fontSize: 20, letterSpacing: '-0.02em' }}>B.Y.H</div>
+              <div style={{ color: '#93c5fd', fontSize: 11, fontWeight: 600 }}>Build Your Home</div>
             </div>
           </div>
-        </div>
-
-        {/* Contenu central */}
-        <div className="relative z-10 space-y-8">
           <div>
-            <h1 className="text-5xl font-black text-white leading-tight mb-4">
-              Construisez<br/>
-              <span className="text-byh-gradient bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent">en confiance</span>
-            </h1>
-            <p className="text-slate-400 text-lg leading-relaxed">
-              La première marketplace BTP certifiée du Cameroun. Artisans vérifiés, paiements sécurisés via escrow.
+            <p style={{ color: '#fff', fontSize: 28, fontWeight: 900, lineHeight: 1.3, marginBottom: 24, letterSpacing: '-0.02em' }}>
+              "La confiance est le<br/>ciment de toute<br/>construction durable."
             </p>
-          </div>
-
-          {/* Features */}
-          <div className="space-y-4">
-            {[
-              { icon: '🔒', title: 'Paiement escrow sécurisé', sub: 'Orange Money & MTN MoMo via MeSomb' },
-              { icon: '⭐', title: 'Artisans vérifiés B.Y.H', sub: 'Profils vérifiés et notés par les clients' },
-              { icon: '🏗️', title: 'Suivi de chantier en temps réel', sub: 'Jalons photo, contrats, litiges gérés' },
-            ].map((f, i) => (
-              <div key={i} className="glass rounded-2xl p-4 flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl flex-shrink-0">{f.icon}</div>
-                <div>
-                  <div className="text-white font-bold text-sm">{f.title}</div>
-                  <div className="text-slate-400 text-xs mt-1">{f.sub}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[
+                { icon: '✅', text: 'Artisans vérifiés par B.Y.H' },
+                { icon: '🔒', text: 'Paiements sécurisés escrow' },
+                { icon: '📱', text: 'Orange Money & MTN MoMo' },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ fontSize: 18 }}>{item.icon}</span>
+                  <span style={{ color: '#cbd5e1', fontSize: 14, fontWeight: 600 }}>{item.text}</span>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-
-        {/* Footer gauche */}
-        <div className="relative z-10">
-          <div className="text-slate-500 text-xs">🇨🇲 Fièrement Made in Cameroun — © 2026 B.Y.H</div>
         </div>
       </div>
 
-      {/* Panneau droit — formulaire */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 bg-slate-50">
-        <div className="w-full max-w-md">
+      {/* ─── PANNEAU DROIT FORMULAIRE ─── */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', background: '#f8fafc' }}>
+        <div style={{ width: '100%', maxWidth: 440 }}>
 
           {/* Logo mobile */}
-          <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
-            <div className="w-11 h-11 rounded-2xl bg-blue-purple flex items-center justify-center text-xl shadow-blue">🏠</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 40, justifyContent: 'center' }}>
+            <div style={{ width: 40, height: 40, background: 'linear-gradient(135deg, #2563EB, #7C3AED)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🏠</div>
             <div>
-              <div className="text-xl font-black text-slate-900 tracking-widest">B.Y.H</div>
-              <div className="text-xs text-blue-500 font-semibold">Build Your Home 🇨🇲</div>
+              <div style={{ fontWeight: 900, fontSize: 18, color: '#0f172a', letterSpacing: '-0.02em' }}>B.Y.H</div>
+              <div style={{ color: '#64748b', fontSize: 11, fontWeight: 600 }}>Build Your Home 🇨🇲</div>
             </div>
           </div>
 
-          {/* Header form */}
-          <div className="mb-8">
-            <h2 className="text-3xl font-black text-slate-900 mb-2">Bon retour ! 👋</h2>
-            <p className="text-slate-500">Connectez-vous à votre espace B.Y.H</p>
-          </div>
+          <h1 style={{ fontSize: 28, fontWeight: 900, color: '#0f172a', marginBottom: 8, letterSpacing: '-0.02em' }}>Bon retour !</h1>
+          <p style={{ color: '#64748b', fontSize: 15, marginBottom: 32 }}>Connectez-vous à votre espace B.Y.H</p>
 
-          {/* Error */}
+          {/* Erreur */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3">
-              <span className="text-red-500 text-lg">⚠️</span>
-              <p className="text-red-600 text-sm font-semibold">{error}</p>
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 12, padding: '12px 16px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 16 }}>⚠️</span>
+              <span style={{ color: '#dc2626', fontSize: 14, fontWeight: 600 }}>{error}</span>
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {/* Email */}
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Adresse email</label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg">📧</span>
-                <input
-                  type="email" required
-                  value={form.email}
-                  onChange={e => setForm(f => ({...f, email: e.target.value}))}
-                  className="input-premium w-full pl-11 pr-4 py-3.5 text-slate-900 font-medium"
-                  placeholder="votre@email.com"
-                />
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 6 }}>Adresse email</label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 16 }}>📧</span>
+                <input type="email" required placeholder="votre@email.com" value={form.email} onChange={e => setForm(f => ({...f, email: e.target.value}))}
+                  style={{ width: '100%', paddingLeft: 44, paddingRight: 16, paddingTop: 14, paddingBottom: 14, background: '#fff', borderRadius: 12, border: '1.5px solid #e2e8f0', fontSize: 15, color: '#0f172a', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
+                  onFocus={e => e.target.style.borderColor = '#2563EB'}
+                  onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
               </div>
             </div>
 
-            {/* Password */}
+            {/* Mot de passe */}
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Mot de passe</label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg">🔒</span>
-                <input
-                  type={showPassword ? 'text' : 'password'} required
-                  value={form.password}
-                  onChange={e => setForm(f => ({...f, password: e.target.value}))}
-                  className="input-premium w-full pl-11 pr-12 py-3.5 text-slate-900 font-medium"
-                  placeholder="Votre mot de passe"
-                />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <label style={{ fontSize: 13, fontWeight: 700, color: '#374151' }}>Mot de passe</label>
+                <Link to="/forgot-password" style={{ fontSize: 13, color: '#2563EB', fontWeight: 600, textDecoration: 'none' }}>Mot de passe oublié ?</Link>
+              </div>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 16 }}>🔒</span>
+                <input type={showPassword ? 'text' : 'password'} required placeholder="••••••••" value={form.password} onChange={e => setForm(f => ({...f, password: e.target.value}))}
+                  style={{ width: '100%', paddingLeft: 44, paddingRight: 50, paddingTop: 14, paddingBottom: 14, background: '#fff', borderRadius: 12, border: '1.5px solid #e2e8f0', fontSize: 15, color: '#0f172a', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
+                  onFocus={e => e.target.style.borderColor = '#2563EB'}
+                  onBlur={e => e.target.style.borderColor = '#e2e8f0'} />
                 <button type="button" onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                  style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 16 }}>
                   {showPassword ? '🙈' : '👁️'}
                 </button>
               </div>
-              <div className="mt-2 text-right">
-                <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 font-semibold">
-                  Mot de passe oublié ?
-                </Link>
-              </div>
             </div>
 
-            {/* Submit */}
+            {/* Bouton */}
             <button type="submit" disabled={loading}
-              className="btn-byh-gradient w-full py-4 text-white font-black text-lg rounded-2xl disabled:opacity-60 disabled:cursor-not-allowed">
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
-                  Connexion...
-                </span>
-              ) : 'Se connecter →'}
+              style={{ background: loading ? '#94a3b8' : 'linear-gradient(135deg, #2563EB, #7C3AED)', color: '#fff', border: 'none', borderRadius: 12, padding: '16px', fontWeight: 800, fontSize: 16, cursor: loading ? 'not-allowed' : 'pointer', marginTop: 8, boxShadow: loading ? 'none' : '0 8px 24px rgba(37,99,235,0.3)', transition: 'all 0.2s' }}>
+              {loading ? 'Connexion...' : 'Se connecter →'}
             </button>
-
-            {/* Séparateur */}
-            <div className="flex items-center gap-4">
-              <div className="flex-1 h-px bg-slate-200"/>
-              <span className="text-slate-400 text-sm font-semibold">ou</span>
-              <div className="flex-1 h-px bg-slate-200"/>
-            </div>
-
-            {/* Register link */}
-            <Link to="/register"
-              className="block w-full py-4 text-center font-bold text-blue-700 bg-blue-50 border-2 border-blue-200 rounded-2xl hover:bg-blue-100 transition-colors">
-              Créer un compte gratuitement
-            </Link>
           </form>
 
-          {/* Security note */}
-          <div className="mt-8 p-4 bg-slate-100 rounded-2xl text-center">
-            <p className="text-slate-400 text-xs">🔒 Connexion sécurisée — B.Y.H plateforme BTP certifiée Cameroun</p>
+          {/* Séparateur */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '24px 0' }}>
+            <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+            <span style={{ color: '#94a3b8', fontSize: 13 }}>ou</span>
+            <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
           </div>
+
+          <Link to="/register" style={{ display: 'block', textAlign: 'center', background: '#fff', color: '#0f172a', textDecoration: 'none', padding: '14px', borderRadius: 12, fontWeight: 700, fontSize: 15, border: '1.5px solid #e2e8f0' }}>
+            Créer un compte gratuitement
+          </Link>
+
+          <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 12, marginTop: 24 }}>
+            🔒 Connexion sécurisée — B.Y.H plateforme BTP certifiée Cameroun
+          </p>
         </div>
       </div>
+
+      <style>{`
+        @media (min-width: 1024px) { .lg-block { display: block !important; } }
+      `}</style>
     </div>
   );
 }
