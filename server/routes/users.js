@@ -54,4 +54,21 @@ router.post('/push-token', auth, async (req, res) => {
   } catch(err) { res.status(500).json({ message: err.message }); }
 });
 
+// GET /api/users/notifications
+router.get("/notifications", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("notifications");
+    res.json(user?.notifications || []);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
+// PUT /api/auth/me — Mettre a jour profil
+router.put("/me", auth, async (req, res) => {
+  try {
+    const { name, phone, city } = req.body;
+    const user = await User.findByIdAndUpdate(req.user.id, { name, phone, city }, { new: true }).select("-password");
+    res.json(user);
+  } catch(err) { res.status(500).json({ message: err.message }); }
+});
+
 module.exports = router;
